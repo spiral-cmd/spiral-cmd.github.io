@@ -123,6 +123,34 @@
       nav { flex-direction: column; gap: .75rem; }
       nav ul { flex-wrap: wrap; justify-content: center; }
     }
+
+form {
+  max-width: 60ch;
+  margin-top: 1rem;
+}
+label {
+  display: block;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+input, textarea {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  font-family: inherit;
+  font-size: 1rem;
+}
+button[type="submit"] {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
   </style>
 </head>
 <body>
