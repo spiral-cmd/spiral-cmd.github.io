@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>building-a-llm-wiki-or-collaborative-thinking-space — Spiralarc AI</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3E7RV5FHGR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3E7RV5FHGR');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #78C2CE;
+      --text: #222;
+      --muted: #666;
+      --line: #6FB3BE;
+      --accent: #01696f;
+      --max: 960px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Inter", "Aktiv Grotesk", "Helvetica Neue", Arial, sans-serif;
+      font-weight: 300;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    h1, h2, h3 {
+      font-family: "Inter", "Univers", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 500;
+    }
+
+    .wrap {
+      width: min(100% - 2rem, var(--max));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(120,194,206,.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 1rem;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.3em;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: .8rem 1rem;
+      background: var(--accent);
+      color: white;
+      border-radius: .5rem;
+    }
+
+    section {
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 { font-size: clamp(2.2rem, 6vw, 4.5rem); line-height: 1.05; margin-bottom: 1rem; }
+    h2 { font-size: 1.5rem; margin-bottom: .75rem; margin-top: 2rem; }
+    p  { max-width: 60ch; color: var(--muted); }
+    ul:not(nav ul), ol { max-width: 60ch; }
+    ul:not(nav ul) li, ol li { font-family: inherit; font-size: inherit; color: var(--muted); line-height: inherit; }
+
+    footer {
+      padding: 2rem 0 4rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 700px) {
+      nav { flex-direction: column; gap: .75rem; }
+      nav ul { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html">spiralarc</a>
+        <ul>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="https://www.superprof.co.uk/artificial-intelligence-and-agentic-coach-from-basic-skills-robust-agent-workflows-can-show-you-the-way.html" target="_blank" rel="noopener">Learn with Martin</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h1 id="why-the-codex-isnt-a-wiki">Why the Codex Isn't a Wiki</h1>
+<p><em>A 657-PDF personal library, three public positions from April 2026, and what the model-owned thinking surface actually costs.</em></p>
+<br>
+<p>April 2026 has seen a 'moment' for personal knowledge management over LLMs. Andrej Karpathy published a lengthy tweet. Artem Zhutov ran an empirical rebuttal two weeks later. Simon Willison, quieter as usual, had already written the architecture that both were arguing around. Watching them triangulate in real time felt like synchronicity — it landed just as I was thinking about what my own corpus should become.</p>
+<p>I'll tell you where I landed, and why, but the shortest version is this: my codex of 657 PDFs is not becoming a wiki. It's becoming something stricter and, I think, more durable.</p>
+<h2 id="the-scale-problem-nobody-names">The scale problem nobody names</h2>
+<p>Personal corpora sit in a strange middle. They're too big to paste into context — 657 documents is not a lunchtime read. But they're too small for research-grade infrastructure — Neo4j and GraphRAG are machinery for tens of thousands of documents and teams of people. The patterns that work for a startup's knowledge base collapse under the weight of their own ceremony when one person uses them. The patterns that work for a single web search don't scale to a lifetime of reading.</p>
+<p>This is the scale where Karpathy, Zhutov, and Willison are all writing. It's also the scale where most of us actually live — a Kindle, a Drive folder, a filesystem of saved PDFs we haven't re-read.</p>
+<p>The question is not <em>whether</em> the model helps you think over your corpus. Everyone agrees it does. The question is <em>how much machinery you build between the raw documents and the query</em>, and <em>who owns what the machinery produces</em>.</p>
+<h2 id="karpathys-proposal-compile-it">Karpathy's proposal: compile it</h2>
+<p>The tweet Karpathy published in early April describes a pattern he calls the LLM Wiki. Raw documents go into a <code>raw/</code> directory. An LLM agent reads each source and writes a summary. It extracts people, places, concepts, and technical terms into their own pages. It builds backlinks and cross-references. It compiles a schema file that tells future queries where to look. You view the wiki in Obsidian. Karpathy is explicit that <strong>he rarely touches it directly</strong>. The model is the maintainer.</p>
+<p>The seduction here is real. If it works, you get a continuously growing, structurally navigable map of everything you've read, organised by concept rather than filename, with the latent connections — the ones you'd never find by searching for keywords you can't remember — surfaced automatically. It's close to what a good human librarian produces for you, at machine speed.</p>
+<p>It also has an implicit bet at its core: that the compile step is cheap enough to run continuously, and that a model at query time will <em>use</em> the compiled artifact rather than going back to the raw sources. Both halves of that bet are load-bearing. If either fails, you've paid for a lot of prose that nothing reads.</p>
+<h2 id="zhutovs-test-the-bet-failed">Zhutov's test: the bet failed</h2>
+<p>On 19 April, Artem Zhutov published an X thread that I'd call the most important empirical contribution to this conversation so far. He took Karpathy's pattern seriously enough to actually build it. Nineteen sources on Ray Dalio's decision-making framework. Twenty minutes to ingest. He asked the wiki ten questions, and he asked the same ten questions of NotebookLM — Google's embedding-over-raw-sources tool — on the same documents.</p>
+<p>The results were uncomfortable for the wiki.</p>
+<p>At query time, Claude <em>ignored the compiled artifact</em>. It bypassed the entity pages, bypassed the summaries, and re-read the full source transcripts to answer. Forty-four thousand tokens per question. The compile work had happened; the retrieval didn't consume it.</p>
+<p>NotebookLM, which had done no compile work at all — only embeddings — answered the same ten questions at a fraction of the cost, in about a minute each, with citations back to the source transcripts. Same quality. Sometimes better.</p>
+<p>Zhutov's second critique cut deeper than the cost one. Even when the wiki <em>does</em> work, he asked, <em>so what?</em> You have a beautifully structured knowledge base. It sits there. It does not integrate with your morning routine or your decision-making or your writing. It is static storage dressed up as thinking. His move was to abandon the wiki frame entirely and reshape his Dalio reading into a <strong>skill</strong> — a callable decision-making template, invoked from a daily routine, consulted at the moment a decision is in front of him. The storage was not the valuable artifact. The reusable action was.</p>
+<p>And then a note that deserves its own paragraph: <strong>the token era has shifted.</strong> Zhutov writes from inside the change. January was unlimited; April is tight. Patterns that assumed subsidised tokens are breaking now, in public. Anyone designing for the next five years of a corpus has to design assuming tokens cost what they cost.</p>
+<h2 id="willisons-architecture-already-solved-quietly">Willison's architecture: already solved, quietly</h2>
+<p>Simon Willison has been writing about this stack for longer than either of them, in smaller increments, without the headline-grabbing post. His position is architecturally conservative and, I think, correct.</p>
+<p>Three things he's put his weight behind:</p>
+<p><strong>Hybrid retrieval over raw sources</strong> — specifically, FTS5 for keyword search (which matters for names and acronyms embeddings miss), sqlite-vec for vector search (which matters for concept match), and Reciprocal Rank Fusion to combine them without the embarrassment of comparing incommensurable scores. Alex Garcia, Willison's collaborator, has published the canonical worked implementation. This is the stack NotebookLM is doing a variant of; it's the stack I'm building; and it's the stack Zhutov's test vindicates.</p>
+<p><strong>Cooling on classic RAG.</strong> Willison's exact phrase: <em>"I've recently found myself cooling a little on the classic RAG pattern of finding relevant documents and dumping them into the context for a single call to an LLM."</em> He favours <strong>iterative</strong> tool-use — multiple retrieval calls across a single answer, the agent reading the first hits, narrowing by tag, pulling a specific passage on demand. Retrieval as a live dialogue, not a one-shot dump.</p>
+<p><strong>Search primitives should be good enough for a human to use directly.</strong> Quoting Panda Smith: <em>"If you want to make a good RAG tool that uses your documentation, you should start by making a search engine over those documents that would be good enough for a human to use themselves."</em> Search is first-class. It's not a hidden step inside an agent loop. The human queries too.</p>
+<p>Willison doesn't argue with Karpathy directly. He doesn't have to. The stack he's been quietly documenting for years is the one Zhutov's test proves viable, and the absence of any compile step in it is the point.</p>
+<h2 id="the-axis-they-split-on">The axis they split on</h2>
+<p>Strip the examples and the three positions line up on one axis: <strong>how much pre-compilation sits between raw documents and the query.</strong></p>
+<p>Karpathy: heavy. Continuous prose wiki, per concept, continuously maintained, model-owned.</p>
+<p>Willison: light. A hybrid index at ingest — embeddings and FTS, nothing else — and iterative tool-use at query time.</p>
+<p>Zhutov: minimal. Embeddings at ingest, and then the distillation happens <em>above</em> retrieval, as skills and templates invoked in context.</p>
+<p>Willison and Zhutov agree on the ingest side. They differ on what sits above it — Willison wants composable CLI tools, Zhutov wants action-embedded skills. Both of them disagree with Karpathy about the middle layer: neither wants a prose wiki maintained by the model as the default navigable surface.</p>
+<p>The empirical weight of Zhutov's test pushes me toward their side of the axis.</p>
+<h2 id="what-the-codex-takes-from-each">What the codex takes from each</h2>
+<p>In dialogue with Sonnet 4.6, it became apparent I would like to share this collaborative thinking space with my son in twenty or thirty years, and I want it to cost me a sensible amount each month. Those two constraints — inheritance and affordability — are not Karpathy's concerns. They are mine.</p>
+<p>The design, in a sentence: <strong>hybrid retrieval over raw sources (Willison), committed distillation into reusable actions (Zhutov's instinct, my shape), no continuous prose wiki (Karpathy's pattern, rejected with evidence).</strong></p>
+<p>Concretely, three primitives do the work:</p>
+<ul>
+<li><code>codex.search</code> is the hybrid FTS5 + sqlite-vec + RRF query, exposed as a CLI, a Telegram command, and a skill. It's good enough for me to use by hand, which is Willison's test.</li>
+<li><code>codex.read</code> pulls a known document into context by path or pattern. It's the move I already make by reflex — <em>read /codex/trading/*no sense*</em> — and it deserves to be a first-class primitive, not a degenerate case of search.</li>
+<li><code>codex.apply</code> composes a <strong>lens</strong> (a framework extracted from one set of corpus documents) onto a <strong>source</strong> (another document, an article, a draft). Its output is a CaseBook draft with per-claim provenance: which claim came from the corpus, which from trained knowledge, which from this session. I commit the CaseBook or discard it. The model proposes; I dispose.</li>
+</ul>
+<p>The CaseBook is where my distilled thinking lives. It is not a wiki page. It is a committed, reusable, invocable view — closer in shape to Zhutov's skills than to Karpathy's concept pages. It carries its provenance with it. It can be applied again, edited, or retired.</p>
+<h2 id="the-principle-that-governs-the-whole-thing">The principle that governs the whole thing</h2>
+<p>Let's keep this as simple as possible:</p>
+<p><strong>Compiled artifacts earn their compile cost only when they are consumed at retrieval time.</strong></p>
+<p>Phase 2 enrichment — concept fingerprints, entities, related-docs — passes this test because <code>codex.search</code> consumes it on every query. It is retrieval fuel. It earns its place every time the search runs.</p>
+<p>A continuously maintained prose wiki fails this test. Zhutov's measurement is the evidence: the model does not read the wiki at query time. It goes to the raw sources. The compile cost is paid; the retrieval benefit is not received. The wiki is dead cargo.</p>
+<p>A browseable concept index as a separate navigation layer — which I considered, and which was my weaker intermediate position — also fails, for the same reason. Once <code>codex.search</code> already consumes the enrichment deterministically, a second navigable surface is redundant. I'd be paying to render what the retrieval already uses.</p>
+<p>The principle rules out more than it rules in. That's what I want from it.</p>
+<h2 id="the-twenty-year-frame">The twenty-year frame</h2>
+<p>There's a last layer to this that the public conversation mostly misses. I'm not optimising only for next week's query. I'm optimising for what my son inherits, and for what his AI — whatever that is in 2046 — can still read.</p>
+<p>This is why the canonical format stays PDF. Text is a cache, derived and regenerable. It's why the metadata lives in SQLite with an export command that produces a self-contained tarball. It's why taxonomy decisions are recorded as markdown files, not absorbed into config. It's why CaseBooks are markdown with explicit provenance manifests — because the thing I most want to pass on is not the corpus itself but the thinking I did on top of it, in a form that's still readable after the LLMs we use now are gone.</p>
+<p>Karpathy's wiki doesn't fail on inheritance — prose is portable. But it fails on affordability and on consumption ratio, and my son doesn't inherit what I can't afford to maintain.</p>
+<h2 id="whats-worth-keeping-from-karpathy">What's worth keeping from Karpathy</h2>
+<p>He's right that raw-documents-plus-retrieval leaves value on the table. That instinct is correct. What he gets wrong is the shape the distillation should take. A continuously maintained prose wiki, owned by the model, is the wrong answer for personal scale in the current token economy. A committed, person-authored, reusable CaseBook that composes with <code>codex.apply</code> is, I think, the right one.</p>
+<p>The rejection is the useful part to record. Not the wiki as an enemy — Karpathy is onto something (when isn't he?), the pattern is interesting, and in a team context with research-grade budgets it may well be right. But in my context, at my scale, with my constraints, it is the wrong bet. Zhutov's test is the evidence I needed to see before I built the wrong thing myself.</p>
+<p>The codex (what I call my system) keeps its raw sources. It builds a retrieval stack Willison would recognise. It distils into CaseBooks Zhutov would call skills. And it writes down why, so whoever reads this next — including my son — knows not just what was decided, but which April 2026 thinking it stood on.</p>
+<p><em>Draft, 2026-04-20.</em></p>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p>© 2026 spiralarc</p>
+  </footer>
+</body>
+</html>
