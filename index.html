@@ -172,6 +172,39 @@
 <section id="contact">
 <h2>Contact</h2>
 <p><a href="https://x.com/messages/compose?recipient_id=2019074955938316288" style="text-decoration: underline; color: blue;">Message me via X</a></p>
+
+<br><br>
+<p>If you prefer, you can also email <a id="emailLink" href="#">click to reveal</a>.</p>
+
+<form action="https://formsubmit.co/spiralarcmaker@gmail.com" method="POST">
+<input type="hidden" name="_subject" value="New message from website">
+<input type="hidden" name="_captcha" value="false">
+<input type="text" name="_honey" tabindex="-1" autocomplete="off"
+style="position:absolute;left:-9999px;" aria-hidden="true">
+
+<label for="name">Name</label>
+<input id="name" name="name" type="text" required>
+
+<label for="email">Your email</label>
+<input id="email" name="email" type="email" required>
+
+<label for="message">Message</label>
+<textarea id="message" name="message" rows="6" required></textarea>
+
+<button type="submit">Send</button>
+</form>
+
+<script>
+const user = "spiralarcmaker";
+const domain = "gmail.com";
+const email = user + '@' + domain;
+const link = document.getElementById("emailLink");
+
+if (link) {
+link.href = 'mailto:' + email;
+link.textContent = email;
+}
+</script>
 </section>
 </main>
 <footer class="wrap">
