@@ -5,9 +5,9 @@
 <title>CC ↔ Polo Communication Flow</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e0e0e0; padding: 32px; }
-  h1 { text-align: center; font-size: 18px; color: #aaa; margin-bottom: 8px; font-weight: 400; letter-spacing: 1px; }
-  .subtitle { text-align: center; font-size: 12px; color: #555; margin-bottom: 40px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; color: #222; padding: 32px; }
+  h1 { text-align: center; font-size: 18px; color: #444; margin-bottom: 8px; font-weight: 400; letter-spacing: 1px; }
+  .subtitle { text-align: center; font-size: 12px; color: #888; margin-bottom: 40px; }
 
   .diagram { position: relative; width: 960px; margin: 0 auto; height: 660px; }
 
@@ -21,18 +21,18 @@
     text-align: center;
     min-width: 120px;
   }
-  .box .label { font-size: 10px; font-weight: 400; opacity: 0.7; margin-top: 3px; }
+  .box .label { font-size: 10px; font-weight: 400; opacity: 0.65; margin-top: 3px; }
 
-  .box-human   { background: #1e2a1e; border: 2px solid #4caf50; color: #81c784; }
-  .box-cc      { background: #1a1f2e; border: 2px solid #5c6bc0; color: #9fa8da; }
-  .box-polo    { background: #1f1a2e; border: 2px solid #9c27b0; color: #ce93d8; }
-  .box-cato    { background: #1f2a1a; border: 2px solid #66bb6a; color: #a5d6a7; }
-  .box-io      { background: #2a1f1a; border: 2px solid #ff7043; color: #ffab91; }
-  .box-file    { background: #1a2028; border: 2px dashed #546e7a; color: #90a4ae; font-size: 12px; }
-  .box-telegram{ background: #1a2233; border: 2px solid #29b6f6; color: #81d4fa; }
-  .box-gateway { background: #221a1a; border: 2px solid #ef5350; color: #ef9a9a; }
+  .box-human   { background: #e8f5e9; border: 2px solid #43a047; color: #2e7d32; }
+  .box-cc      { background: #e8eaf6; border: 2px solid #5c6bc0; color: #3949ab; }
+  .box-polo    { background: #f3e5f5; border: 2px solid #9c27b0; color: #6a1b9a; }
+  .box-cato    { background: #f1f8e9; border: 2px solid #66bb6a; color: #2e7d32; }
+  .box-io      { background: #fbe9e7; border: 2px solid #ff7043; color: #bf360c; }
+  .box-file    { background: #f5f5f5; border: 2px dashed #90a4ae; color: #546e7a; font-size: 12px; }
+  .box-telegram{ background: #e1f5fe; border: 2px solid #0288d1; color: #01579b; }
+  .box-gateway { background: #fce4ec; border: 2px solid #e53935; color: #b71c1c; }
 
-  .broken { border-style: dashed; opacity: 0.5; }
+  .broken { border-style: dashed; opacity: 0.55; }
 
   /* SVG arrows */
   svg.arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -41,31 +41,32 @@
   .legend {
     position: absolute;
     bottom: 0; right: 0;
-    background: #161b22;
-    border: 1px solid #333;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 12px 16px;
     font-size: 11px;
+    color: #444;
   }
   .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .legend-line { width: 28px; height: 2px; }
-  .legend-line.ok { background: #4caf50; }
-  .legend-line.broken { background: #ef5350; border-top: 2px dashed #ef5350; height: 0; }
-  .legend-line.pending { background: #ff9800; border-top: 2px dashed #ff9800; height: 0; }
+  .legend-line.ok { background: #43a047; }
+  .legend-line.broken { background: #e53935; border-top: 2px dashed #e53935; height: 0; }
+  .legend-line.pending { background: #fb8c00; border-top: 2px dashed #fb8c00; height: 0; }
 
   /* Arrow labels */
   .arrow-label {
     position: absolute;
     font-size: 10px;
-    background: #0f1117;
+    background: #f8f9fa;
     padding: 2px 5px;
     border-radius: 3px;
     white-space: nowrap;
-    color: #aaa;
+    color: #666;
   }
-  .arrow-label.ok    { color: #66bb6a; }
-  .arrow-label.broken{ color: #ef5350; }
-  .arrow-label.pending{color: #ffa726; }
+  .arrow-label.ok     { color: #2e7d32; }
+  .arrow-label.broken { color: #c62828; }
+  .arrow-label.pending{ color: #e65100; }
 
   /* Status badge */
   .badge {
@@ -77,9 +78,9 @@
     margin-top: 4px;
     letter-spacing: 0.5px;
   }
-  .badge-ok      { background: #1b5e20; color: #a5d6a7; }
-  .badge-broken  { background: #b71c1c; color: #ffcdd2; }
-  .badge-pending { background: #e65100; color: #ffe0b2; }
+  .badge-ok      { background: #c8e6c9; color: #1b5e20; }
+  .badge-broken  { background: #ffcdd2; color: #b71c1c; }
+  .badge-pending { background: #ffe0b2; color: #bf360c; }
 </style>
 </head>
 <body>
@@ -92,38 +93,38 @@
   <!-- SVG layer for arrows -->
   <svg class="arrows" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <marker id="arrow-ok"      markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4caf50"/></marker>
-      <marker id="arrow-broken"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ef5350"/></marker>
-      <marker id="arrow-pending" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ffa726"/></marker>
-      <marker id="arrow-blue"    markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#29b6f6"/></marker>
+      <marker id="arrow-ok"      markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#43a047"/></marker>
+      <marker id="arrow-broken"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e53935"/></marker>
+      <marker id="arrow-pending" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#fb8c00"/></marker>
+      <marker id="arrow-blue"    markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#0288d1"/></marker>
     </defs>
 
     <!-- CC → Polo direct (working) -->
-    <path d="M 185,155 C 285,120 380,120 455,155" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+    <path d="M 185,155 C 285,120 380,120 455,155" stroke="#43a047" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- Polo → cc-inbox.md (working) -->
-    <path d="M 490,225 L 370,300" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+    <path d="M 490,225 L 370,300" stroke="#43a047" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- cc-inbox.md → CC via UserPromptSubmit hook (BROKEN) -->
-    <path d="M 290,310 L 155,220" stroke="#ef5350" stroke-width="2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow-broken)"/>
+    <path d="M 290,310 L 155,220" stroke="#e53935" stroke-width="2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow-broken)"/>
 
     <!-- cc-inbox.md → CC via launchd watcher (PENDING) -->
-    <path d="M 280,340 L 140,240" stroke="#ffa726" stroke-width="2" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-pending)"/>
+    <path d="M 280,340 L 140,240" stroke="#fb8c00" stroke-width="2" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-pending)"/>
 
     <!-- Polo → Gateway (working) -->
     <path d="M 520,240 L 520,390" stroke="#9c27b0" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- Gateway → Telegram topics (working) -->
-    <path d="M 570,430 L 700,430" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+    <path d="M 570,430 L 700,430" stroke="#43a047" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- Polo → Sermo via sessions_send (working) -->
-    <path d="M 570,160 C 640,100 720,110 760,130" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+    <path d="M 570,160 C 640,100 720,110 760,130" stroke="#43a047" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- CC → Sermo via openclaw message send (working) -->
-    <path d="M 185,130 C 400,40 680,80 755,130" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+    <path d="M 185,130 C 400,40 680,80 755,130" stroke="#43a047" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- Martin reads Sermo (visibility) -->
-    <path d="M 480,55 L 760,145" stroke="#29b6f6" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-blue)"/>
+    <path d="M 480,55 L 760,145" stroke="#0288d1" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-blue)"/>
 
     <!-- Cato → Telegram delivery (working) -->
     <path d="M 760,305 L 760,410" stroke="#66bb6a" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
@@ -132,7 +133,7 @@
     <path d="M 380,530 L 470,470" stroke="#ff7043" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
 
     <!-- Martin ↔ Polo (WhatsApp/Telegram direct) -->
-    <path d="M 520,55 L 530,130" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-ok)"/>
+    <path d="M 520,55 L 530,130" stroke="#9c27b0" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-ok)"/>
 
   </svg>
 
@@ -222,8 +223,8 @@
   <div class="arrow-label ok"      style="left:610px; top:418px;">cron announce</div>
   <div class="arrow-label ok"      style="left:610px; top:118px;">sessions_send</div>
   <div class="arrow-label ok"      style="left:330px; top:42px;">openclaw message send</div>
-  <div class="arrow-label"         style="left:545px; top:62px; color:#29b6f6;">reads (visibility)</div>
-  <div class="arrow-label ok"      style="left:530px; top:75px; color:#ce93d8; font-size:9px;">WhatsApp / Telegram</div>
+  <div class="arrow-label"         style="left:545px; top:62px; color:#0288d1;">reads (visibility)</div>
+  <div class="arrow-label ok"      style="left:530px; top:75px; color:#7b1fa2; font-size:9px;">WhatsApp / Telegram</div>
   <div class="arrow-label ok"      style="left:390px; top:490px;">gateway sessions</div>
 
   <!-- Legend -->
