@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CC ↔ Polo Communication Flow</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e0e0e0; padding: 32px; }
+  h1 { text-align: center; font-size: 18px; color: #aaa; margin-bottom: 8px; font-weight: 400; letter-spacing: 1px; }
+  .subtitle { text-align: center; font-size: 12px; color: #555; margin-bottom: 40px; }
+
+  .diagram { position: relative; width: 960px; margin: 0 auto; height: 660px; }
+
+  /* Boxes */
+  .box {
+    position: absolute;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 120px;
+  }
+  .box .label { font-size: 10px; font-weight: 400; opacity: 0.7; margin-top: 3px; }
+
+  .box-human   { background: #1e2a1e; border: 2px solid #4caf50; color: #81c784; }
+  .box-cc      { background: #1a1f2e; border: 2px solid #5c6bc0; color: #9fa8da; }
+  .box-polo    { background: #1f1a2e; border: 2px solid #9c27b0; color: #ce93d8; }
+  .box-cato    { background: #1f2a1a; border: 2px solid #66bb6a; color: #a5d6a7; }
+  .box-io      { background: #2a1f1a; border: 2px solid #ff7043; color: #ffab91; }
+  .box-file    { background: #1a2028; border: 2px dashed #546e7a; color: #90a4ae; font-size: 12px; }
+  .box-telegram{ background: #1a2233; border: 2px solid #29b6f6; color: #81d4fa; }
+  .box-gateway { background: #221a1a; border: 2px solid #ef5350; color: #ef9a9a; }
+
+  .broken { border-style: dashed; opacity: 0.5; }
+
+  /* SVG arrows */
+  svg.arrows { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  /* Legend */
+  .legend {
+    position: absolute;
+    bottom: 0; right: 0;
+    background: #161b22;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 11px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .legend-line { width: 28px; height: 2px; }
+  .legend-line.ok { background: #4caf50; }
+  .legend-line.broken { background: #ef5350; border-top: 2px dashed #ef5350; height: 0; }
+  .legend-line.pending { background: #ff9800; border-top: 2px dashed #ff9800; height: 0; }
+
+  /* Arrow labels */
+  .arrow-label {
+    position: absolute;
+    font-size: 10px;
+    background: #0f1117;
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    color: #aaa;
+  }
+  .arrow-label.ok    { color: #66bb6a; }
+  .arrow-label.broken{ color: #ef5350; }
+  .arrow-label.pending{color: #ffa726; }
+
+  /* Status badge */
+  .badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+  .badge-ok      { background: #1b5e20; color: #a5d6a7; }
+  .badge-broken  { background: #b71c1c; color: #ffcdd2; }
+  .badge-pending { background: #e65100; color: #ffe0b2; }
+</style>
+</head>
+<body>
+
+<h1>CC ↔ Polo / OpenClaw Communication Flow</h1>
+<p class="subtitle">2026-04-25 — green = working · red dashed = broken · orange dashed = not yet implemented</p>
+
+<div class="diagram">
+
+  <!-- SVG layer for arrows -->
+  <svg class="arrows" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrow-ok"      markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4caf50"/></marker>
+      <marker id="arrow-broken"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ef5350"/></marker>
+      <marker id="arrow-pending" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ffa726"/></marker>
+      <marker id="arrow-blue"    markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#29b6f6"/></marker>
+    </defs>
+
+    <!-- CC → Polo direct (working) -->
+    <path d="M 185,155 C 285,120 380,120 455,155" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- Polo → cc-inbox.md (working) -->
+    <path d="M 490,225 L 370,300" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- cc-inbox.md → CC via UserPromptSubmit hook (BROKEN) -->
+    <path d="M 290,310 L 155,220" stroke="#ef5350" stroke-width="2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow-broken)"/>
+
+    <!-- cc-inbox.md → CC via launchd watcher (PENDING) -->
+    <path d="M 280,340 L 140,240" stroke="#ffa726" stroke-width="2" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-pending)"/>
+
+    <!-- Polo → Gateway (working) -->
+    <path d="M 520,240 L 520,390" stroke="#9c27b0" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- Gateway → Telegram topics (working) -->
+    <path d="M 570,430 L 700,430" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- Polo → Sermo via sessions_send (working) -->
+    <path d="M 570,160 C 640,100 720,110 760,130" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- CC → Sermo via openclaw message send (working) -->
+    <path d="M 185,130 C 400,40 680,80 755,130" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- Martin reads Sermo (visibility) -->
+    <path d="M 480,55 L 760,145" stroke="#29b6f6" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-blue)"/>
+
+    <!-- Cato → Telegram delivery (working) -->
+    <path d="M 760,305 L 760,410" stroke="#66bb6a" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- io → Gateway (working) -->
+    <path d="M 380,530 L 470,470" stroke="#ff7043" stroke-width="2" fill="none" marker-end="url(#arrow-ok)"/>
+
+    <!-- Martin ↔ Polo (WhatsApp/Telegram direct) -->
+    <path d="M 520,55 L 530,130" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-ok)"/>
+
+  </svg>
+
+  <!-- BOXES -->
+
+  <!-- Martin -->
+  <div class="box box-human" style="left:390px; top:10px; min-width:140px;">
+    👤 Martin
+    <div class="label">Human / owner</div>
+  </div>
+
+  <!-- CC -->
+  <div class="box box-cc" style="left:30px; top:130px; min-width:140px;">
+    🖥 CC
+    <div class="label">Claude Code CLI</div>
+    <span class="badge badge-ok">ACTIVE</span>
+  </div>
+
+  <!-- Polo -->
+  <div class="box box-polo" style="left:450px; top:130px; min-width:140px;">
+    🤖 Polo
+    <div class="label">main agent</div>
+    <span class="badge badge-broken">MODEL WRONG</span>
+  </div>
+
+  <!-- Sermo -->
+  <div class="box box-telegram" style="left:740px; top:130px; min-width:140px;">
+    ✈ Sermo
+    <div class="label">Telegram topic 111</div>
+    <span class="badge badge-ok">VISIBILITY LOG</span>
+  </div>
+
+  <!-- cc-inbox.md -->
+  <div class="box box-file" style="left:265px; top:285px; min-width:160px;">
+    📄 cc-inbox.md
+    <div class="label">~/.openclaw/workspace/</div>
+  </div>
+
+  <!-- sermo-check.sh -->
+  <div class="box box-file broken" style="left:30px; top:340px; min-width:160px;">
+    📜 sermo-check.sh
+    <div class="label">scripts/ — exists on Mac</div>
+    <span class="badge badge-broken">HOOK NOT WIRED</span>
+  </div>
+
+  <!-- Cato -->
+  <div class="box box-cato" style="left:700px; top:255px; min-width:140px;">
+    🤖 Cato
+    <div class="label">cron sub-agent</div>
+    <span class="badge badge-ok">RUNNING</span>
+  </div>
+
+  <!-- Gateway -->
+  <div class="box box-gateway" style="left:450px; top:390px; min-width:140px;">
+    ⚙ Gateway
+    <div class="label">openclaw daemon</div>
+    <span class="badge badge-ok">RUNNING</span>
+  </div>
+
+  <!-- Telegram delivery topics -->
+  <div class="box box-telegram" style="left:680px; top:405px; min-width:170px;">
+    ✈ Telegram Topics
+    <div class="label">xdigest · shares · go4schools</div>
+    <span class="badge badge-ok">DELIVERING</span>
+  </div>
+
+  <!-- io -->
+  <div class="box box-io" style="left:280px; top:510px; min-width:140px;">
+    🔀 io
+    <div class="label">orchestrator agent</div>
+    <span class="badge badge-ok">NEW</span>
+  </div>
+
+  <!-- launchd watcher -->
+  <div class="box box-file broken" style="left:30px; top:460px; min-width:160px;">
+    🔔 launchd watcher
+    <div class="label">cc-inbox WatchPaths</div>
+    <span class="badge badge-pending">NOT IMPLEMENTED</span>
+  </div>
+
+  <!-- Arrow labels -->
+  <div class="arrow-label ok"      style="left:280px; top:100px;">openclaw agent --agent main --local</div>
+  <div class="arrow-label ok"      style="left:390px; top:255px;">write</div>
+  <div class="arrow-label broken"  style="left:155px; top:268px;">UserPromptSubmit hook ✗</div>
+  <div class="arrow-label pending" style="left:110px; top:380px;">WatchPaths trigger ✗</div>
+  <div class="arrow-label ok"      style="left:470px; top:310px;">sessions</div>
+  <div class="arrow-label ok"      style="left:610px; top:418px;">cron announce</div>
+  <div class="arrow-label ok"      style="left:610px; top:118px;">sessions_send</div>
+  <div class="arrow-label ok"      style="left:330px; top:42px;">openclaw message send</div>
+  <div class="arrow-label"         style="left:545px; top:62px; color:#29b6f6;">reads (visibility)</div>
+  <div class="arrow-label ok"      style="left:530px; top:75px; color:#ce93d8; font-size:9px;">WhatsApp / Telegram</div>
+  <div class="arrow-label ok"      style="left:390px; top:490px;">gateway sessions</div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-line ok"></div><span>Working</span></div>
+    <div class="legend-item"><div class="legend-line broken"></div><span>Broken (exists, not wired)</span></div>
+    <div class="legend-item"><div class="legend-line pending"></div><span>Not yet implemented</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>
