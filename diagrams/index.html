@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Diagrams</title>
-<style>
-  body { font-family: monospace; max-width: 700px; margin: 40px auto; padding: 0 20px; background: #fff; color: #222; }
-  h1 { font-size: 1.2rem; margin-bottom: 1.5rem; }
-  ol { padding-left: 1.5rem; }
-  li { margin: 0.5rem 0; }
-  a { color: #0066cc; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .err { color: #c00; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrams - Spiralarc AI</title>
+    <style>
+        :root { --bg: #78C2CE; --text: #222; --muted: #666; --line: #6FB3BE; --accent: #01696f; --max: 960px; }
+        body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 2rem; display: flex; flex-direction: column; align-items: center; }
+        .wrap { width: min(100% - 2rem, var(--max)); }
+        h1 { font-size: 2rem; margin-bottom: 2rem; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .card { background: white; padding: 1.5rem; border-radius: .75rem; border: 1px solid var(--line); text-decoration: none; color: inherit; transition: transform 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .card h3 { margin: 0 0 1rem 0; color: var(--accent); }
+        .card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 1.5rem; }
+        .btn { align-self: flex-start; padding: .5rem 1rem; background: var(--accent); color: white; border-radius: .4rem; font-size: 0.8rem; font-weight: 500; }
+        nav { margin-bottom: 2rem; text-align: center; }
+        nav a { color: var(--text); text-decoration: none; font-weight: 500; border-bottom: 2px solid var(--accent); }
+    </style>
 </head>
 <body>
-<h1>Diagrams</h1>
-<ol id="list"></ol>
-<script>
-fetch('https://api.github.com/repos/spiral-cmd/spiral-cmd.github.io/contents/diagrams')
-  .then(r => r.json())
-  .then(files => {
-    const ol = document.getElementById('list');
-    files
-      .filter(f => f.name !== 'index.html')
-      .sort((a, b) => b.name.localeCompare(a.name))
-      .forEach(f => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = f.name;
-        a.textContent = f.name.replace(/\.html$/, '').replace(/-/g, ' ');
-        li.appendChild(a);
-        ol.appendChild(li);
-      });
-  })
-  .catch(() => {
-    document.getElementById('list').innerHTML = '<li class="err">Failed to load file list.</li>';
-  });
-</script>
+    <div class="wrap">
+        <nav><a href="../index.html">← Back to Home</a></nav>
+        <h1>System Diagrams</h1>
+        <div class="grid">
+            <a href="0001-cc-polo-flow.html" class="card">
+                <div>
+                    <h3>0001 CC Polo Flow</h3>
+                    <p>Communication flow between Claude Code and Polo.</p>
+                </div>
+                <span class="btn">View Diagram</span>
+            </a>
+            <a href="0002-agent-workflow.html" class="card">
+                <div>
+                    <h3>0002 Agent Workflow</h3>
+                    <p>Detailed boxes-and-arrows workflow of the multi-agent system.</p>
+                </div>
+                <span class="btn">View Diagram</span>
+            </a>
+            <a href="cron-dash.html" class="card">
+                <div>
+                    <h3>0003 Cron Dashboard</h3>
+                    <p>Real-time visualization of all active OpenClaw cron jobs and their health status.</p>
+                </div>
+                <span class="btn">View Dashboard</span>
+            </a>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Cron Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color: #4a90e2;
+            --status-ok: #28a745;
+            --status-error: #dc3545;
+            --status-idle: #ffc107;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        .job-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0;
+            color: var(--accent-color);
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: white;
+        }
+        .status-ok { background-color: var(--status-ok); }
+        .status-error { background-color: var(--status-error); }
+        .status-idle { background-color: var(--status-idle); color: #333; }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .label { color: var(--text-muted); }
+        .value { font-weight: 500; }
+        .payload {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <h1>📅 Cron Job Dashboard</h1>
+    <div class="grid" id="cron-grid"></div>
+
+    <script>
+        const jobs = [
+            { name: "oc-version-check", schedule: "0 9 * * *", next: "09:00", last: "ok", agent: "polo", payload: "bash /Users/cz/.openclaw/workspace/scripts/oc-version-check.sh" },
+            { name: "openclaw-update-check", schedule: "0 9 * * *", next: "09:00", last: "idle", agent: "polo", payload: "Check for OpenClaw updates and announce if found" },
+            { name: "model-change-discussion", schedule: "0 9 * * *", next: "09:00", last: "idle", agent: "polo", payload: "Discuss the Gateway agent-registration bug..." },
+            { name: "sharesmc", schedule: "0 17 * * 1-5", next: "17:00", last: "ok", agent: "cato", payload: "Run sharesmc skill (Alpha Vantage -> Sheets)" },
+            { name: "go4schools", schedule: "0 17 * * 1-5", next: "17:00", last: "ok", agent: "cato", payload: "Check Isaac's behavior entries" },
+            { name: "shareradar daily", schedule: "0 21 * * *", next: "21:00", last: "ok", agent: "cato", payload: "Run shareradar skill" },
+            { name: "xdigest-agenticai", schedule: "30 21 * * *", next: "21:30", last: "error", agent: "cato", payload: "/Users/cz/.openclaw/workspace/xdigest-agenticai/run-digest.sh" },
+            { name: "email-digest", schedule: "0 7 * * *", next: "07:00", last: "ok", agent: "cato", payload: "Scan Gmail for last 24 hours" },
+            { name: "thoughtfortheday", schedule: "30 7 * * *", next: "07:30", last: "error", agent: "cato", payload: "bash /Users/cz/.openclaw/workspace/scripts/thoughtfortheday.sh" },
+            { name: "todoist recap", schedule: "0 08 * * *", next: "08:00", last: "ok", agent: "cato", payload: "List incomplete tasks" },
+            { name: "probate reminder", schedule: "0 8 * * 1-5", next: "08:00", last: "ok", agent: "cato", payload: "Check if any action needed this week" },
+            { name: "xdigest", schedule: "30 8 * * *", next: "08:30", last: "ok", agent: "cato", payload: "/Users/cz/claudecode/xdigest/run-digest.sh" },
+            { name: "agent-meeting-monday", schedule: "0 8 * * 1", next: "Monday 08:00", last: "idle", agent: "polo", payload: "Review /workspace/waysofworking/* files" },
+            { name: "deepseek-reminder-may5", schedule: "2026-05-05", next: "May 5th", last: "idle", agent: "cato", payload: "DeepSeek model status reminder" },
+            { name: "calnow-announce", schedule: "0 20:05 * * *", next: "20:05", last: "ok", agent: "cato", payload: "Read /tmp/calnow_output.txt and announce" }
+        ];
+
+        const grid = document.getElementById('cron-grid');
+        jobs.forEach(job => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const statusClass = job.last === 'ok' ? 'status-ok' : (job.last === 'error' ? 'status-error' : 'status-idle');
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <p class="job-name">${job.name}</p>
+                    <span class="status-badge ${statusClass}">${job.last}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Schedule</span>
+                    <span class="value">${job.schedule}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Next Run</span>
+                    <span class="value">${job.next}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Agent</span>
+                    <span class="value">${job.agent}</span>
+                </div>
+                <div class="payload">${job.payload}</div>
+            `;
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+</html>
