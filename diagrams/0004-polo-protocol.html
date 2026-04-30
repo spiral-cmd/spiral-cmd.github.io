@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT Scrape — Polo Productivity Protocol</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f5f0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .slide {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 900px;
+    padding: 48px 56px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+  }
+  h1 span {
+    color: #c0392b;
+  }
+  .meta {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 8px;
+  }
+  .rules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .rule {
+    background: #fafaf8;
+    border: 1px solid #e8e8e4;
+    border-left: 4px solid #1a1a1a;
+    border-radius: 4px;
+    padding: 16px 18px;
+  }
+  .rule.warn {
+    border-left-color: #e67e22;
+  }
+  .rule.stop {
+    border-left-color: #c0392b;
+  }
+  .rule-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 4px;
+  }
+  .rule-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+  .rule-body {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .rule-body strong {
+    color: #1a1a1a;
+  }
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+  }
+  .report-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .report-box {
+    background: #fafaf8;
+    border: 1px solid #e8e8e4;
+    border-radius: 4px;
+    padding: 16px 18px;
+  }
+  .report-box h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+  }
+  .report-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .report-box ul li {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+    padding-left: 14px;
+    position: relative;
+  }
+  .report-box ul li::before {
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: #bbb;
+  }
+  .footer-bar {
+    border-top: 1px solid #e8e8e4;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-bar .io-note {
+    font-size: 12px;
+    color: #555;
+  }
+  .footer-bar .io-note strong {
+    color: #1a1a1a;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="header">
+    <div class="tag">FT Scrape · 2026-04-30</div>
+    <h1>Polo Productivity <span>Protocol</span></h1>
+    <div class="meta">CC → io — active for duration of FT scrape task</div>
+  </div>
+
+  <div class="section-title">Hard Rules</div>
+  <div class="rules">
+    <div class="rule">
+      <div class="rule-num">Rule 1</div>
+      <div class="rule-title">One clear task at a time</div>
+      <div class="rule-body">Brief Polo with full spec and explicit success criteria. No ambiguity about what "done" looks like.</div>
+    </div>
+    <div class="rule warn">
+      <div class="rule-num">Rule 2</div>
+      <div class="rule-title">Timeboxes enforced</div>
+      <div class="rule-body">Each step has a time estimate. If Polo exceeds it, <strong>stop and report</strong> — do not keep trying.</div>
+    </div>
+    <div class="rule stop">
+      <div class="rule-num">Rule 3</div>
+      <div class="rule-title">2-attempt blocker threshold</div>
+      <div class="rule-body">Any step failing twice → Polo stops immediately and reports to <strong>io-inbox + to-cc + sermo</strong>. No silent retries.</div>
+    </div>
+    <div class="rule stop">
+      <div class="rule-num">Rule 4</div>
+      <div class="rule-title">Pre-check is blocking</div>
+      <div class="rule-body">If Firefox is running, Polo posts to sermo and <strong>waits for Martin to confirm it's closed</strong>. Does not proceed.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">Rule 5</div>
+      <div class="rule-title">No scope creep</div>
+      <div class="rule-body">Polo builds the script and runs once. Structural issues → document and escalate. <strong>Do not redesign mid-task.</strong></div>
+    </div>
+    <div class="rule warn">
+      <div class="rule-num">Rules 6 & 7</div>
+      <div class="rule-title">Strict report format</div>
+      <div class="rule-body">Completion and failure each have a defined format. See below.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Report Formats</div>
+  <div class="report-cols">
+    <div class="report-box">
+      <h3>✓ On completion</h3>
+      <ul>
+        <li>Selector used + article count</li>
+        <li>Date extraction method</li>
+        <li>Total articles after date filter</li>
+        <li>Path to ft_results.json</li>
+        <li>Any warnings / partial failures</li>
+      </ul>
+    </div>
+    <div class="report-box">
+      <h3>✗ On failure</h3>
+      <ul>
+        <li>Step that failed</li>
+        <li>Error message verbatim</li>
+        <li>Number of attempts made</li>
+        <li>What was tried</li>
+        <li>Recommended next step (do not self-assign)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="io-note"><strong>io:</strong> Monitor sermo during execution. Unblock within authority or escalate to CC. Do not re-brief Polo without CC approval.</div>
+    <div class="badge">CC · 2026-04-30</div>
+  </div>
+
+</div>
+</body>
+</html>
