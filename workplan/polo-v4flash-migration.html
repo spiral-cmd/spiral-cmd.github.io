@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polo → V4 Flash Migration</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f5f0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .slide {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 960px;
+    padding: 48px 56px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 20px;
+    margin-bottom: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+  h1 { font-size: 24px; font-weight: 700; color: #1a1a1a; }
+  h1 span { color: #1a6ef5; }
+  .meta { font-size: 12px; color: #aaa; }
+  .time-total { text-align: right; }
+  .time-total .mins { font-size: 28px; font-weight: 700; color: #1a1a1a; }
+  .time-total .label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: start;
+    gap: 16px;
+    background: #fafaf8;
+    border: 1px solid #e8e8e4;
+    border-radius: 6px;
+    padding: 16px 20px;
+  }
+  .step.warn { border-left: 4px solid #e67e22; }
+  .step.danger { border-left: 4px solid #c0392b; }
+  .step.success { border-left: 4px solid #27ae60; }
+  .step.info { border-left: 4px solid #1a6ef5; }
+  .step-num {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step.warn .step-num { background: #e67e22; }
+  .step.danger .step-num { background: #c0392b; }
+  .step.success .step-num { background: #27ae60; }
+  .step.info .step-num { background: #1a6ef5; }
+  .step-body {}
+  .step-title { font-size: 14px; font-weight: 700; color: #1a1a1a; margin-bottom: 5px; }
+  .step-desc { font-size: 12px; color: #555; line-height: 1.55; }
+  .step-desc code {
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 11px;
+    background: #eee;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #333;
+  }
+  .step-checks { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+  .check { font-size: 11px; color: #666; display: flex; gap: 6px; }
+  .check::before { content: "☐"; color: #bbb; flex-shrink: 0; }
+  .step-time {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    white-space: nowrap;
+    padding-top: 4px;
+  }
+
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #888; margin-bottom: 12px;
+  }
+
+  .triggers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .trigger {
+    background: #fff5f5;
+    border: 1px solid #f5c6c6;
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #555;
+  }
+  .trigger strong { color: #c0392b; display: block; margin-bottom: 2px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .footer-bar {
+    border-top: 1px solid #e8e8e4;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .preconditions { display: flex; gap: 16px; }
+  .precond {
+    font-size: 12px; color: #555;
+    background: #fafaf8;
+    border: 1px solid #e8e8e4;
+    border-radius: 4px;
+    padding: 6px 12px;
+  }
+  .precond strong { color: #1a1a1a; }
+  .badge {
+    font-size: 11px; font-weight: 600;
+    background: #1a1a1a; color: #fff;
+    padding: 4px 10px; border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="header">
+    <div>
+      <div class="tag">Polo Model Migration · 2026-04-30</div>
+      <h1>Polo → DeepSeek <span>V4 Flash</span></h1>
+      <div class="meta">gemma-4-31b (256K) → deepseek-v4-flash (1M) · OpenRouter · thinking disabled</div>
+    </div>
+    <div class="time-total">
+      <div class="mins">~35 min</div>
+      <div class="label">Total</div>
+    </div>
+  </div>
+
+  <div class="section-title">Steps</div>
+  <div class="steps">
+
+    <div class="step info">
+      <div class="step-num">P</div>
+      <div class="step-body">
+        <div class="step-title">Pre-conditions</div>
+        <div class="step-desc">Check before touching anything.</div>
+        <div class="step-checks">
+          <div class="check">OpenRouter balance ≥ $5</div>
+          <div class="check">No active Polo tasks in <code>polo-active-tasks.md</code></div>
+          <div class="check">Martin confirms go-ahead</div>
+        </div>
+      </div>
+      <div class="step-time">3 min</div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Update openclaw.json</div>
+        <div class="step-desc">
+          Change <code>model.primary</code> to <code>openrouter/deepseek/deepseek-v4-flash</code> and add <code>extra_body: { thinking: { type: "disabled" } }</code> to <code>model.params</code>.<br><br>
+          Verify: <code>grep -A8 '"id": "main"'</code> shows new model and extra_body.
+        </div>
+      </div>
+      <div class="step-time">2 min</div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Clear stale sessions</div>
+        <div class="step-desc">
+          Per breakage #5 — use exact path:<br>
+          <code>ls ~/.openclaw/agents/main/sessions/</code> (note count)<br>
+          <code>rm -f ~/.openclaw/agents/main/sessions/*.jsonl</code><br>
+          <code>ls ~/.openclaw/agents/main/sessions/</code> (confirm empty)
+        </div>
+      </div>
+      <div class="step-time">2 min</div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Restart gateway</div>
+        <div class="step-desc">
+          <code>openclaw gateway restart</code><br><br>
+          Verify: <code>openclaw gateway status</code> shows running, agent <code>main</code> loaded.
+        </div>
+      </div>
+      <div class="step-time">1 min</div>
+    </div>
+
+    <div class="step warn">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Smoke test — exec + thinking check</div>
+        <div class="step-desc">3-minute response timeout. Send Polo: confirm model, write <code>/tmp/polo-smoke.txt</code>, read it back.</div>
+        <div class="step-checks">
+          <div class="check">Polo reports model name contains <code>v4flash</code> or <code>deepseek</code></div>
+          <div class="check">File <code>/tmp/polo-smoke.txt</code> actually written (exec ran)</div>
+          <div class="check">Polo's reply includes <code>cat</code> output (not silent drop)</div>
+          <div class="check">to-cc.md written + sermo post appears</div>
+          <div class="check">No <code>reasoning_content</code> or <code>&lt;think&gt;</code> in session transcript → thinking OFF</div>
+        </div>
+      </div>
+      <div class="step-time">10 min</div>
+    </div>
+
+    <div class="step success">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Post-migration monitoring</div>
+        <div class="step-desc">
+          Assign Polo one real task. Monitor for 15–20 min:<br>
+          no 400 errors on turn 2+, no exec retry loops (&gt;5 same call), context usage well below ceiling.<br><br>
+          Only declare migration complete after this window passes cleanly.
+        </div>
+      </div>
+      <div class="step-time">20 min</div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <div class="step-title">Update records</div>
+        <div class="step-desc">Update <code>bible/models.md</code>, log to breakage DB, update CC memory. Note: polo-coder migration deferred 1–2 days.</div>
+      </div>
+      <div class="step-time">2 min</div>
+    </div>
+
+    <div class="step danger">
+      <div class="step-num">R</div>
+      <div class="step-body">
+        <div class="step-title">Rollback (if triggered)</div>
+        <div class="step-desc">
+          Revert <code>model.primary</code> to <code>openrouter/google/gemma-4-31b-it</code>, remove <code>extra_body</code>, clear sessions, restart gateway. Log breakage entry.
+        </div>
+      </div>
+      <div class="step-time">5 min</div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Rollback Triggers</div>
+  <div class="triggers">
+    <div class="trigger"><strong>No response in 3 min</strong>Check gateway logs — if no activity, rollback</div>
+    <div class="trigger"><strong>File not written</strong>exec fired but nothing happened — silent drop (#4 pattern)</div>
+    <div class="trigger"><strong>reasoning_content present</strong>extra_body ignored — thinking ON, re-creates #1–3</div>
+    <div class="trigger"><strong>400 on turn 2</strong>Thinking not disabled — round-trip failure</div>
+    <div class="trigger"><strong>False confirmation</strong>to-cc.md written but no sermo (or vice versa)</div>
+    <div class="trigger"><strong>Retry loop (&gt;5 same call)</strong>Cascade failure — breakage #4 pattern</div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="preconditions">
+      <div class="precond"><strong>Context:</strong> 256K → 1M</div>
+      <div class="precond"><strong>Cost:</strong> $0.13/$0.38 → $0.14/$0.28 per M</div>
+      <div class="precond"><strong>polo-coder:</strong> deferred</div>
+    </div>
+    <div class="badge">CC · 2026-04-30</div>
+  </div>
+
+</div>
+</body>
+</html>
