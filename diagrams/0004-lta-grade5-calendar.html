@@ -82,12 +82,9 @@ const tournaments = [
   { name: "Sutton Tennis Acad (Open)", loc: "Surrey, 9.4mi", date: "2026-05-28", grade: 4 },
 ];
 
-const monthNames = ["May", "Jun"];
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function buildCalendar() {
-  const start = new Date(2026, 4, 11); // Mon May 11 (start of week containing May 16)
-  const end = new Date(2026, 5, 7);    // Jun 7
   const grid = document.getElementById("calendar");
   const summary = document.getElementById("summary");
 
@@ -99,18 +96,15 @@ function buildCalendar() {
     grid.appendChild(h);
   });
 
-  // Find first day of week containing May 16
-  const firstDay = new Date(2026, 4, 11); // May 11 is a Monday
-  const lastDay = new Date(2026, 5, 7);   // Jun 7 is a Sunday
-  const endGrid = new Date(2026, 5, 7);   // Include Jun 7
+  // May 11 2026 is a Monday — start there
+  const firstDay = new Date(2026, 4, 11);
+  const endGrid = new Date(2026, 5, 7); // include Jun 7
 
   let d = new Date(firstDay);
   while (d <= endGrid) {
     const cell = document.createElement("div");
     cell.className = "day-cell";
 
-    const isMay = d.getMonth() === 4;
-    const isJun = d.getMonth() === 5;
     const inRange = d >= new Date(2026, 4, 16) && d <= new Date(2026, 5, 7);
 
     if (!inRange) {
@@ -145,13 +139,14 @@ function buildCalendar() {
   // Summary
   const g5 = tournaments.filter(t => t.grade === 5);
   const dates = [...new Set(g5.map(t => t.date))].sort();
+  const monthNames = ["May", "Jun"];
   let html = `<h3>📋 Summary — <span class="count">${g5.length}</span> Grade 5 tournaments across ${dates.length} days</h3><ul>`;
   dates.forEach(dateStr => {
-    const d = new Date(dateStr + "T12:00:00");
-    const dayName = dayNames[d.getDay()];
-    const monthName = monthNames[d.getMonth() === 4 ? 0 : 1];
+    const dt = new Date(dateStr + "T12:00:00");
+    const dayName = dayNames[dt.getDay() === 0 ? 6 : dt.getDay() - 1];
+    const monthName = monthNames[dt.getMonth() === 4 ? 0 : 1];
     const dayEvents = g5.filter(t => t.date === dateStr);
-    html += `<li><strong>${dayName} ${d.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => t.name + ' (' + t.loc + ')').join(', ')}</li>`;
+    html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => t.name + ' (' + t.loc + ')').join(', ')}</li>`;
   });
   html += "</ul>";
   summary.innerHTML = html;
