@@ -27,7 +27,6 @@
   .event.g5 { background: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; }
   .event.g4 { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
   .event .loc { display: block; font-size: 0.65rem; color: #666; }
-  .event .dist { font-size: 0.6rem; color: #888; }
   .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
   .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
   .summary ul { list-style: none; font-size: 0.85rem; }
@@ -84,6 +83,13 @@ const tournaments = [
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+function fmtDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function buildCalendar() {
   const grid = document.getElementById("calendar");
   const summary = document.getElementById("summary");
@@ -98,7 +104,7 @@ function buildCalendar() {
 
   // May 11 2026 is a Monday — start there
   const firstDay = new Date(2026, 4, 11);
-  const endGrid = new Date(2026, 5, 7); // include Jun 7
+  const endGrid = new Date(2026, 5, 7);
 
   let d = new Date(firstDay);
   while (d <= endGrid) {
@@ -122,8 +128,8 @@ function buildCalendar() {
       cell.classList.add("today");
     }
 
-    // Add events for this date
-    const dateStr = d.toISOString().split("T")[0];
+    // Add events for this date — use local date string to avoid UTC offset bug
+    const dateStr = fmtDate(d);
     const dayEvents = tournaments.filter(t => t.date === dateStr);
     dayEvents.forEach(t => {
       const el = document.createElement("div");
@@ -142,7 +148,8 @@ function buildCalendar() {
   const monthNames = ["May", "Jun"];
   let html = `<h3>📋 Summary — <span class="count">${g5.length}</span> Grade 5 tournaments across ${dates.length} days</h3><ul>`;
   dates.forEach(dateStr => {
-    const dt = new Date(dateStr + "T12:00:00");
+    const parts = dateStr.split('-');
+    const dt = new Date(+parts[0], +parts[1] - 1, +parts[2]);
     const dayName = dayNames[dt.getDay() === 0 ? 6 : dt.getDay() - 1];
     const monthName = monthNames[dt.getMonth() === 4 ? 0 : 1];
     const dayEvents = g5.filter(t => t.date === dateStr);
