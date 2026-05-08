@@ -14,7 +14,6 @@
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
   .legend-dot.g5 { background: #2563eb; }
-  .legend-dot.g4 { background: #f59e0b; }
   .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
   .day-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #666; padding: 6px 0; }
   .day-cell { background: white; border-radius: 8px; padding: 8px; min-height: 100px; border: 1px solid #e2e8f0; }
@@ -22,12 +21,10 @@
   .day-cell.other-month { opacity: 0.4; }
   .day-number { font-weight: 600; font-size: 0.85rem; color: #333; margin-bottom: 4px; }
   .day-cell.today .day-number { background: #2563eb; color: white; display: inline-block; padding: 1px 7px; border-radius: 50%; }
-  .event { font-size: 0.7rem; padding: 3px 5px; margin-bottom: 3px; border-radius: 4px; cursor: pointer; transition: transform 0.1s; }
-  .event:hover { transform: scale(1.03); }
-  .event.g5 { background: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; }
-  .event.g4 { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
-  .event .loc { display: block; font-size: 0.65rem; color: #666; }
-  .event .age { display: inline-block; font-size: 0.6rem; background: rgba(37,99,235,0.1); padding: 0 3px; border-radius: 2px; margin-left: 2px; }
+  .event { display: block; font-size: 0.7rem; padding: 3px 5px; margin-bottom: 3px; border-radius: 4px; background: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; text-decoration: none; transition: transform 0.1s, box-shadow 0.1s; }
+  .event:hover { transform: scale(1.03); box-shadow: 0 2px 6px rgba(37,99,235,0.2); }
+  .event .loc { display: block; font-size: 0.65rem; color: #555; }
+  .event .age { display: inline-block; font-size: 0.6rem; background: rgba(37,99,235,0.12); padding: 0 3px; border-radius: 2px; margin-left: 2px; }
   .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
   .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
   .summary ul { list-style: none; font-size: 0.85rem; }
@@ -48,7 +45,6 @@
 
   <div class="legend">
     <div class="legend-item"><span class="legend-dot g5"></span> Grade 5</div>
-    <div class="legend-item"><span class="legend-dot g4"></span> Grade 4 (shown for context)</div>
   </div>
 
   <div class="calendar-grid" id="calendar"></div>
@@ -58,23 +54,23 @@
 
 <script>
 const tournaments = [
-  { name: "John Innes Park", loc: "Surrey, 7.9mi", age: "14U", date: "2026-05-23", grade: 5 },
-  { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "Open/14U/18U", date: "2026-05-23", grade: 5 },
-  { name: "Russell Park", loc: "Kent, 11mi", age: "Open/14U", date: "2026-05-23", grade: 5 },
-  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "14U/18U", date: "2026-05-23", grade: 5 },
-  { name: "Radlett LTC", loc: "Herts, 15mi", age: "14U", date: "2026-05-24", grade: 5 },
-  { name: "Ebbisham Sports Club", loc: "Surrey, 13mi", age: "14U", date: "2026-05-24", grade: 5 },
-  { name: "Gunnersbury Park", loc: "Middlesex, 7.7mi", age: "14U", date: "2026-05-24", grade: 5 },
-  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "Open/8U", date: "2026-05-24", grade: 5 },
-  { name: "Russell Park", loc: "Kent, 11mi", age: "10U/14U", date: "2026-05-25", grade: 5 },
-  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U", date: "2026-05-26", grade: 5 },
-  { name: "Purley Sports Club", loc: "Surrey, 11mi", age: "14U", date: "2026-05-28", grade: 5 },
-  { name: "Tennis Avenue School", loc: "Surrey, 10mi", age: "14U", date: "2026-05-28", grade: 5 },
-  { name: "Oxted School", loc: "18mi", age: "10U/14U", date: "2026-05-29", grade: 5 },
-  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U", date: "2026-05-30", grade: 5 },
-  { name: "Headstone Manor Park", loc: "Middlesex, 12mi", age: "Open/14U", date: "2026-05-30", grade: 5 },
-  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "14U", date: "2026-06-06", grade: 5 },
-  { name: "Wembley & Sudbury", loc: "Middlesex, 9.2mi", age: "14U", date: "2026-06-06", grade: 5 },
+  { name: "John Innes Park", loc: "Surrey, 7.9mi", age: "14U", date: "2026-05-23", url: "https://competitions.lta.org.uk/tournament/075FFA1D-135F-480C-9A88-3954F474FA9D" },
+  { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "Open/14U/18U", date: "2026-05-23", url: "https://competitions.lta.org.uk/tournament/B227FA84-14E1-4BE7-A9CC-B7E5855632F9" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "Open/14U", date: "2026-05-23", url: "https://competitions.lta.org.uk/tournament/0D211149-B904-434B-93A4-967C24E8D22A" },
+  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "14U/18U", date: "2026-05-23", url: "https://competitions.lta.org.uk/tournament/D12281A7-DCCD-4F81-ABB6-6C11EEA94316" },
+  { name: "Radlett LTC", loc: "Herts, 15mi", age: "14U", date: "2026-05-24", url: "https://competitions.lta.org.uk/tournament/458FD354-43CC-4864-8D7E-F6AD3F9C93F2" },
+  { name: "Ebbisham Sports Club", loc: "Surrey, 13mi", age: "14U", date: "2026-05-24", url: "https://competitions.lta.org.uk/tournament/2C884545-01E9-49BD-9EE8-35A958BC293A" },
+  { name: "Gunnersbury Park", loc: "Middlesex, 7.7mi", age: "14U", date: "2026-05-24", url: "https://competitions.lta.org.uk/tournament/F56F5AE7-69A8-44F3-84C4-9E2032566001" },
+  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "Open/8U", date: "2026-05-24", url: "https://competitions.lta.org.uk/tournament/17ACDBD3-EE3F-498C-B6BD-ED2B09EAEC18" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "10U/14U", date: "2026-05-25", url: "https://competitions.lta.org.uk/tournament/8FD11038-6816-471E-B143-23B065154612" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U", date: "2026-05-26", url: "https://competitions.lta.org.uk/tournament/098CB790-DC35-4C4C-82D2-8F342601D65B" },
+  { name: "Purley Sports Club", loc: "Surrey, 11mi", age: "14U", date: "2026-05-28", url: "https://competitions.lta.org.uk/tournament/5B5D03E4-50FE-40D1-9DD5-1621DCC0E21C" },
+  { name: "Tennis Avenue School", loc: "Surrey, 10mi", age: "14U", date: "2026-05-28", url: "https://competitions.lta.org.uk/tournament/4A445228-8C9C-49F1-873F-959515D8F439" },
+  { name: "Oxted School", loc: "18mi", age: "10U/14U", date: "2026-05-29", url: "https://competitions.lta.org.uk/tournament/E49E7A74-05B2-4791-9D4F-287665F68B59" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U", date: "2026-05-30", url: "https://competitions.lta.org.uk/tournament/74C8C9CF-F41B-40D5-B466-73CC83FA7704" },
+  { name: "Headstone Manor Park", loc: "Middlesex, 12mi", age: "Open/14U", date: "2026-05-30", url: "https://competitions.lta.org.uk/tournament/1A373276-3364-4F79-9E97-3C7606AD3925" },
+  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "14U", date: "2026-06-06", url: "https://competitions.lta.org.uk/tournament/1C52D9B9-9E06-4D31-8DDC-C5B3EEDD158E" },
+  { name: "Wembley & Sudbury", loc: "Middlesex, 9.2mi", age: "14U", date: "2026-06-06", url: "https://competitions.lta.org.uk/tournament/357046EE-0948-44E6-8261-4923E3777515" },
 ];
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -90,7 +86,6 @@ function buildCalendar() {
   const grid = document.getElementById("calendar");
   const summary = document.getElementById("summary");
 
-  // Header
   dayNames.forEach(d => {
     const h = document.createElement("div");
     h.className = "day-header";
@@ -98,7 +93,6 @@ function buildCalendar() {
     grid.appendChild(h);
   });
 
-  // May 11 2026 is a Monday — start there
   const firstDay = new Date(2026, 4, 11);
   const endGrid = new Date(2026, 5, 7);
 
@@ -108,48 +102,44 @@ function buildCalendar() {
     cell.className = "day-cell";
 
     const inRange = d >= new Date(2026, 4, 16) && d <= new Date(2026, 5, 7);
-
-    if (!inRange) {
-      cell.classList.add("other-month");
-    }
+    if (!inRange) cell.classList.add("other-month");
 
     const num = document.createElement("div");
     num.className = "day-number";
     num.textContent = d.getDate();
     cell.appendChild(num);
 
-    // Check if today
     const today = new Date();
     if (d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate()) {
       cell.classList.add("today");
     }
 
-    // Add events for this date — use local date formatting to avoid UTC offset bug
     const dateStr = fmtDate(d);
     const dayEvents = tournaments.filter(t => t.date === dateStr);
     dayEvents.forEach(t => {
-      const el = document.createElement("div");
-      el.className = "event " + (t.grade === 5 ? "g5" : "g4");
-      el.innerHTML = `${t.name} <span class="loc">${t.loc} <span class="age">${t.age}</span></span>`;
-      cell.appendChild(el);
+      const a = document.createElement("a");
+      a.className = "event";
+      a.href = t.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.innerHTML = `${t.name} <span class="loc">${t.loc} <span class="age">${t.age}</span></span>`;
+      cell.appendChild(a);
     });
 
     grid.appendChild(cell);
     d.setDate(d.getDate() + 1);
   }
 
-  // Summary
-  const g5 = tournaments.filter(t => t.grade === 5);
-  const dates = [...new Set(g5.map(t => t.date))].sort();
+  const dates = [...new Set(tournaments.map(t => t.date))].sort();
   const monthNames = ["May", "Jun"];
-  let html = `<h3>📋 Summary — <span class="count">${g5.length}</span> Grade 5 tournaments across ${dates.length} days</h3><ul>`;
+  let html = `<h3>📋 Summary — <span class="count">${tournaments.length}</span> Grade 5 tournaments across ${dates.length} days</h3><ul>`;
   dates.forEach(dateStr => {
     const parts = dateStr.split('-');
     const dt = new Date(+parts[0], +parts[1] - 1, +parts[2]);
     const dayName = dayNames[dt.getDay() === 0 ? 6 : dt.getDay() - 1];
     const monthName = monthNames[dt.getMonth() === 4 ? 0 : 1];
-    const dayEvents = g5.filter(t => t.date === dateStr);
-    html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => t.name + ' (' + t.loc + ', ' + t.age + ')').join(', ')}</li>`;
+    const dayEvents = tournaments.filter(t => t.date === dateStr);
+    html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => `<a href="${t.url}" target="_blank" rel="noopener">${t.name}</a> (${t.loc}, ${t.age})`).join(', ')}</li>`;
   });
   html += "</ul>";
   summary.innerHTML = html;
