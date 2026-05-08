@@ -27,6 +27,7 @@
   .event.g5 { background: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; }
   .event.g4 { background: #fef3c7; color: #92400e; border-left: 3px solid #f59e0b; }
   .event .loc { display: block; font-size: 0.65rem; color: #666; }
+  .event .age { display: inline-block; font-size: 0.6rem; background: rgba(37,99,235,0.1); padding: 0 3px; border-radius: 2px; margin-left: 2px; }
   .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
   .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
   .summary ul { list-style: none; font-size: 0.85rem; }
@@ -43,7 +44,7 @@
 <body>
 <div class="container">
   <h1>🎾 LTA Grade 5 Tournaments</h1>
-  <p class="subtitle">14U Boys Singles · 20mi from London · 16 May – 7 Jun 2026</p>
+  <p class="subtitle">14U Boys Singles · 20mi from London · 23 May – 6 Jun 2026</p>
 
   <div class="legend">
     <div class="legend-item"><span class="legend-dot g5"></span> Grade 5</div>
@@ -57,28 +58,23 @@
 
 <script>
 const tournaments = [
-  { name: "John Innes Park", loc: "Surrey, 7.7mi", date: "2026-05-23", grade: 5 },
-  { name: "Oakwood Park", loc: "Middlesex, 9.1mi", date: "2026-05-23", grade: 5 },
-  { name: "Russell Park", loc: "Kent, 12mi", date: "2026-05-23", grade: 5 },
-  { name: "Spelthorne CTC", loc: "Surrey, 16mi", date: "2026-05-23", grade: 5 },
-  { name: "Radlett LTC", loc: "Herts, 14mi", date: "2026-05-24", grade: 5 },
-  { name: "Ebbisham Sports Club", loc: "Surrey, 13mi", date: "2026-05-24", grade: 5 },
-  { name: "Gunnersbury Park", loc: "Middlesex, 6.9mi", date: "2026-05-24", grade: 5 },
-  { name: "Spelthorne CTC", loc: "Surrey, 16mi", date: "2026-05-24", grade: 5 },
-  { name: "Russell Park", loc: "Kent, 12mi", date: "2026-05-25", grade: 5 },
-  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", date: "2026-05-26", grade: 5 },
-  { name: "Purley Sports Club", loc: "Surrey, 11mi", date: "2026-05-28", grade: 5 },
-  { name: "Tennis Avenue School", loc: "Surrey, 9.9mi", date: "2026-05-28", grade: 5 },
-  { name: "Oxted School", loc: "19mi", date: "2026-05-29", grade: 5 },
-  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", date: "2026-05-30", grade: 5 },
-  { name: "Headstone Manor Park", loc: "Middlesex, 11mi", date: "2026-05-30", grade: 5 },
-  { name: "Spelthorne CTC", loc: "Surrey, 16mi", date: "2026-06-06", grade: 5 },
-  { name: "Wembley & Sudbury", loc: "Middlesex, 8.3mi", date: "2026-06-06", grade: 5 },
-  // Grade 4 for context
-  { name: "Sutton Tennis Acad (FAST4)", loc: "Surrey, 9.4mi", date: "2026-05-17", grade: 4 },
-  { name: "Hoddesdon LTC", loc: "18mi", date: "2026-05-17", grade: 4 },
-  { name: "Sutton Tennis Acad (FAST4)", loc: "Surrey, 9.4mi", date: "2026-05-25", grade: 4 },
-  { name: "Sutton Tennis Acad (Open)", loc: "Surrey, 9.4mi", date: "2026-05-28", grade: 4 },
+  { name: "John Innes Park", loc: "Surrey, 7.9mi", age: "14U", date: "2026-05-23", grade: 5 },
+  { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "Open/14U/18U", date: "2026-05-23", grade: 5 },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "Open/14U", date: "2026-05-23", grade: 5 },
+  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "14U/18U", date: "2026-05-23", grade: 5 },
+  { name: "Radlett LTC", loc: "Herts, 15mi", age: "14U", date: "2026-05-24", grade: 5 },
+  { name: "Ebbisham Sports Club", loc: "Surrey, 13mi", age: "14U", date: "2026-05-24", grade: 5 },
+  { name: "Gunnersbury Park", loc: "Middlesex, 7.7mi", age: "14U", date: "2026-05-24", grade: 5 },
+  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "Open/8U", date: "2026-05-24", grade: 5 },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "10U/14U", date: "2026-05-25", grade: 5 },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U", date: "2026-05-26", grade: 5 },
+  { name: "Purley Sports Club", loc: "Surrey, 11mi", age: "14U", date: "2026-05-28", grade: 5 },
+  { name: "Tennis Avenue School", loc: "Surrey, 10mi", age: "14U", date: "2026-05-28", grade: 5 },
+  { name: "Oxted School", loc: "18mi", age: "10U/14U", date: "2026-05-29", grade: 5 },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U", date: "2026-05-30", grade: 5 },
+  { name: "Headstone Manor Park", loc: "Middlesex, 12mi", age: "Open/14U", date: "2026-05-30", grade: 5 },
+  { name: "Spelthorne CTC", loc: "Surrey, 17mi", age: "14U", date: "2026-06-06", grade: 5 },
+  { name: "Wembley & Sudbury", loc: "Middlesex, 9.2mi", age: "14U", date: "2026-06-06", grade: 5 },
 ];
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -128,13 +124,13 @@ function buildCalendar() {
       cell.classList.add("today");
     }
 
-    // Add events for this date — use local date string to avoid UTC offset bug
+    // Add events for this date — use local date formatting to avoid UTC offset bug
     const dateStr = fmtDate(d);
     const dayEvents = tournaments.filter(t => t.date === dateStr);
     dayEvents.forEach(t => {
       const el = document.createElement("div");
       el.className = "event " + (t.grade === 5 ? "g5" : "g4");
-      el.innerHTML = `${t.name} <span class="loc">${t.loc}</span>`;
+      el.innerHTML = `${t.name} <span class="loc">${t.loc} <span class="age">${t.age}</span></span>`;
       cell.appendChild(el);
     });
 
@@ -153,7 +149,7 @@ function buildCalendar() {
     const dayName = dayNames[dt.getDay() === 0 ? 6 : dt.getDay() - 1];
     const monthName = monthNames[dt.getMonth() === 4 ? 0 : 1];
     const dayEvents = g5.filter(t => t.date === dateStr);
-    html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => t.name + ' (' + t.loc + ')').join(', ')}</li>`;
+    html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => t.name + ' (' + t.loc + ', ' + t.age + ')').join(', ')}</li>`;
   });
   html += "</ul>";
   summary.innerHTML = html;
