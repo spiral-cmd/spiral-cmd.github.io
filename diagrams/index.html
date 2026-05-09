@@ -16,21 +16,20 @@
         .list li { background: white; margin-bottom: 0.75rem; border-radius: .5rem; border: 1px solid var(--line); transition: transform 0.15s ease; }
         .list li:hover { transform: translateX(4px); }
         .list a { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; text-decoration: none; color: inherit; }
-        .list .name { font-weight: 500; color: var(--accent); }
-        .list .date { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+        .list .num { color: var(--muted); font-size: 0.8rem; font-weight: 600; margin-right: 0.75rem; min-width: 3em; }
+        .list .name { font-weight: 500; color: var(--accent); flex: 1; }
     </style>
 </head>
 <body>
     <div class="wrap">
         <nav><a href="../index.html">← Back to Home</a></nav>
         <h1>System Diagrams</h1>
-        <p class="subtitle">Newest first</p>
         <ul class="list">
-            <li><a href="0004-lta-grade5-calendar.html"><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span><span class="date">08 May 2026</span></a></li>
-            <li><a href="0004-polo-protocol.html"><span class="name">FT Scrape — Polo Productivity Protocol</span><span class="date">30 Apr 2026</span></a></li>
-            <li><a href="cron-dash.html"><span class="name">OpenClaw Cron Dashboard</span><span class="date">30 Apr 2026</span></a></li>
-            <li><a href="0002-agent-workflow.html"><span class="name">OpenClaw Agent Workflow</span><span class="date">29 Apr 2026</span></a></li>
-            <li><a href="0001-cc-polo-flow.html"><span class="name">CC ↔ Polo Communication Flow</span><span class="date">25 Apr 2026</span></a></li>
+            <li><a href="0004-lta-grade5-calendar.html"><span class="num">0004</span><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span></a></li>
+            <li><a href="0004-polo-protocol.html"><span class="num">0004</span><span class="name">FT Scrape — Polo Productivity Protocol</span></a></li>
+            <li><a href="0002-agent-workflow.html"><span class="num">0002</span><span class="name">OpenClaw Agent Workflow</span></a></li>
+            <li><a href="0001-cc-polo-flow.html"><span class="num">0001</span><span class="name">CC ↔ Polo Communication Flow</span></a></li>
+            <li><a href="cron-dash.html"><span class="name">OpenClaw Cron Dashboard</span></a></li>
         </ul>
     </div>
 </body>
