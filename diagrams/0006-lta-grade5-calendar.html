@@ -55,34 +55,51 @@
 <script>
 const tournaments = [
   { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "Open/11U", date: "2026-06-13", url: "https://competitions.lta.org.uk/tournament/EDA4417F-15CB-4ED0-83C7-AEED062A5117" },
+  { name: "Oxted School", loc: "18mi", age: "Open/12U", date: "2026-06-13", url: "https://competitions.lta.org.uk/tournament/20729BD2-4828-4105-B90A-620A4CBA2A0F" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "Open/12U", date: "2026-06-13", url: "https://competitions.lta.org.uk/tournament/9DB5105C-B4B6-492F-9EE3-933AC6FBDCAB" },
+  { name: "Spelthorne Community Tennis Centre", loc: "Surrey, 17mi", age: "Open/11U", date: "2026-06-13", url: "https://competitions.lta.org.uk/tournament/5A4B02EE-9EE2-4E71-A025-BF7370E78C61" },
   { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/14U/10U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/60BC8616-6378-4A31-A51A-17B995D2856E" },
   { name: "Georgians & Holly Park Tennis Club", loc: "Middlesex, 5.7mi", age: "Open/16U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/E2D9309E-3B4B-4137-9E4B-03015E01DC62" },
   { name: "Hadley Wood Lawn Tennis Club", loc: "Middlesex, 12mi", age: "14U/11U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/7206D9C2-BD85-488A-8F9E-481D8F763565" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "14U/11U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/BD826F30-B759-4200-9733-F1C2CB86225F" },
+  { name: "Spelthorne Community Tennis Centre", loc: "Surrey, 17mi", age: "14U/8U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/6EED5A4C-09E1-4D7D-8011-96F06BA23780" },
+  { name: "Cobham Tennis Club", loc: "Surrey, 17mi", age: "Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/A2FE5D25-8A54-4231-9E72-778C000A4EBA" },
   { name: "Georgians & Holly Park Tennis Club", loc: "Middlesex, 5.7mi", age: "Open/10U", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/BCD31CB3-1C08-42E2-9FF2-826647BAF167" },
   { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "16U/Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/F2A53663-A99D-400F-B4CD-7DF5358DA9C8" },
   { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "16U/Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/2E1ECEDE-5C7D-4928-8ED6-9000356617AE" },
+  { name: "Oxted School", loc: "18mi", age: "Open/10U", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/80A68F6C-4E50-4320-A882-6D666D34941D" },
   { name: "Park Sports - Pitshanger Park", loc: "Middlesex, 9.3mi", age: "16U/Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/1793652C-87EB-4836-9E94-C215EEAE73C1" },
+  { name: "Brunel University", loc: "Middlesex, 16mi", age: "11U/16U/Open", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/27C0D109-F570-48E2-BD54-12B11300CA79" },
   { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/18U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/2A0A896E-446F-4420-882A-4A2DEE046EC3" },
   { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "Open/14U/18U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/67E37A3A-7AA5-4BBA-A76F-51286BF3BCF5" },
+  { name: "Oxted School", loc: "18mi", age: "11U/16U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/7483E3D5-FABF-4CE6-8066-FBD894F39251" },
   { name: "Pavilion Tennis", loc: "Middlesex, 6.8mi", age: "Open", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/F017C469-B133-42A2-B12E-347FFCF1B64E" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "11U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/6A67602A-B4E9-41D8-9398-AF30AB9A7142" },
+  { name: "Spelthorne Community Tennis Centre", loc: "Surrey, 17mi", age: "Open/8U/11U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/3B460A37-5AEB-4B29-AA9E-86F6F297FE09" },
   { name: "The Avenue LTC", loc: "Middlesex, 7.4mi", age: "14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/35A85436-5289-4F56-8AFC-3F49D37AAB70" },
   { name: "Broomfield Park", loc: "Middlesex, 7.8mi", age: "10U/Open", date: "2026-06-27", url: "https://competitions.lta.org.uk/tournament/945FD09A-7791-4139-968B-622D24837DC3" },
   { name: "Headstone Manor Park", loc: "Middlesex, 12mi", age: "Open/11U", date: "2026-06-27", url: "https://competitions.lta.org.uk/tournament/EEE63BD9-BDE5-4D00-8C28-C53D4235792F" },
+  { name: "Oxted School", loc: "18mi", age: "10U/Open", date: "2026-06-27", url: "https://competitions.lta.org.uk/tournament/2382838A-F4B9-4E10-A0FF-7E40984A7E90" },
+  { name: "Weybridge Tennis Academy", loc: "Surrey, 18mi", age: "Open", date: "2026-06-27", url: "https://competitions.lta.org.uk/tournament/869FF35C-3D47-4EB3-9948-96326196EBD6" },
+  { name: "Brunel University", loc: "Middlesex, 16mi", age: "14U/18U/11U", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/0CC0301D-7842-4420-BF50-453D69D9C275" },
   { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U/12U", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/2B76F7D0-7EFA-4EBE-A29C-0567E84226F8" },
   { name: "Georgians & Holly Park Tennis Club", loc: "Middlesex, 5.7mi", age: "14U/11U", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/95E8CB54-8357-4727-A536-7FB924344684" },
   { name: "Hadley Wood Lawn Tennis Club", loc: "Middlesex, 12mi", age: "10U/Open", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/CAE28611-CEF1-497B-9D9A-5B658F2F8044" },
   { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "14U/18U/Open", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/3F6B830A-F96E-4B8E-854A-36C726909E4D" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "9U/Open", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/B804B2B1-665E-4E61-B64A-6FE91AE2D8C3" },
+  { name: "Spelthorne Community Tennis Centre", loc: "Surrey, 17mi", age: "18U/Open/8U", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/EFBE41BF-9EF8-41BC-9849-3313AB59FA53" },
+  { name: "Brunel University", loc: "Middlesex, 16mi", age: "Open/16U", date: "2026-07-04", url: "https://competitions.lta.org.uk/tournament/AE2C8E7F-BBA8-41D8-AB16-E1911721D436" },
   { name: "John Innes Park", loc: "Surrey, 7.9mi", age: "Open/16U", date: "2026-07-04", url: "https://competitions.lta.org.uk/tournament/169EE813-D308-48CC-B145-17A2A1844BE6" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "Open/16U", date: "2026-07-04", url: "https://competitions.lta.org.uk/tournament/B85430CA-0901-4F51-B084-65200B557FE9" },
   { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/10U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/82CA02DE-A963-4507-8ECA-E5FA49C1868F" },
   { name: "Enfield Chase LTC", loc: "Middlesex, 9.7mi", age: "14U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/6750E0F1-2C4A-4638-B62C-6566FAB52A95" },
+  { name: "Spelthorne Community Tennis Centre", loc: "Surrey, 17mi", age: "14U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/6F38E742-90E9-4E60-95C2-48F124434FD1" },
   { name: "Tennis Avenue School", loc: "Surrey, 10mi", age: "14U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/2715AE35-1B5F-476E-9BA7-52796B1E8D66" },
+  { name: "Brunel University", loc: "Middlesex, 16mi", age: "12U/16U/14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/B11ADC43-AF00-489D-85A4-76CC90F0D8C0" },
+  { name: "Cobham Tennis Club", loc: "Surrey, 17mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/29194C94-6B3B-41EC-8B3C-FAE4F1189D5B" },
   { name: "Cottenham Park", loc: "Surrey, 8.4mi", age: "16U/Open", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/65DB66D7-073E-4F1B-A8CC-6F7124EB1E0F" },
   { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "12U/16U/Open", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/DAA3B201-5075-4286-BD90-2CBFC39F3B40" },
+  { name: "Oxted School", loc: "18mi", age: "Open/9U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/4CDE076C-959E-4C6F-8091-CBD6A3DB41E5" },
   { name: "Park Sports - Pitshanger Park", loc: "Middlesex, 9.3mi", age: "12U/Open", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/070705A3-1C65-4066-ACF2-37950E7E047D" },
   { name: "Raphael Park Tennis Club", loc: "Essex, 14mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/DEFCD21B-7558-43DF-9854-5C6A6027DF19" },
   { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/9U", date: "2026-07-12", url: "https://competitions.lta.org.uk/tournament/48F15E68-0B1D-48D3-93F1-ED8BA9439A3A" },
@@ -111,9 +128,9 @@ function buildCalendar() {
     grid.appendChild(h);
   });
 
-  // Grid: Mon Jun 8 to Sun Jul 12
-  const firstDay = new Date(2026, 5, 8);
-  const endGrid = new Date(2026, 6, 12);
+  // Grid: Mon Jun 1 to Sun Jul 19 (context before + after tournament window)
+  const firstDay = new Date(2026, 5, 1);
+  const endGrid = new Date(2026, 6, 19);
 
   // Tournament window: Jun 13 to Jul 12
   const windowStart = new Date(2026, 5, 13);
