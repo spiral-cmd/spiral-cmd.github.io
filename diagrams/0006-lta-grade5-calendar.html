@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTA Grade 5 Tournaments — Jun/Jul 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f4f8; color: #1a1a2e; padding: 20px; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin-bottom: 4px; color: #16213e; }
+  .subtitle { color: #555; font-size: 0.9rem; margin-bottom: 20px; }
+  .legend { display: flex; gap: 20px; margin-bottom: 16px; font-size: 0.85rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .legend-dot.g5 { background: #2563eb; }
+  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #666; padding: 6px 0; }
+  .day-cell { background: white; border-radius: 8px; padding: 8px; min-height: 100px; border: 1px solid #e2e8f0; }
+  .day-cell.empty { background: transparent; border: none; min-height: 0; }
+  .day-cell.other-month { opacity: 0.4; }
+  .day-number { font-weight: 600; font-size: 0.85rem; color: #333; margin-bottom: 4px; }
+  .day-cell.today .day-number { background: #2563eb; color: white; display: inline-block; padding: 1px 7px; border-radius: 50%; }
+  .event { display: block; font-size: 0.7rem; padding: 3px 5px; margin-bottom: 3px; border-radius: 4px; background: #dbeafe; color: #1e40af; border-left: 3px solid #2563eb; text-decoration: none; transition: transform 0.1s, box-shadow 0.1s; }
+  .event:hover { transform: scale(1.03); box-shadow: 0 2px 6px rgba(37,99,235,0.2); }
+  .event .loc { display: block; font-size: 0.65rem; color: #555; }
+  .event .age { display: inline-block; font-size: 0.6rem; background: rgba(37,99,235,0.12); padding: 0 3px; border-radius: 2px; margin-left: 2px; }
+  .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
+  .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
+  .summary ul { list-style: none; font-size: 0.85rem; }
+  .summary li { padding: 3px 0; }
+  .summary .count { font-weight: 600; color: #2563eb; }
+  @media (max-width: 700px) {
+    .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .day-cell { min-height: 70px; padding: 4px; }
+    .event { font-size: 0.6rem; padding: 2px 3px; }
+    .day-number { font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎾 LTA Grade 5 Tournaments</h1>
+  <p class="subtitle">14U Boys Singles · 20mi from London · 13 Jun – 12 Jul 2026</p>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot g5"></span> Grade 5</div>
+  </div>
+
+  <div class="calendar-grid" id="calendar"></div>
+
+  <div class="summary" id="summary"></div>
+</div>
+
+<script>
+const tournaments = [
+  { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "Open/11U", date: "2026-06-13", url: "https://competitions.lta.org.uk/tournament/EDA4417F-15CB-4ED0-83C7-AEED062A5117" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "Open/12U", date: "2026-06-13", url: "https://competitions.lta.org.uk/tournament/9DB5105C-B4B6-492F-9EE3-933AC6FBDCAB" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/14U/10U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/60BC8616-6378-4A31-A51A-17B995D2856E" },
+  { name: "Georgians & Holly Park Tennis Club", loc: "Middlesex, 5.7mi", age: "Open/16U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/E2D9309E-3B4B-4137-9E4B-03015E01DC62" },
+  { name: "Hadley Wood Lawn Tennis Club", loc: "Middlesex, 12mi", age: "14U/11U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/7206D9C2-BD85-488A-8F9E-481D8F763565" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "14U/11U", date: "2026-06-14", url: "https://competitions.lta.org.uk/tournament/BD826F30-B759-4200-9733-F1C2CB86225F" },
+  { name: "Georgians & Holly Park Tennis Club", loc: "Middlesex, 5.7mi", age: "Open/10U", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/BCD31CB3-1C08-42E2-9FF2-826647BAF167" },
+  { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "16U/Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/F2A53663-A99D-400F-B4CD-7DF5358DA9C8" },
+  { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "16U/Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/2E1ECEDE-5C7D-4928-8ED6-9000356617AE" },
+  { name: "Park Sports - Pitshanger Park", loc: "Middlesex, 9.3mi", age: "16U/Open", date: "2026-06-20", url: "https://competitions.lta.org.uk/tournament/1793652C-87EB-4836-9E94-C215EEAE73C1" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/18U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/2A0A896E-446F-4420-882A-4A2DEE046EC3" },
+  { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "Open/14U/18U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/67E37A3A-7AA5-4BBA-A76F-51286BF3BCF5" },
+  { name: "Pavilion Tennis", loc: "Middlesex, 6.8mi", age: "Open", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/F017C469-B133-42A2-B12E-347FFCF1B64E" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "11U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/6A67602A-B4E9-41D8-9398-AF30AB9A7142" },
+  { name: "The Avenue LTC", loc: "Middlesex, 7.4mi", age: "14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/35A85436-5289-4F56-8AFC-3F49D37AAB70" },
+  { name: "Broomfield Park", loc: "Middlesex, 7.8mi", age: "10U/Open", date: "2026-06-27", url: "https://competitions.lta.org.uk/tournament/945FD09A-7791-4139-968B-622D24837DC3" },
+  { name: "Headstone Manor Park", loc: "Middlesex, 12mi", age: "Open/11U", date: "2026-06-27", url: "https://competitions.lta.org.uk/tournament/EEE63BD9-BDE5-4D00-8C28-C53D4235792F" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "10U/14U/12U", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/2B76F7D0-7EFA-4EBE-A29C-0567E84226F8" },
+  { name: "Georgians & Holly Park Tennis Club", loc: "Middlesex, 5.7mi", age: "14U/11U", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/95E8CB54-8357-4727-A536-7FB924344684" },
+  { name: "Hadley Wood Lawn Tennis Club", loc: "Middlesex, 12mi", age: "10U/Open", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/CAE28611-CEF1-497B-9D9A-5B658F2F8044" },
+  { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "14U/18U/Open", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/3F6B830A-F96E-4B8E-854A-36C726909E4D" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "9U/Open", date: "2026-06-28", url: "https://competitions.lta.org.uk/tournament/B804B2B1-665E-4E61-B64A-6FE91AE2D8C3" },
+  { name: "John Innes Park", loc: "Surrey, 7.9mi", age: "Open/16U", date: "2026-07-04", url: "https://competitions.lta.org.uk/tournament/169EE813-D308-48CC-B145-17A2A1844BE6" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "Open/16U", date: "2026-07-04", url: "https://competitions.lta.org.uk/tournament/B85430CA-0901-4F51-B084-65200B557FE9" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/10U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/82CA02DE-A963-4507-8ECA-E5FA49C1868F" },
+  { name: "Enfield Chase LTC", loc: "Middlesex, 9.7mi", age: "14U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/6750E0F1-2C4A-4638-B62C-6566FAB52A95" },
+  { name: "Tennis Avenue School", loc: "Surrey, 10mi", age: "14U/18U", date: "2026-07-05", url: "https://competitions.lta.org.uk/tournament/2715AE35-1B5F-476E-9BA7-52796B1E8D66" },
+  { name: "Cottenham Park", loc: "Surrey, 8.4mi", age: "16U/Open", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/65DB66D7-073E-4F1B-A8CC-6F7124EB1E0F" },
+  { name: "Oakwood Park", loc: "Middlesex, 9.4mi", age: "12U/16U/Open", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/DAA3B201-5075-4286-BD90-2CBFC39F3B40" },
+  { name: "Park Sports - Pitshanger Park", loc: "Middlesex, 9.3mi", age: "12U/Open", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/070705A3-1C65-4066-ACF2-37950E7E047D" },
+  { name: "Raphael Park Tennis Club", loc: "Essex, 14mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/DEFCD21B-7558-43DF-9854-5C6A6027DF19" },
+  { name: "Croydon High Sports Club", loc: "Surrey, 12mi", age: "Open/9U", date: "2026-07-12", url: "https://competitions.lta.org.uk/tournament/48F15E68-0B1D-48D3-93F1-ED8BA9439A3A" },
+  { name: "Headstone Manor Park", loc: "Middlesex, 12mi", age: "Open", date: "2026-07-12", url: "https://competitions.lta.org.uk/tournament/491CF4DE-6EA4-42A4-88D2-83160F1FCF19" },
+  { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "Open/18U", date: "2026-07-12", url: "https://competitions.lta.org.uk/tournament/B03FBB65-49A9-4E54-BF42-32940DE3C554" },
+  { name: "Russell Park", loc: "Kent, 11mi", age: "Open", date: "2026-07-12", url: "https://competitions.lta.org.uk/tournament/3213B5A7-04AE-4067-B4F5-7A7D9CE162B4" }
+];
+
+const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function fmtDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function buildCalendar() {
+  const grid = document.getElementById("calendar");
+  const summary = document.getElementById("summary");
+
+  dayNames.forEach(d => {
+    const h = document.createElement("div");
+    h.className = "day-header";
+    h.textContent = d;
+    grid.appendChild(h);
+  });
+
+  // Grid: Mon Jun 8 to Sun Jul 12
+  const firstDay = new Date(2026, 5, 8);
+  const endGrid = new Date(2026, 6, 12);
+
+  // Tournament window: Jun 13 to Jul 12
+  const windowStart = new Date(2026, 5, 13);
+  const windowEnd = new Date(2026, 6, 12);
+
+  let d = new Date(firstDay);
+  while (d <= endGrid) {
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+
+    const inRange = d >= windowStart && d <= windowEnd;
+    if (!inRange) cell.classList.add("other-month");
+
+    const num = document.createElement("div");
+    num.className = "day-number";
+    num.textContent = d.getDate();
+    cell.appendChild(num);
+
+    const today = new Date();
+    if (d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate()) {
+      cell.classList.add("today");
+    }
+
+    const dateStr = fmtDate(d);
+    const dayEvents = tournaments.filter(t => t.date === dateStr);
+    dayEvents.forEach(t => {
+      const a = document.createElement("a");
+      a.className = "event";
+      a.href = t.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.innerHTML = `${t.name} <span class="loc">${t.loc} <span class="age">${t.age}</span></span>`;
+      cell.appendChild(a);
+    });
+
+    grid.appendChild(cell);
+    d.setDate(d.getDate() + 1);
+  }
+
+  const uniqueDates = [...new Set(tournaments.map(t => t.date))].sort();
+  const monthNames = ["Jun", "Jul"];
+  let html = `<h3>📋 Summary — <span class="count">${tournaments.length}</span> Grade 5 tournaments across ${uniqueDates.length} days</h3><ul>`;
+  uniqueDates.forEach(dateStr => {
+    const parts = dateStr.split('-');
+    const dt = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    const dayIdx = dt.getDay() === 0 ? 6 : dt.getDay() - 1;
+    const dayName = dayNames[dayIdx];
+    const monthName = monthNames[dt.getMonth() === 5 ? 0 : 1];
+    const dayEvents = tournaments.filter(t => t.date === dateStr);
+    html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? 's' : ''}: ${dayEvents.map(t => `<a href="${t.url}" target="_blank" rel="noopener">${t.name}</a> (${t.loc}, ${t.age})`).join(', ')}</li>`;
+  });
+  html += "</ul>";
+  summary.innerHTML = html;
+}
+
+buildCalendar();
+</script>
+</body>
+</html>
