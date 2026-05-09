@@ -1,3 +1,33 @@
+#!/bin/bash
+# generate-index.sh — rebuild diagrams/index.html from file dates (newest first)
+set -euo pipefail
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(dirname "$DIR")"
+OUT="$DIR/index.html"
+
+# Gather files: all .html except index.html and this script
+entries=()
+for f in "$DIR"/*.html; do
+    base="$(basename "$f")"
+    [[ "$base" == "index.html" ]] && continue
+    [[ "$base" == "generate-index.sh" ]] && continue
+
+    # Get last commit date for this file
+    date=$(git -C "$REPO" log -1 --format="%ai" -- "$f" 2>/dev/null || echo "1970-01-01 00:00:00 +0000")
+    # Get title from <title> tag
+    title=$(sed -n 's/.*<title>\(.*\)<\/title>.*/\1/p' "$f" | head -1)
+    [[ -z "$title" ]] && title="${base%.html}"  # fallback to filename
+
+    entries+=("$date|$base|$title")
+done
+
+# Sort by date descending (newest first)
+IFS=$'\n' sorted=($(sort -r <<<"${entries[*]}"))
+unset IFS
+
+# Build HTML
+cat > "$OUT" << 'HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,12 +56,22 @@
         <h1>System Diagrams</h1>
         <p class="subtitle">Newest first</p>
         <ul class="list">
-            <li><a href="0004-lta-grade5-calendar.html"><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span><span class="date">08 May 2026</span></a></li>
-            <li><a href="0004-polo-protocol.html"><span class="name">FT Scrape — Polo Productivity Protocol</span><span class="date">30 Apr 2026</span></a></li>
-            <li><a href="cron-dash.html"><span class="name">OpenClaw Cron Dashboard</span><span class="date">30 Apr 2026</span></a></li>
-            <li><a href="0002-agent-workflow.html"><span class="name">OpenClaw Agent Workflow</span><span class="date">29 Apr 2026</span></a></li>
-            <li><a href="0001-cc-polo-flow.html"><span class="name">CC ↔ Polo Communication Flow</span><span class="date">25 Apr 2026</span></a></li>
+HTML
+
+for entry in "${sorted[@]}"; do
+    IFS='|' read -r date base title <<< "$entry"
+    # Format date nicely
+    display_date=$(date -j -f "%Y-%m-%d %H:%M:%S %z" "$date" "+%d %b %Y" 2>/dev/null || echo "$date")
+    cat >> "$OUT" << EOF
+            <li><a href="$base"><span class="name">$title</span><span class="date">$display_date</span></a></li>
+EOF
+done
+
+cat >> "$OUT" << 'HTML'
         </ul>
     </div>
 </body>
 </html>
+HTML
+
+echo "Generated $OUT with ${#sorted[@]} entries"
