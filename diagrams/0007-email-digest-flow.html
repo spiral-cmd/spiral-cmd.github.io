@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Digest Workflow</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body {
+    background: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 24px;
+  }
+  h1 {
+    color: #1a1a2e;
+    font-size: 1.5rem;
+    margin: 0 0 4px 0;
+    font-weight: 600;
+  }
+  .subtitle {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0 0 20px 0;
+  }
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .legend-swatch.cron { background: #d97706; }
+  .legend-swatch.gmail { background: #0d9488; }
+  .legend-swatch.sheet { background: #ca8a04; }
+  .legend-swatch.telegram { background: #059669; }
+  .legend-swatch.process { background: #7c3aed; }
+  .legend-swatch.label { background: #db2777; }
+  #mermaid-container {
+    overflow-x: auto;
+  }
+  .footer {
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📧 Email Digest Workflow</h1>
+  <p class="subtitle">Daily pipeline: Gmail → Triage Sheet → Telegram (07:00 cron, Cato agent)</p>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-swatch cron"></span> Cron / Trigger</span>
+    <span class="legend-item"><span class="legend-swatch gmail"></span> Gmail API</span>
+    <span class="legend-item"><span class="legend-swatch sheet"></span> Triage Sheet</span>
+    <span class="legend-item"><span class="legend-swatch telegram"></span> Telegram Output</span>
+    <span class="legend-item"><span class="legend-swatch process"></span> Script / Process</span>
+    <span class="legend-item"><span class="legend-swatch label"></span> Gmail Label</span>
+  </div>
+
+  <div id="mermaid-container">
+    <pre class="mermaid">
+%%{init: {"flowchart": {"curve": "stepAfter"}}}%%
+flowchart TD
+    %% ── Triggers ──
+    CRON(["⏰ Cron: 07:00 daily<br/>Europe/London"])
+    CRON --> CATO["Cato Agent<br/>receives cron message"]
+
+    %% ── Step 0: Build Terms ──
+    subgraph S0["Step 0 — Build Search Terms"]
+        direction LR
+        TERMS_SH["email-digest-terms.sh<br/>gog sheets get → pipe to py"]
+        TERMS_PY["email-digest-terms.py<br/>Reads triage sheet JSON<br/>Generates Gmail search terms"]
+        HIGH_TERMS["/tmp/ed-high.txt<br/>Positive from: terms<br/>from type=h entries"]
+        LOW_EXCL["/tmp/ed-low.txt<br/>Negative -from: terms<br/>from type=l + type=n entries"]
+        TERMS_SH --> TERMS_PY
+        TERMS_PY --> HIGH_TERMS
+        TERMS_PY --> LOW_EXCL
+    end
+
+    CATO --> S0
+
+    %% ── Step 1: Priority Search ──
+    subgraph S1["Step 1 — PRIORITY Search"]
+        direction LR
+        STEP1_SH["email-digest-step1.sh<br/>Gmail search using HIGH_TERMS"]
+        PRIORITY_RESULT["📬 Priority emails<br/>from type=h senders<br/>-label:Reviewed newer_than:5d"]
+        STEP1_SH --> PRIORITY_RESULT
+    end
+
+    HIGH_TERMS --> STEP1_SH
+
+    %% ── Step 2: Review Search ──
+    subgraph S2["Step 2 — REVIEW Search"]
+        direction LR
+        STEP2_SH["email-digest-step2.sh<br/>Heuristic Gmail search<br/>minus LOW_EXCL"]
+        REVIEW_RESULT["📬 Review emails<br/>Re:, Fwd:, family names,<br/>invoice, probate, urgent<br/>-label:Reviewed newer_than:5d"]
+        STEP2_SH --> REVIEW_RESULT
+    end
+
+    LOW_EXCL --> STEP2_SH
+
+    %% ── Step 3: Broad Search ──
+    subgraph S3["Step 3 — BROAD Search"]
+        direction LR
+        STEP3_SH["email-digest-step3.sh<br/>All unreviewed mail<br/>newer_than:5d"]
+        BROAD_RESULT["📬 All unreviewed emails<br/>-label:Reviewed newer_than:5d"]
+        STEP3_SH --> BROAD_RESULT
+    end
+
+    %% ── Step 4: Sheet Append ──
+    subgraph S4["Step 4 — Append to Triage Sheet"]
+        direction LR
+        APPEND_PY["email-digest-sheet-append.py<br/>Deduplicates against sheet<br/>Appends new senders"]
+        REVIEW_APPEND["REVIEW rows<br/>col E = blank<br/>(Martin sets h/l)"]
+        UNCAT_APPEND["UNCATEGORIZED rows<br/>col E = 'n' if freq≥2<br/>col E = blank if freq=1"]
+        APPEND_PY --> REVIEW_APPEND
+        APPEND_PY --> UNCAT_APPEND
+    end
+
+    PRIORITY_RESULT --> APPEND_PY
+    REVIEW_RESULT --> APPEND_PY
+    BROAD_RESULT --> APPEND_PY
+
+    %% ── Triage Sheet ──
+    TRIAGE_SHEET(["📊 Triage Sheet<br/>1DBVKKGP1WsmzoTBcgjzF4JevtYzeMJ23PsVQQM3xrG0<br/>Col A: sender · Col B: subject<br/>Col C: email · Col D: label · Col E: type"])
+    APPEND_PY -->|appends new rows| TRIAGE_SHEET
+    TRIAGE_SHEET -.->|feeds next run| TERMS_SH
+
+    %% ── Format & Deliver ──
+    subgraph S5["Format & Deliver"]
+        direction LR
+        FORMAT["Cato formats 3 sections:<br/>📌 PRIORITY (type=h)<br/>📋 REVIEW (heuristics)<br/>🆕 UNCATEGORIZED (new senders)"]
+        TELEGRAM(["📱 Telegram<br/>topic 150 / bulletin"])
+        FORMAT --> TELEGRAM
+    end
+
+    PRIORITY_RESULT --> FORMAT
+    REVIEW_RESULT --> FORMAT
+    BROAD_RESULT --> FORMAT
+
+    %% ── Label Application ──
+    subgraph S6["Step 5 — Label Application"]
+        direction LR
+        LABEL_ALPHA["email-digest-label-alpha.sh<br/>Apply 'Alpha' label<br/>to PRIORITY message IDs"]
+        LABEL_REVIEWED["email-digest-label-reviewed.sh<br/>Apply 'Reviewed' label<br/>to REVIEW message IDs"]
+        SAVE_IDS["email-digest-save-ids.sh<br/>Save ID mapping<br/>for ack feature"]
+        LABEL_ALPHA --> GMAIL_ALPHA["Gmail: Alpha label"]
+        LABEL_REVIEWED --> GMAIL_REVIEWED["Gmail: Reviewed label"]
+    end
+
+    PRIORITY_RESULT --> LABEL_ALPHA
+    REVIEW_RESULT --> LABEL_REVIEWED
+    PRIORITY_RESULT --> SAVE_IDS
+    REVIEW_RESULT --> SAVE_IDS
+
+    %% ── Martin's Manual Triage ──
+    MARTIN(["👤 Martin reviews<br/>blank type rows<br/>Sets h or l"])
+    TRIAGE_SHEET --> MARTIN
+    MARTIN -->|updates col E| TRIAGE_SHEET
+
+    %% ── Styling ──
+    classDef cron fill:#fef3c7,stroke:#d97706,stroke-width:2,color:#78350f
+    classDef gmail fill:#ccfbf1,stroke:#0d9488,stroke-width:1.5,color:#134e4a
+    classDef sheet fill:#fef9c3,stroke:#ca8a04,stroke-width:1.5,color:#713f12
+    classDef telegram fill:#d1fae5,stroke:#059669,stroke-width:2,color:#064e3b
+    classDef process fill:#f3e8ff,stroke:#7c3aed,stroke-width:1.5,color:#4c1d95
+    classDef label fill:#fce7f3,stroke:#db2777,stroke-width:1.5,color:#831843
+    classDef human fill:#e0e7ff,stroke:#6366f1,stroke-width:2,color:#312e81
+    classDef file fill:#f3f4f6,stroke:#9ca3af,stroke-width:1,color:#374151
+
+    class CRON cron
+    class STEP1_SH,STEP2_SH,STEP3_SH gmail
+    class PRIORITY_RESULT,REVIEW_RESULT,BROAD_RESULT gmail
+    class TRIAGE_SHEET,REVIEW_APPEND,UNCAT_APPEND sheet
+    class TELEGRAM telegram
+    class TERMS_SH,TERMS_PY,APPEND_PY,FORMAT process
+    class LABEL_ALPHA,LABEL_REVIEWED,SAVE_IDS label
+    class GMAIL_ALPHA,GMAIL_REVIEWED label
+    class MARTIN human
+    class HIGH_TERMS,LOW_EXCL file
+    </pre>
+  </div>
+
+  <div class="footer">
+    Generated from ~/.openclaw/workspace/scripts/email-digest-*.{sh,py} · Triage Sheet: 1DBVKKGP1WsmzoTBcgjzF4JevtYzeMJ23PsVQQM3xrG0
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      background: '#ffffff',
+      primaryColor: '#f3f4f6',
+      primaryTextColor: '#1f2937',
+      primaryBorderColor: '#d1d5db',
+      lineColor: '#6b7280',
+      secondaryColor: '#f9fafb',
+      tertiaryColor: '#ffffff',
+      fontSize: '13px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }
+  });
+</script>
+</body>
+</html>
