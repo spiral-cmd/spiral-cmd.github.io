@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oracle Gate — OpenClaw Plugin</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #212529;
+      --muted: #6c757d;
+      --border: #dee2e6;
+      --blue: #4a90e2;
+      --blue-light: #e8f1fb;
+      --green: #28a745;
+      --green-light: #e9f7ec;
+      --red: #dc3545;
+      --red-light: #fde9eb;
+      --amber: #f59e0b;
+      --amber-light: #fef3c7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --grey: #6c757d;
+      --grey-light: #f1f3f5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2.5rem 2rem;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      color: var(--muted);
+      margin-top: .4rem;
+      font-size: .9rem;
+    }
+
+    /* ── flow diagram ── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      max-width: 680px;
+      margin: 0 auto 3rem;
+    }
+
+    .node {
+      width: 100%;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      padding: 1rem 1.2rem;
+      background: var(--card);
+      position: relative;
+    }
+    .node-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: .35rem;
+    }
+    .node-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .node-sub {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: .25rem;
+    }
+
+    .node.agent   { border-color: var(--blue);   background: var(--blue-light); }
+    .node.hook    { border-color: var(--purple);  background: var(--purple-light); }
+    .node.check   { border-color: var(--amber);   background: var(--amber-light); }
+    .node.allow   { border-color: var(--green);   background: var(--green-light); }
+    .node.block   { border-color: var(--red);     background: var(--red-light); }
+    .node.evidence{ border-color: var(--grey);    background: var(--grey-light); }
+    .node.gateway { border-color: #adb5bd; background: #fff; }
+
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 0;
+    }
+    .arrow-line {
+      width: 2px;
+      height: 22px;
+      background: #adb5bd;
+    }
+    .arrow-head {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #adb5bd;
+    }
+    .arrow-label {
+      font-size: .72rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    /* branch after check */
+    .branch {
+      display: flex;
+      width: 100%;
+      gap: 1rem;
+      align-items: flex-start;
+      justify-content: center;
+      margin-top: 0;
+    }
+    .branch-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      max-width: 300px;
+    }
+    .branch-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 0;
+    }
+    .branch-label {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 3px;
+    }
+    .label-pass { background: var(--green-light); color: var(--green); }
+    .label-fail { background: var(--red-light); color: var(--red); }
+
+    /* ── detail cards ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+    }
+    .card h3 {
+      font-size: .88rem;
+      font-weight: 700;
+      margin-bottom: .7rem;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    .badge {
+      font-size: .68rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .badge-blue   { background: var(--blue-light);   color: var(--blue); }
+    .badge-purple { background: var(--purple-light);  color: var(--purple); }
+    .badge-amber  { background: var(--amber-light);   color: var(--amber); }
+    .badge-green  { background: var(--green-light);   color: var(--green); }
+    .badge-red    { background: var(--red-light);     color: var(--red); }
+
+    .card ul {
+      list-style: none;
+      font-size: .84rem;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+    }
+    .card ul li {
+      padding-left: 1.1rem;
+      position: relative;
+      line-height: 1.4;
+    }
+    .card ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+    code {
+      font-family: "SF Mono", "Fira Code", Menlo, monospace;
+      font-size: .8em;
+      background: #f1f3f5;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .card .mono-block {
+      font-family: "SF Mono", "Fira Code", Menlo, monospace;
+      font-size: .78rem;
+      background: #f1f3f5;
+      border-radius: 6px;
+      padding: .65rem .8rem;
+      color: #495057;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    section-title {
+      display: block;
+      text-align: center;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Oracle Gate</h1>
+  <p>OpenClaw plugin · <code>before_tool_call</code> hook · priority 100</p>
+</header>
+
+<!-- ── FLOW DIAGRAM ── -->
+<div class="flow">
+
+  <div class="node agent">
+    <div class="node-label">Agent (Polo / Cato / io)</div>
+    <div class="node-title">Attempts to call a tool</div>
+    <div class="node-sub">e.g. <code>sessions_send</code> or <code>sessions_spawn</code></div>
+  </div>
+
+  <div class="arrow">
+    <div class="arrow-line"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <div class="node gateway">
+    <div class="node-label">OpenClaw Gateway</div>
+    <div class="node-title">Fires <code>before_tool_call</code> event</div>
+    <div class="node-sub">All registered plugins at this hook are invoked in priority order</div>
+  </div>
+
+  <div class="arrow">
+    <div class="arrow-line"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <div class="node hook">
+    <div class="node-label">oracle-gate · priority 100</div>
+    <div class="node-title">Is tool in gated set?</div>
+    <div class="node-sub"><code>sessions_send</code> · <code>sessions_spawn</code></div>
+  </div>
+
+  <!-- split: not gated vs gated -->
+  <div class="branch" style="margin-top:0;">
+    <!-- left: not a gated tool -->
+    <div class="branch-col">
+      <div class="branch-arrow">
+        <div class="arrow-line"></div>
+        <div class="arrow-head"></div>
+        <span class="branch-label label-pass">No — other tool</span>
+      </div>
+      <div class="node allow" style="width:100%;">
+        <div class="node-label">Pass-through</div>
+        <div class="node-title">Plugin returns nothing</div>
+        <div class="node-sub">Gateway proceeds normally</div>
+      </div>
+    </div>
+
+    <!-- right: gated tool -->
+    <div class="branch-col">
+      <div class="branch-arrow">
+        <div class="arrow-line"></div>
+        <div class="arrow-head"></div>
+        <span class="branch-label label-fail">Yes — gated tool</span>
+      </div>
+      <div class="node check" style="width:100%;">
+        <div class="node-label">Evidence check</div>
+        <div class="node-title">Does <code>/tmp/evidence-<br>{agentId}-{taskId}</code> exist?</div>
+        <div class="node-sub">File must be non-empty · taskId from session metadata</div>
+      </div>
+
+      <!-- sub-branch: file exists vs missing -->
+      <div class="branch" style="margin-top:0; gap:.6rem;">
+        <div class="branch-col">
+          <div class="branch-arrow">
+            <div class="arrow-line"></div>
+            <div class="arrow-head"></div>
+            <span class="branch-label label-pass">Exists &amp; non-empty</span>
+          </div>
+          <div class="node allow" style="width:100%;">
+            <div class="node-label">Allow</div>
+            <div class="node-title">Tool call proceeds</div>
+          </div>
+        </div>
+        <div class="branch-col">
+          <div class="branch-arrow">
+            <div class="arrow-line"></div>
+            <div class="arrow-head"></div>
+            <span class="branch-label label-fail">Missing or empty</span>
+          </div>
+          <div class="node block" style="width:100%;">
+            <div class="node-label">Block</div>
+            <div class="node-title">Returns <code>{ block: true }</code></div>
+            <div class="node-sub">Reason injected into agent context</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /branch -->
+
+</div><!-- /flow -->
+
+<!-- ── DETAIL CARDS ── -->
+<section-title>Plugin Details</section-title>
+
+<div class="cards">
+
+  <div class="card">
+    <h3><span class="badge badge-purple">Hook</span> before_tool_call</h3>
+    <ul>
+      <li>Fires synchronously before any tool executes</li>
+      <li>Priority 100 — runs ahead of lower-priority hooks</li>
+      <li>Returns <code>{ block: true, blockReason: "..." }</code> to stop execution</li>
+      <li>Returns nothing to allow</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge badge-amber">Gate logic</span> Evidence contract</h3>
+    <ul>
+      <li>Gated tools: <code>sessions_send</code>, <code>sessions_spawn</code></li>
+      <li>Evidence path: <code>/tmp/evidence-{agentId}-{taskId}</code></li>
+      <li>No taskId in session → gate is skipped (cron/heartbeat safe)</li>
+      <li>Empty file counts as missing — agent must write real content</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge badge-blue">Discovery</span> Plugin setup</h3>
+    <div class="mono-block">~/.openclaw/extensions/oracle-gate/
+  index.js            ← hook logic
+  openclaw.plugin.json
+  package.json
+
+~/.openclaw/node_modules/oracle-gate
+  → symlink to extensions/oracle-gate</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge badge-green">Integration</span> Agent side</h3>
+    <ul>
+      <li>Before reporting done, agent writes evidence to <code>/tmp/evidence-{agentId}-{taskId}</code></li>
+      <li>Content: tool call result, file write confirmation, or message ID</li>
+      <li>Soft gate (AGENTS.md rule) + hard gate (this plugin) work in tandem</li>
+      <li>Connects to io's mandatory evidence requirement added 2026-05-11</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge badge-red">Replaced</span> oracle-gate-test</h3>
+    <ul>
+      <li>Previous test plugin blocked <em>all</em> <code>exec</code> calls unconditionally</li>
+      <li>Removed from <code>plugins.allow</code> on 2026-05-11</li>
+      <li>oracle-gate targets only delegation tools, not execution tools</li>
+      <li>Exec calls from Polo/Cato are unaffected by this gate</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge badge-purple">Context</span> Why it exists</h3>
+    <ul>
+      <li>FM-5 failure pattern: agent claims delegation but makes no tool call</li>
+      <li>io wrote "Codo has GO" with zero tool calls — Codo was never briefed</li>
+      <li>Oracle Gate makes undocumented delegation physically impossible</li>
+      <li>Part of Tier 1 agent-reliability roadmap (2026-05-11)</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  oracle-gate v0.1.0 · OpenClaw 2026.5.6 · generated 2026-05-11
+</footer>
+
+</body>
+</html>
