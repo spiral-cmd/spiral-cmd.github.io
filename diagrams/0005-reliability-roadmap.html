@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Reliability Roadmap — OpenClaw</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --card: #ffffff;
+      --text: #1a1d23;
+      --muted: #6b7280;
+      --border: #e2e5ea;
+
+      --t1:        #1d4ed8;
+      --t1-light:  #eff6ff;
+      --t1-border: #bfdbfe;
+      --t1-bar:    #3b82f6;
+
+      --t2:        #6d28d9;
+      --t2-light:  #f5f3ff;
+      --t2-border: #ddd6fe;
+      --t2-bar:    #8b5cf6;
+
+      --t3:        #0f766e;
+      --t3-light:  #f0fdfa;
+      --t3-border: #99f6e4;
+      --t3-bar:    #14b8a6;
+
+      --done:    #15803d;
+      --done-bg: #f0fdf4;
+      --done-bd: #bbf7d0;
+
+      --wip:     #b45309;
+      --wip-bg:  #fffbeb;
+      --wip-bd:  #fde68a;
+
+      --gap:     #b91c1c;
+      --gap-bg:  #fff1f2;
+      --gap-bd:  #fecdd3;
+
+      --todo:    #4b5563;
+      --todo-bg: #f9fafb;
+      --todo-bd: #e5e7eb;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2.5rem 1.75rem 3.5rem;
+      min-height: 100vh;
+    }
+
+    /* ── header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2.75rem;
+    }
+    .page-header h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -.025em;
+    }
+    .page-header p {
+      color: var(--muted);
+      font-size: .875rem;
+      margin-top: .4rem;
+    }
+
+    /* ── progress summary bar ── */
+    .summary {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .25rem;
+    }
+    .summary-num {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .summary-label {
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .n-done    { color: var(--done); }
+    .n-wip     { color: var(--wip); }
+    .n-gap     { color: var(--gap); }
+    .n-todo    { color: var(--muted); }
+
+    /* ── tier columns ── */
+    .tiers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 1140px;
+      margin: 0 auto 2.5rem;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .tiers { grid-template-columns: 1fr; }
+    }
+
+    .tier {
+      background: var(--card);
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+
+    /* coloured top bar */
+    .tier-bar {
+      height: 5px;
+    }
+    .tier-1 .tier-bar { background: var(--t1-bar); }
+    .tier-2 .tier-bar { background: var(--t2-bar); }
+    .tier-3 .tier-bar { background: var(--t3-bar); }
+
+    .tier-head {
+      padding: 1rem 1.15rem .85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tier-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      padding: 3px 9px;
+      border-radius: 99px;
+      margin-bottom: .55rem;
+    }
+    .tier-1 .tier-tag { background: var(--t1-light); color: var(--t1); border: 1px solid var(--t1-border); }
+    .tier-2 .tier-tag { background: var(--t2-light); color: var(--t2); border: 1px solid var(--t2-border); }
+    .tier-3 .tier-tag { background: var(--t3-light); color: var(--t3); border: 1px solid var(--t3-border); }
+
+    .tier-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: .2rem;
+    }
+    .tier-when {
+      font-size: .78rem;
+      color: var(--muted);
+    }
+
+    /* progress mini-bar inside header */
+    .tier-progress {
+      margin-top: .7rem;
+      height: 5px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .tier-progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .3s;
+    }
+    .tier-1 .tier-progress-fill { background: var(--t1-bar); }
+    .tier-2 .tier-progress-fill { background: var(--t2-bar); }
+    .tier-3 .tier-progress-fill { background: var(--t3-bar); }
+    .tier-progress-label {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: .3rem;
+    }
+
+    /* tasks */
+    .tier-body {
+      padding: .85rem .9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .55rem;
+    }
+
+    .task {
+      border-radius: 9px;
+      border: 1.5px solid var(--todo-bd);
+      background: var(--todo-bg);
+      padding: .65rem .8rem;
+    }
+    .task.done  { border-color: var(--done-bd); background: var(--done-bg); }
+    .task.wip   { border-color: var(--wip-bd);  background: var(--wip-bg);  }
+    .task.gap   { border-color: var(--gap-bd);  background: var(--gap-bg);  }
+
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+
+    .task-icon {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: .62rem;
+      font-weight: 800;
+    }
+    .icon-done  { background: var(--done); color: #fff; }
+    .icon-wip   { background: var(--wip);  color: #fff; }
+    .icon-gap   { background: var(--gap);  color: #fff; }
+    .icon-todo  { background: #d1d5db;     color: #fff; }
+
+    .task-right { flex: 1; min-width: 0; }
+
+    .task-name {
+      font-size: .85rem;
+      font-weight: 650;
+      line-height: 1.3;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: .4rem;
+    }
+    .task-badge {
+      font-size: .62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-done  { background: var(--done-bg); color: var(--done); border: 1px solid var(--done-bd); }
+    .badge-wip   { background: var(--wip-bg);  color: var(--wip);  border: 1px solid var(--wip-bd); }
+    .badge-gap   { background: var(--gap-bg);  color: var(--gap);  border: 1px solid var(--gap-bd); }
+    .badge-todo  { background: var(--todo-bg); color: var(--todo); border: 1px solid var(--todo-bd); }
+
+    .task-detail {
+      font-size: .77rem;
+      color: var(--muted);
+      margin-top: .3rem;
+      line-height: 1.5;
+    }
+    code {
+      font-family: "SF Mono", "Fira Code", Menlo, monospace;
+      font-size: .8em;
+      background: rgba(0,0,0,.06);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ── open questions ── */
+    .questions {
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+    .questions h2 {
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-bottom: .9rem;
+      text-align: center;
+    }
+    .q-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+      gap: 1rem;
+    }
+    .q-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+    .q-card strong {
+      display: block;
+      font-size: .82rem;
+      font-weight: 700;
+      margin-bottom: .35rem;
+    }
+    .q-card p {
+      font-size: .78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      font-size: .74rem;
+      color: var(--muted);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Agent Reliability Roadmap</h1>
+  <p>OpenClaw multi-agent stack &nbsp;·&nbsp; OpenClaw 2026.5.6 &nbsp;·&nbsp; 2026-05-11</p>
+</div>
+
+<!-- summary counts -->
+<div class="summary">
+  <div class="summary-item">
+    <span class="summary-num n-done">4</span>
+    <span class="summary-label">Done</span>
+  </div>
+  <div class="summary-item">
+    <span class="summary-num n-wip">2</span>
+    <span class="summary-label">In progress</span>
+  </div>
+  <div class="summary-item">
+    <span class="summary-num n-gap">1</span>
+    <span class="summary-label">Design gap</span>
+  </div>
+  <div class="summary-item">
+    <span class="summary-num n-todo">8</span>
+    <span class="summary-label">Not started</span>
+  </div>
+</div>
+
+<div class="tiers">
+
+  <!-- ────────── TIER 1 ────────── -->
+  <div class="tier tier-1">
+    <div class="tier-bar"></div>
+    <div class="tier-head">
+      <div class="tier-tag">Tier 1</div>
+      <div class="tier-title">Quick Wins</div>
+      <div class="tier-when">This week &nbsp;·&nbsp; no upgrade required</div>
+      <div class="tier-progress">
+        <div class="tier-progress-fill" style="width:64%"></div>
+      </div>
+      <div class="tier-progress-label">4 of 7 complete</div>
+    </div>
+    <div class="tier-body">
+
+      <div class="task done">
+        <div class="task-row">
+          <div class="task-icon icon-done">✓</div>
+          <div class="task-right">
+            <div class="task-name">MemoClaw <span class="task-badge badge-done">Done</span></div>
+            <div class="task-detail">Per-agentId persistent memory between cron runs. Anti-goldfish for digests. v0.1.15 installed; main-agent exclusion patched; 1-week trial running.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task done">
+        <div class="task-row">
+          <div class="task-icon icon-done">✓</div>
+          <div class="task-right">
+            <div class="task-name">Telemetry plugin <span class="task-badge badge-done">Done</span></div>
+            <div class="task-detail">Captures <code>tool.start</code> / <code>tool.end</code> / <code>llm.usage</code> to <code>telemetry.jsonl</code>. Activation field fixed. Loaded as plugin 7 of 7.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task done">
+        <div class="task-row">
+          <div class="task-icon icon-done">✓</div>
+          <div class="task-right">
+            <div class="task-name">Oracle Gate v1 <span class="task-badge badge-done">Done</span></div>
+            <div class="task-detail"><code>before_tool_call</code> hook blocks <code>sessions_send</code> / <code>sessions_spawn</code> unless evidence file present. Replaces oracle-gate-test (was blocking all exec).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task done">
+        <div class="task-row">
+          <div class="task-icon icon-done">✓</div>
+          <div class="task-right">
+            <div class="task-name">io evidence requirement <span class="task-badge badge-done">Done</span></div>
+            <div class="task-detail">Mandatory evidence table added to io's <code>AGENTS.md</code> after FM-5 incident (2026-05-11). DONE without tool call result is now a logged violation.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task wip">
+        <div class="task-row">
+          <div class="task-icon icon-wip">~</div>
+          <div class="task-right">
+            <div class="task-name">Isolated cron sessions <span class="task-badge badge-wip">Pending</span></div>
+            <div class="task-detail">Add <code>--session isolated</code> to xdigest, sharesmc, email-digest, shareradar. Prevents compaction purging task context mid-run.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task wip">
+        <div class="task-row">
+          <div class="task-icon icon-wip">~</div>
+          <div class="task-right">
+            <div class="task-name">Token audit <span class="task-badge badge-wip">Pending</span></div>
+            <div class="task-detail">Measure Polo/Cato per-turn token overhead. Trim Polo's AGENTS.md (~2,729 tokens, 47% of workspace). Add explicit token budget instruction.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task gap">
+        <div class="task-row">
+          <div class="task-icon icon-gap">!</div>
+          <div class="task-right">
+            <div class="task-name">Oracle Gate — attestation <span class="task-badge badge-gap">Design gap</span></div>
+            <div class="task-detail">Evidence file is agent-written — forgeable. Gateway-side <code>after_tool_call</code> attestation needed so the runtime writes evidence, not the agent.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ────────── TIER 2 ────────── -->
+  <div class="tier tier-2">
+    <div class="tier-bar"></div>
+    <div class="tier-head">
+      <div class="tier-tag">Tier 2</div>
+      <div class="tier-title">Short Term</div>
+      <div class="tier-when">Requires 2026.5.x &nbsp;·&nbsp; already running 2026.5.6</div>
+      <div class="tier-progress">
+        <div class="tier-progress-fill" style="width:17%"></div>
+      </div>
+      <div class="tier-progress-label">1 of 6 complete</div>
+    </div>
+    <div class="tier-body">
+
+      <div class="task done">
+        <div class="task-row">
+          <div class="task-icon icon-done">✓</div>
+          <div class="task-right">
+            <div class="task-name">OpenClaw upgrade <span class="task-badge badge-done">Done</span></div>
+            <div class="task-detail">Running 2026.5.6 — unlocks <code>before_tool_call</code>, fixed <code>cron list --json</code>. Upgrade blocker from initial research was moot.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">Oracle Gate v2 <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Redesign: gateway writes evidence on <code>after_tool_call</code> success. Agent cannot forge. Resolves the Tier 1 design gap.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">Trace-diff script <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Parse JSONL. Diff stated reasoning intent (CoT / assistant turns) against actual tool calls in trace. Flag discrepancies. Data layer is live — script not yet built.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">Artifact verification — all cron jobs <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Extend the sharesmc pattern (query artifact after write, exit 1 if missing) to xdigest, email-digest, shareradar. Currently only sharesmc has an independent oracle check.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">session-logs plugin <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Structured per-session log output. Pairs with telemetry JSONL to give full event → reasoning → outcome chain. Prerequisite for Tier 3 analytics.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">lazy-agent-loader <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Defers workspace injection until first relevant tool call. Cuts baseline token overhead for io / Polo long-running sessions.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ────────── TIER 3 ────────── -->
+  <div class="tier tier-3">
+    <div class="tier-bar"></div>
+    <div class="tier-head">
+      <div class="tier-tag">Tier 3</div>
+      <div class="tier-title">Medium Term</div>
+      <div class="tier-when">Post-stabilisation &nbsp;·&nbsp; analytics &amp; evals</div>
+      <div class="tier-progress">
+        <div class="tier-progress-fill" style="width:0%"></div>
+      </div>
+      <div class="tier-progress-label">0 of 5 complete</div>
+    </div>
+    <div class="tier-body">
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">JSONL analytics pipeline <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Parse <code>tool.start</code> / <code>tool.end</code> across all sessions. Frequency / failure-ratio dashboards. Identify silent failures under token pressure.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">Thinking block extraction <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Automated scan of CoT blocks for stated intent. Flag sessions where agent wrote "I will call X" but X never appears in tool call record. Catches FM-5 at scale.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">Non-stationarity detection <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Fixed task suite run weekly against each agent. Alert on output drift. Catches silent provider-side model changes that evals won't surface.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">SARA — sequence-aware interceptor <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Block dangerous tool <em>sequences</em> before execution, not just individual calls. Requires sequence-aware hook support in a future OpenClaw version.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task">
+        <div class="task-row">
+          <div class="task-icon icon-todo">–</div>
+          <div class="task-right">
+            <div class="task-name">External eval framework <span class="task-badge badge-todo">Not started</span></div>
+            <div class="task-detail">Evaluate Distributional PAEF / DBNL for continuous production evals. Only if internal analytics show persistent failure patterns manual review can't address.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /tiers -->
+
+<!-- open questions -->
+<div class="questions">
+  <h2>Open questions</h2>
+  <div class="q-grid">
+    <div class="q-card">
+      <strong>Oracle Gate evidence model</strong>
+      <p>Agent-written evidence is forgeable. Gateway-side <code>after_tool_call</code> attestation closes the loop. Should be first Tier 2 action.</p>
+    </div>
+    <div class="q-card">
+      <strong>MemoClaw trial verdict</strong>
+      <p>Running ~1 week. Verify agentId isolation (no Polo↔Cato bleed), anti-goldfish in digests, and conflict with existing MEMORY.md pattern.</p>
+    </div>
+    <div class="q-card">
+      <strong>Cron session isolation scope</strong>
+      <p>All 6 active jobs or only long-running ones (xdigest ~90 min)? Audit-trail trade-off: isolated sessions produce no persistent conversational history.</p>
+    </div>
+    <div class="q-card">
+      <strong>Token budget enforcement</strong>
+      <p>Polo AGENTS.md ~2,729 tokens with no budget instruction. Does token pressure cause hallucination vs. truncation? Need a measurement baseline first.</p>
+    </div>
+  </div>
+</div>
+
+<footer>agent-reliability roadmap &nbsp;·&nbsp; OpenClaw 2026.5.6 &nbsp;·&nbsp; 2026-05-11</footer>
+
+</body>
+</html>
