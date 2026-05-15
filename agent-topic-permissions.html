@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agent Permissions — Telegram Topics</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .slide {
+    background: #fff;
+    width: 1100px;
+    min-height: 680px;
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+    padding: 40px 48px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: -0.3px;
+  }
+  h1 span { color: #5b6af0; }
+  .subtitle {
+    font-size: 12.5px;
+    color: #888;
+    margin-top: 2px;
+    font-weight: 400;
+  }
+
+  /* Agent legend */
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .agent-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f7f8ff;
+    border: 1px solid #e0e3f5;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .agent-pill .tools {
+    color: #aaa;
+    font-size: 11px;
+    margin-left: 2px;
+  }
+
+  /* Topic table */
+  .table-wrap {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+  thead tr th {
+    background: #f5f6fc;
+    color: #555;
+    font-weight: 600;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 2px solid #e8eaf5;
+  }
+  thead tr th:first-child { border-radius: 8px 0 0 8px; }
+  thead tr th:last-child  { border-radius: 0 8px 8px 0; }
+
+  tbody tr { transition: background 0.12s; }
+  tbody tr:hover { background: #f9faff; }
+  tbody tr td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #f0f1f7;
+    color: #2d2d3a;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .topic-id {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+  }
+  .topic-name {
+    font-weight: 500;
+    color: #1a1a2e;
+  }
+  .topic-desc {
+    font-size: 11.5px;
+    color: #888;
+    margin-top: 1px;
+  }
+
+  .agent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* tool tags */
+  .tool-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tag {
+    background: #f3f4fb;
+    border: 1px solid #e2e4f5;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 11px;
+    color: #555;
+    white-space: nowrap;
+  }
+  .tag.highlight {
+    background: #eef0ff;
+    border-color: #c5caff;
+    color: #3a43c8;
+  }
+
+  /* colours per agent */
+  .c-main  { background: #e8f5e9; color: #2e7d32; }
+  .c-io    { background: #e3f2fd; color: #1565c0; }
+  .c-cato  { background: #fce4ec; color: #ad1457; }
+  .c-codo  { background: #fff8e1; color: #f57f17; }
+
+  .dot-main  { background: #4caf50; }
+  .dot-io    { background: #2196f3; }
+  .dot-cato  { background: #e91e63; }
+  .dot-codo  { background: #ffc107; }
+
+  .footer {
+    font-size: 11px;
+    color: #bbb;
+    text-align: right;
+    margin-top: auto;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div>
+    <h1>Agent Permissions — <span>Telegram Topics</span></h1>
+    <div class="subtitle">ocaisa group · -1003678179601 · Generated 2026-05-15</div>
+  </div>
+
+  <!-- Agent legend -->
+  <div class="legend">
+    <div class="agent-pill">
+      <div class="dot dot-main"></div>
+      <strong>polo (main)</strong>
+      <span class="tools">exec · sessions · agentToAgent</span>
+    </div>
+    <div class="agent-pill">
+      <div class="dot dot-io"></div>
+      <strong>io</strong>
+      <span class="tools">read · write · edit · exec · sessions</span>
+    </div>
+    <div class="agent-pill">
+      <div class="dot dot-cato"></div>
+      <strong>cato</strong>
+      <span class="tools">browser · read · write · edit · exec · sessions · agentToAgent</span>
+    </div>
+    <div class="agent-pill">
+      <div class="dot dot-codo"></div>
+      <strong>codo</strong>
+      <span class="tools">read</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Topic</th>
+          <th>Purpose</th>
+          <th>Agent</th>
+          <th>Agent Tools</th>
+          <th>Model</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><span class="topic-id">#1</span></td>
+          <td>
+            <div class="topic-name">General</div>
+            <div class="topic-desc">General-purpose assistant</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#2</span></td>
+          <td>
+            <div class="topic-name">Inner Life</div>
+            <div class="topic-desc">Journaling, mood, reflection</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#4</span></td>
+          <td>
+            <div class="topic-name">Tennis</div>
+            <div class="topic-desc">Technique notes, match stats, scheduling</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#6</span></td>
+          <td>
+            <div class="topic-name">Business Strategy</div>
+            <div class="topic-desc">Meta-analysis, revenue tracking</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#8</span></td>
+          <td>
+            <div class="topic-name">GTD Inbox</div>
+            <div class="topic-desc">Rapid task capture, brain dumps</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#10</span></td>
+          <td>
+            <div class="topic-name">io Direct</div>
+            <div class="topic-desc">Research, investigation, orchestration</div>
+          </td>
+          <td><span class="agent-badge c-io"><span class="dot dot-io" style="width:7px;height:7px"></span>io</span></td>
+          <td><div class="tool-tags"><span class="tag">read</span><span class="tag">write</span><span class="tag">edit</span><span class="tag highlight">exec</span><span class="tag">sessions</span></div></td>
+          <td><span class="topic-id">mimo-v2.5-pro</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#12</span></td>
+          <td>
+            <div class="topic-name">Family (CZ)</div>
+            <div class="topic-desc">Family coordination, household planning</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#14</span></td>
+          <td>
+            <div class="topic-name">Zee</div>
+            <div class="topic-desc">Child development, education, milestones</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#60</span></td>
+          <td>
+            <div class="topic-name">Trading</div>
+            <div class="topic-desc">Investment analysis, tickers, PDFs</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#111</span></td>
+          <td>
+            <div class="topic-name">Sermo</div>
+            <div class="topic-desc">Inter-agent coordination log · Martin visibility</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#6704</span></td>
+          <td>
+            <div class="topic-name">Health</div>
+            <div class="topic-desc">Lifestyle, nutrition, wellness articles</div>
+          </td>
+          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">deepseek-chat</span></td>
+        </tr>
+
+        <tr>
+          <td><span class="topic-id">#12687</span></td>
+          <td>
+            <div class="topic-name">Cronwatch</div>
+            <div class="topic-desc">Cron monitoring, automation alerts</div>
+          </td>
+          <td><span class="agent-badge c-cato"><span class="dot dot-cato" style="width:7px;height:7px"></span>cato</span></td>
+          <td><div class="tool-tags"><span class="tag">browser</span><span class="tag">read</span><span class="tag">write</span><span class="tag">edit</span><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
+          <td><span class="topic-id">gemma-4-31b-it</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">openclaw 2026.5.7 · spiral arc</div>
+</div>
+</body>
+</html>
