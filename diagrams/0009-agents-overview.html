@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OpenClaw Agents</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f7f8fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px;
+  }
+  .slide {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.08);
+    width: 960px;
+    padding: 40px 48px 36px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1d23;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #8a919e;
+    margin-bottom: 32px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .card {
+    border-radius: 12px;
+    padding: 22px 24px 20px;
+    border: 1.5px solid transparent;
+    position: relative;
+  }
+  .card.polo  { background: #e8f5e9; border-color: #a5d6a7; }
+  .card.io    { background: #f1f8e9; border-color: #c5e1a5; }
+  .card.cato  { background: #e0f2f1; border-color: #80cbc4; }
+  .card.codo  { background: #d8efe0; border-color: #81c784; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .emoji { font-size: 22px; line-height: 1; }
+  .agent-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1d23;
+  }
+  .role {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #8a919e;
+    margin-top: 1px;
+  }
+  .session-key {
+    font-size: 11px;
+    font-family: "SF Mono", "Fira Code", monospace;
+    color: #8a919e;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+    padding: 2px 6px;
+    display: inline-block;
+    margin-bottom: 14px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  td {
+    font-size: 12.5px;
+    padding: 4px 0;
+    vertical-align: top;
+    color: #3a3f4a;
+    line-height: 1.5;
+  }
+  td:first-child {
+    color: #8a919e;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    width: 76px;
+    padding-top: 5px;
+  }
+  .model-id {
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 11.5px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 4px;
+    padding: 2px 6px;
+    display: inline-block;
+  }
+  .cost-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cost-pill {
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .cost-in  { background: #dceeff; color: #1a6bbf; }
+  .cost-out { background: #ffe8d0; color: #b85c00; }
+  .cost-cache { background: #e8f5ee; color: #1a7a44; }
+  .ctx-pill {
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 2px 8px;
+    background: #ebebeb;
+    color: #555;
+    display: inline-block;
+  }
+  .supplier-badge {
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 2px 7px;
+    display: inline-block;
+  }
+  .s-deepseek   { background: #dce8ff; color: #1a4eab; }
+  .s-openrouter { background: #fde8d5; color: #a83e00; }
+  .s-siliconflow{ background: #e5e0ff; color: #4a1eb8; }
+  .s-xiaomi     { background: #fff0c8; color: #8a5500; }
+
+  .footer {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #ebedf0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-note { font-size: 11px; color: #aab0bb; }
+  .legend { display: flex; gap: 16px; }
+  .legend-item { font-size: 11px; color: #8a919e; display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <h1>OpenClaw — Agent Overview</h1>
+  <div class="subtitle">Model · Supplier · Cost · Context — as of 2026-05-15</div>
+
+  <div class="grid">
+
+    <!-- POLO -->
+    <div class="card polo">
+      <div class="card-header">
+        <span class="emoji">🤖</span>
+        <div>
+          <div class="agent-name">Polo</div>
+          <div class="role">General agent · Coder</div>
+        </div>
+      </div>
+      <div class="session-key">agent:main:main</div>
+      <table>
+        <tr>
+          <td>Model</td>
+          <td><span class="model-id">deepseek-chat</span></td>
+        </tr>
+        <tr>
+          <td>Alias</td>
+          <td>DeepSeek V4 Flash</td>
+        </tr>
+        <tr>
+          <td>Supplier</td>
+          <td><span class="supplier-badge s-deepseek">DeepSeek direct</span></td>
+        </tr>
+        <tr>
+          <td>Cost</td>
+          <td>
+            <div class="cost-row">
+              <span class="cost-pill cost-in">$0.28 in</span>
+              <span class="cost-pill cost-out">$0.42 out</span>
+              <span class="cost-pill cost-cache">$0.028 cache</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Context</td>
+          <td><span class="ctx-pill">65k tokens</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- IO -->
+    <div class="card io">
+      <div class="card-header">
+        <span class="emoji">🔭</span>
+        <div>
+          <div class="agent-name">io</div>
+          <div class="role">Research · Orchestration</div>
+        </div>
+      </div>
+      <div class="session-key">agent:io:main</div>
+      <table>
+        <tr>
+          <td>Model</td>
+          <td><span class="model-id">mimo-v2.5-pro</span></td>
+        </tr>
+        <tr>
+          <td>Alias</td>
+          <td>MiMo V2.5 Pro</td>
+        </tr>
+        <tr>
+          <td>Supplier</td>
+          <td><span class="supplier-badge s-xiaomi">Xiaomi Token Plan</span></td>
+        </tr>
+        <tr>
+          <td>Cost</td>
+          <td>
+            <div class="cost-row">
+              <span class="cost-pill cost-in">$1.00 in</span>
+              <span class="cost-pill cost-out">$3.00 out</span>
+              <span class="cost-pill cost-cache">$0.20 cache</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Context</td>
+          <td><span class="ctx-pill">1M tokens</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- CATO -->
+    <div class="card cato">
+      <div class="card-header">
+        <span class="emoji">📅</span>
+        <div>
+          <div class="agent-name">Cato</div>
+          <div class="role">Cron jobs · Digests</div>
+        </div>
+      </div>
+      <div class="session-key">agent:cato:main</div>
+      <table>
+        <tr>
+          <td>Model</td>
+          <td><span class="model-id">gemma-4-31b-it</span></td>
+        </tr>
+        <tr>
+          <td>Alias</td>
+          <td>Gemma 4 31B</td>
+        </tr>
+        <tr>
+          <td>Supplier</td>
+          <td><span class="supplier-badge s-openrouter">OpenRouter</span></td>
+        </tr>
+        <tr>
+          <td>Cost</td>
+          <td>
+            <div class="cost-row">
+              <span class="cost-pill cost-in">$0.10 in</span>
+              <span class="cost-pill cost-out">$0.30 out</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Context</td>
+          <td><span class="ctx-pill">131k tokens</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- CODO -->
+    <div class="card codo">
+      <div class="card-header">
+        <span class="emoji">💻</span>
+        <div>
+          <div class="agent-name">codo</div>
+          <div class="role">Code generation · Single-shot</div>
+        </div>
+      </div>
+      <div class="session-key">spawned by Polo</div>
+      <table>
+        <tr>
+          <td>Model</td>
+          <td><span class="model-id">DeepSeek-V3.2</span></td>
+        </tr>
+        <tr>
+          <td>Alias</td>
+          <td>DeepSeek V3.2</td>
+        </tr>
+        <tr>
+          <td>Supplier</td>
+          <td><span class="supplier-badge s-siliconflow">SiliconFlow</span></td>
+        </tr>
+        <tr>
+          <td>Cost</td>
+          <td>
+            <div class="cost-row">
+              <span class="cost-pill cost-in">$0.14 in</span>
+              <span class="cost-pill cost-out">$0.28 out</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Context</td>
+          <td><span class="ctx-pill">163k tokens</span></td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-note">Costs per million tokens · CC (Claude Sonnet 4.6) not shown · Compaction model: Gemini 2.5 Flash via OpenRouter</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#4a7fe0"></div>DeepSeek direct</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f07030"></div>OpenRouter</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7a55d4"></div>SiliconFlow</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#d4a017"></div>Xiaomi</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
