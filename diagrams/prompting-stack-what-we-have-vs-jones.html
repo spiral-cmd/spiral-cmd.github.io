@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompting Stack: What We Have vs. What Jones Recommends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  
+  .slide {
+    max-width: 1100px;
+    width: 100%;
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #d946ef);
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+  }
+  
+  .title-group h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  
+  .title-group .subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-top: 6px;
+    font-weight: 400;
+  }
+  
+  .source-badge {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #a5b4fc;
+    white-space: nowrap;
+  }
+  
+  .source-badge a {
+    color: #818cf8;
+    text-decoration: none;
+  }
+  
+  .source-badge a:hover {
+    text-decoration: underline;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+  
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .column-header {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid;
+    margin-bottom: 4px;
+  }
+  
+  .column-header.left {
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+  
+  .column-header.right {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+  
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: all 0.2s;
+  }
+  
+  .card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.1);
+  }
+  
+  .card .layer {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  
+  .card .layer.l1 { color: #f59e0b; }
+  .card .layer.l2 { color: #8b5cf6; }
+  .card .layer.l3 { color: #06b6d4; }
+  .card .layer.l4 { color: #10b981; }
+  
+  .card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  
+  .card p {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+  
+  .card .status-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+  
+  .tag-present { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+  .tag-partial { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+  .tag-missing { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+  
+  .divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    margin: 8px 0 24px;
+  }
+  
+  .takeaway {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  
+  .takeaway h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #a5b4fc;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .takeaway p {
+    font-size: 14px;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+  
+  .takeaway strong {
+    color: #fff;
+  }
+  
+  .footer {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #64748b;
+  }
+  
+  @media (max-width: 768px) {
+    .slide { padding: 28px 20px; }
+    .grid { grid-template-columns: 1fr; gap: 24px; }
+    .header { flex-direction: column; gap: 12px; }
+    .title-group h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="header">
+    <div class="title-group">
+      <h1>Prompting Stack: What We Have vs. What Jones Recommends</h1>
+      <div class="subtitle">Based on Nate B Jones — "I Built 2 AI Agents. One Had This. Total Game Changer"</div>
+    </div>
+    <div class="source-badge">
+      <a href="https://www.youtube.com/shorts/fsFxiXzwvp8" target="_blank">▶ YouTube Short</a> &nbsp;·&nbsp; 
+      <a href="https://natesnewsletter.substack.com/p/prompting-just-split-into-4-different" target="_blank">📄 Full Article</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT COLUMN: What We Have -->
+    <div class="column">
+      <div class="column-header left">🟡 What We Have</div>
+      
+      <div class="card">
+        <div class="layer l1">LAYER 1 · PROMPT CRAFT</div>
+        <h3>Basic instruction writing</h3>
+        <p>System prompts, task descriptions, role definitions. We do this well — SOUL.md, AGENTS.md, USER.md provide rich context. Our agents have structured identity and operational protocols.</p>
+        <span class="status-tag tag-present">✅ Present</span>
+      </div>
+      
+      <div class="card">
+        <div class="layer l2">LAYER 2 · SPECIFICATION ENGINEERING</div>
+        <h3>Structured agent specs</h3>
+        <p>Agent configs in openclaw.json define models, tools, timeouts, subagent policies. Cron jobs, heartbeat tasks, and inter-agent protocols (io ↔ Polo) are specified. But these are <em>config-level</em>, not prompt-level specs.</p>
+        <span class="status-tag tag-partial">🟡 Partial</span>
+      </div>
+      
+      <div class="card">
+        <div class="layer l3">LAYER 3 · CONTEXT ENGINEERING</div>
+        <h3>Context quality &amp; compression</h3>
+        <p>Lossless-claw handles compaction with summaries. Memory-core does dreaming/promotion. But we don't have a systematic discipline for <em>designing</em> context — we react to context limits rather than engineering context proactively.</p>
+        <span class="status-tag tag-partial">🟡 Partial</span>
+      </div>
+      
+      <div class="card">
+        <div class="layer l4">LAYER 4 · AUTONOMOUS AGENT DESIGN</div>
+        <h3>Encoding intent upfront</h3>
+        <p>Cato runs autonomously via cron. Sub-agents spawn isolated. But most agent tasks still rely on conversational back-and-forth. We haven't fully embraced the "encode everything before the agent starts" paradigm for long-running agents.</p>
+        <span class="status-tag tag-partial">🟡 Partial</span>
+      </div>
+    </div>
+    
+    <!-- RIGHT COLUMN: What Jones Recommends -->
+    <div class="column">
+      <div class="column-header right">🟢 What Jones Recommends</div>
+      
+      <div class="card">
+        <div class="layer l1">LAYER 1 · PROMPT CRAFT</div>
+        <h3>Table stakes — everyone does this</h3>
+        <p>Basic instruction writing is no longer a differentiator. Jones calls this "table stakes" — necessary but insufficient for 10x output. The gap comes from the layers above.</p>
+        <span class="status-tag tag-present">✅ We do this</span>
+      </div>
+      
+      <div class="card">
+        <div class="layer l2">LAYER 2 · SPECIFICATION ENGINEERING</div>
+        <h3>Determines the quality ceiling</h3>
+        <p>Five primitives (not detailed in the short — in the Substack). The discipline of writing precise, testable specifications rather than vague instructions. This is where most of the 10x gap lives.</p>
+        <span class="status-tag tag-missing">❌ Need to explore</span>
+      </div>
+      
+      <div class="card">
+        <div class="layer l3">LAYER 3 · CONTEXT ENGINEERING</div>
+        <h3>Toby Lutke's discipline</h3>
+        <p>Designing context to be maximally informative per token. Lutke (Shopify CEO) applies this to emails and memos — making every word carry weight. For agents, this means structuring context so the model extracts maximum signal.</p>
+        <span class="status-tag tag-missing">❌ Not systematic</span>
+      </div>
+      
+      <div class="card">
+        <div class="layer l4">LAYER 4 · AUTONOMOUS AGENT DESIGN</div>
+        <h3>Encode everything before start</h3>
+        <p>"Everything you relied on in conversation must be encoded before the agent starts." For agents running hours/days without check-ins, you can't iterate via chat. The spec must be complete upfront — including error handling, edge cases, and decision trees.</p>
+        <span class="status-tag tag-missing">❌ Biggest gap</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="takeaway">
+    <h3>🔑 Key Takeaway</h3>
+    <p>
+      We're solid at <strong>Layer 1</strong> (prompt craft) and have partial coverage of <strong>Layers 2–4</strong> through configs and tooling. 
+      But Jones' thesis is that the <strong>real 10x leverage</strong> comes from practicing <em>all four layers systematically</em> — 
+      especially specification engineering (Layer 2) and upfront encoding for autonomous agents (Layer 4). 
+      The Substack article likely has the concrete primitives we'd want to adopt.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>Generated by Polo · 15 May 2026</span>
+    <span>Source: Nate B Jones / AI News &amp; Strategy Daily</span>
+  </div>
+</div>
+</body>
+</html>
