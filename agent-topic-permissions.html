@@ -127,6 +127,16 @@
     font-weight: 600;
     white-space: nowrap;
   }
+  .multi-agent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .role-note {
+    font-size: 10.5px;
+    color: #aaa;
+    margin-top: 3px;
+  }
 
   /* tool tags */
   .tool-tags {
@@ -273,11 +283,18 @@
           <td><span class="topic-id">#10</span></td>
           <td>
             <div class="topic-name">io Direct</div>
-            <div class="topic-desc">Research, investigation, orchestration</div>
+            <div class="topic-desc">Research, orchestration; cato/codo join as subagents</div>
           </td>
-          <td><span class="agent-badge c-io"><span class="dot dot-io" style="width:7px;height:7px"></span>io</span></td>
-          <td><div class="tool-tags"><span class="tag">read</span><span class="tag">write</span><span class="tag">edit</span><span class="tag highlight">exec</span><span class="tag">sessions</span></div></td>
-          <td><span class="topic-id">mimo-v2.5-pro</span></td>
+          <td>
+            <div class="multi-agent">
+              <span class="agent-badge c-io"><span class="dot dot-io" style="width:7px;height:7px"></span>io</span>
+              <span class="agent-badge c-cato"><span class="dot dot-cato" style="width:7px;height:7px"></span>cato</span>
+              <span class="agent-badge c-codo"><span class="dot dot-codo" style="width:7px;height:7px"></span>codo</span>
+            </div>
+            <div class="role-note">io = primary listener · cato/codo = subagent tasks</div>
+          </td>
+          <td><div class="tool-tags"><span class="tag">read</span><span class="tag">write</span><span class="tag">edit</span><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">browser (cato)</span></div></td>
+          <td><span class="topic-id">mimo-v2.5-pro / gemma / deepseek</span></td>
         </tr>
 
         <tr>
@@ -319,9 +336,16 @@
             <div class="topic-name">Sermo</div>
             <div class="topic-desc">Inter-agent coordination log · Martin visibility</div>
           </td>
-          <td><span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span></td>
-          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span></div></td>
-          <td><span class="topic-id">deepseek-chat</span></td>
+          <td>
+            <div class="multi-agent">
+              <span class="agent-badge c-main"><span class="dot dot-main" style="width:7px;height:7px"></span>polo</span>
+              <span class="agent-badge c-cato"><span class="dot dot-cato" style="width:7px;height:7px"></span>cato</span>
+              <span class="agent-badge c-io"><span class="dot dot-io" style="width:7px;height:7px"></span>io</span>
+            </div>
+            <div class="role-note">polo = primary responder · cato posts cron alerts · io listens, NO_REPLY unless addressed</div>
+          </td>
+          <td><div class="tool-tags"><span class="tag highlight">exec</span><span class="tag">sessions</span><span class="tag">agentToAgent</span><span class="tag">browser (cato)</span></div></td>
+          <td><span class="topic-id">deepseek-chat / gemma / mimo</span></td>
         </tr>
 
         <tr>
