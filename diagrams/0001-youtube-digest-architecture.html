@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Digest — Architecture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f8f9fa;
+    color: #1a1a1a;
+    padding: 40px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 40px;
+  }
+
+  .diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 860px;
+  }
+
+  /* ── Phases ── */
+  .phase {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .phase-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    padding: 12px 8px;
+    min-width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .phase-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 16px 0;
+  }
+
+  /* ── Nodes ── */
+  .node {
+    border-radius: 8px;
+    border: 1.5px solid;
+    padding: 12px 16px;
+    min-width: 130px;
+    text-align: center;
+    position: relative;
+  }
+  .node-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .node-sub {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.4;
+  }
+
+  /* colours */
+  .n-trigger  { background: #e8f4e8; border-color: #5a9e5a; }
+  .n-trigger .node-title { color: #2d6e2d; }
+
+  .n-discover { background: #e6f0fb; border-color: #5a8ec9; }
+  .n-discover .node-title { color: #1e4f8a; }
+
+  .n-fetch    { background: #fef4e6; border-color: #d4882a; }
+  .n-fetch .node-title { color: #7a4a00; }
+
+  .n-process  { background: #f0eafb; border-color: #8a62c4; }
+  .n-process .node-title { color: #4a1f8a; }
+
+  .n-state    { background: #fef9e6; border-color: #c9a72a; }
+  .n-state .node-title { color: #6b5200; }
+
+  .n-deliver  { background: #e6f6f4; border-color: #3aa89a; }
+  .n-deliver .node-title { color: #1a6b60; }
+
+  .n-error    { background: #fdeaea; border-color: #d45a5a; }
+  .n-error .node-title { color: #8a1f1f; }
+
+  /* ── Arrows ── */
+  .arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+  .arrow-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .arrow-shaft {
+    width: 36px;
+    height: 2px;
+    background: #bbb;
+    position: relative;
+  }
+  .arrow-shaft::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left: 8px solid #bbb;
+  }
+  .arrow-label {
+    font-size: 10px;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  /* vertical connector between phases */
+  .v-connector {
+    display: flex;
+    align-items: center;
+    padding-left: 28px; /* align with phase-content */
+  }
+  .v-line {
+    width: 2px;
+    height: 28px;
+    background: #ddd;
+    margin-left: 80px; /* roughly center under first node */
+    position: relative;
+  }
+  .v-line::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: -4px;
+    border: 5px solid transparent;
+    border-top: 8px solid #ddd;
+  }
+
+  /* ── Decision diamond ── */
+  .diamond-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-width: 130px;
+  }
+  .diamond {
+    width: 100px;
+    height: 60px;
+    background: #f0eafb;
+    border: 1.5px solid #8a62c4;
+    transform: rotate(45deg) scale(0.8);
+    border-radius: 4px;
+    margin: 10px auto;
+  }
+  .diamond-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: #4a1f8a;
+    white-space: nowrap;
+    text-align: center;
+    pointer-events: none;
+  }
+  .diamond-yes, .diamond-no {
+    font-size: 10px;
+    color: #888;
+    position: absolute;
+  }
+  .diamond-yes { bottom: -2px; left: 50%; transform: translateX(-50%); }
+  .diamond-no  { top: 50%; right: -28px; transform: translateY(-50%); }
+
+  /* ── State sidebar ── */
+  .row-with-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sidebar-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .sidebar-h-line {
+    width: 24px;
+    height: 2px;
+    background: #c9a72a;
+    position: relative;
+  }
+  .sidebar-h-line::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left: 8px solid #c9a72a;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    margin-top: 40px;
+    max-width: 860px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #555;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    flex-shrink: 0;
+  }
+
+  /* ── Notes ── */
+  .notes {
+    margin-top: 32px;
+    max-width: 860px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .notes h2 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #888;
+    margin-bottom: 10px;
+  }
+  .notes ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .notes li {
+    font-size: 12px;
+    color: #444;
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .notes li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: #aaa;
+  }
+  strong { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>YouTube Digest — Data Flow</h1>
+<p class="subtitle">OpenClaw skill · RSS discovery · yt-dlp transcripts · SQLite state · Telegram delivery</p>
+
+<div class="diagram">
+
+  <!-- ── PHASE 1: TRIGGER ── -->
+  <div class="phase">
+    <div class="phase-label">Trigger</div>
+    <div class="phase-content">
+      <div class="node n-trigger">
+        <div class="node-title">OpenClaw Cron</div>
+        <div class="node-sub">Daily schedule<br>configurable cadence</div>
+      </div>
+      <div class="arrow">
+        <div class="arrow-line">
+          <div class="arrow-shaft"></div>
+          <div class="arrow-label">invokes</div>
+        </div>
+      </div>
+      <div class="node n-trigger">
+        <div class="node-title">digest.py</div>
+        <div class="node-sub">Main entry point<br>reads channels.json</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-connector"><div class="v-line"></div></div>
+
+  <!-- ── PHASE 2: DISCOVERY ── -->
+  <div class="phase">
+    <div class="phase-label">Discovery</div>
+    <div class="phase-content row-with-sidebar">
+      <div style="display:flex;align-items:center;gap:0;">
+        <div class="node n-discover">
+          <div class="node-title">RSS Feeds</div>
+          <div class="node-sub">UULF playlist prefix<br>zero quota · 30 min lag</div>
+        </div>
+        <div class="arrow">
+          <div class="arrow-line">
+            <div class="arrow-shaft"></div>
+            <div class="arrow-label">new video IDs</div>
+          </div>
+        </div>
+        <div class="node n-discover">
+          <div class="node-title">videos.list API</div>
+          <div class="node-sub">Metadata enrichment<br>1 unit/video · batch 50</div>
+        </div>
+        <div class="arrow">
+          <div class="arrow-line">
+            <div class="arrow-shaft"></div>
+            <div class="arrow-label">filter seen</div>
+          </div>
+        </div>
+        <div class="node n-discover">
+          <div class="node-title">Dedup Check</div>
+          <div class="node-sub">Query SQLite<br>skip processed IDs</div>
+        </div>
+      </div>
+      <div class="sidebar-connector">
+        <div class="sidebar-h-line"></div>
+      </div>
+      <div class="node n-state" style="min-width:110px;">
+        <div class="node-title">state.db</div>
+        <div class="node-sub">SQLite · WAL mode<br>videos table</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-connector" style="padding-left:28px;"><div class="v-line" style="margin-left:390px;"></div></div>
+
+  <!-- ── PHASE 3: FETCH ── -->
+  <div class="phase">
+    <div class="phase-label">Fetch</div>
+    <div class="phase-content">
+      <div class="node n-fetch">
+        <div class="node-title">yt-dlp</div>
+        <div class="node-sub">--write-auto-subs<br>--skip-download</div>
+      </div>
+      <div class="arrow">
+        <div class="arrow-line">
+          <div class="arrow-shaft"></div>
+          <div class="arrow-label">raw .vtt</div>
+        </div>
+      </div>
+      <div class="node n-fetch">
+        <div class="node-title">Preprocess</div>
+        <div class="node-sub">Strip codes · filler words<br>punctuation restore (pysbd)</div>
+      </div>
+      <div class="arrow">
+        <div class="arrow-line">
+          <div class="arrow-shaft"></div>
+          <div class="arrow-label">clean text</div>
+        </div>
+      </div>
+      <div class="node n-error" style="min-width:110px;">
+        <div class="node-title">No Subs?</div>
+        <div class="node-sub">Flag in digest<br>status = no_transcript</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-connector" style="padding-left:28px;"><div class="v-line" style="margin-left:80px;"></div></div>
+
+  <!-- ── PHASE 4: PROCESS ── -->
+  <div class="phase">
+    <div class="phase-label">Process</div>
+    <div class="phase-content">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0;min-width:130px;">
+        <div class="node n-process" style="width:130px;">
+          <div class="node-title">Token Count</div>
+          <div class="node-sub">Threshold: 20k tokens</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;padding:0 8px;">
+        <!-- above threshold -->
+        <div style="display:flex;align-items:center;gap:0;">
+          <div class="arrow">
+            <div class="arrow-line">
+              <div class="arrow-shaft"></div>
+              <div class="arrow-label">&gt;20k · chunk</div>
+            </div>
+          </div>
+          <div class="node n-process" style="min-width:120px;">
+            <div class="node-title">Chunk Pass</div>
+            <div class="node-sub">3k token fixed chunks<br>sequential · no overlap</div>
+          </div>
+          <div class="arrow">
+            <div class="arrow-line">
+              <div class="arrow-shaft"></div>
+            </div>
+          </div>
+          <div class="node n-process" style="min-width:120px;">
+            <div class="node-title">Synthesis</div>
+            <div class="node-sub">Merge chunk summaries<br>single LLM call</div>
+          </div>
+        </div>
+        <!-- below threshold -->
+        <div style="display:flex;align-items:center;gap:0;">
+          <div class="arrow">
+            <div class="arrow-line">
+              <div class="arrow-shaft"></div>
+              <div class="arrow-label">&lt;20k · direct</div>
+            </div>
+          </div>
+          <div class="node n-process" style="min-width:258px;">
+            <div class="node-title">Single LLM Call</div>
+            <div class="node-sub">Full transcript → TL;DR + key points</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="v-connector" style="padding-left:28px;"><div class="v-line" style="margin-left:80px;"></div></div>
+
+  <!-- ── PHASE 5: DELIVER ── -->
+  <div class="phase">
+    <div class="phase-label">Deliver</div>
+    <div class="phase-content row-with-sidebar">
+      <div style="display:flex;align-items:center;gap:0;">
+        <div class="node n-deliver">
+          <div class="node-title">Compile Digest</div>
+          <div class="node-sub">Aggregate videos<br>HTML Telegram format</div>
+        </div>
+        <div class="arrow">
+          <div class="arrow-line">
+            <div class="arrow-shaft"></div>
+            <div class="arrow-label">if &gt;4096 chars → split by channel</div>
+          </div>
+        </div>
+        <div class="node n-deliver">
+          <div class="node-title">Telegram</div>
+          <div class="node-sub">HTML parse mode<br>link previews off · silent if 0 videos</div>
+        </div>
+      </div>
+      <div class="sidebar-connector">
+        <div class="sidebar-h-line"></div>
+      </div>
+      <div class="node n-state" style="min-width:110px;">
+        <div class="node-title">state.db</div>
+        <div class="node-sub">Mark delivered<br>prune after 30d</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /diagram -->
+
+<!-- ── LEGEND ── -->
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#e8f4e8;border-color:#5a9e5a;"></div>
+    Trigger / scheduling
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#e6f0fb;border-color:#5a8ec9;"></div>
+    Discovery
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#fef4e6;border-color:#d4882a;"></div>
+    Fetch / preprocess
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#f0eafb;border-color:#8a62c4;"></div>
+    LLM processing
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#fef9e6;border-color:#c9a72a;"></div>
+    State (SQLite)
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#e6f6f4;border-color:#3aa89a;"></div>
+    Delivery
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#fdeaea;border-color:#d45a5a;"></div>
+    Error / fallback
+  </div>
+</div>
+
+<!-- ── NOTES ── -->
+<div class="notes">
+  <h2>Key decisions</h2>
+  <ul>
+    <li><strong>Discovery:</strong> RSS with UULF prefix (zero quota, filters Shorts). Fallback to <code>search.list</code> (100 units) if RSS fails.</li>
+    <li><strong>Quota budget:</strong> <code>videos.list</code> at 1 unit/video (batch 50). 10 channels · 5 videos/day = 50 units/day out of 10,000 free.</li>
+    <li><strong>Transcripts:</strong> yt-dlp <code>--write-auto-subs --skip-download</code>. Auto-update yt-dlp in cron script to track anti-bot patches (24–48h lag).</li>
+    <li><strong>Preprocessing:</strong> Strip VTT codes → remove filler words → punctuation restoration (pysbd) before chunking.</li>
+    <li><strong>Chunking threshold:</strong> &lt;20k tokens = single call. &gt;20k = 3k fixed chunks + synthesis. No overlap.</li>
+    <li><strong>State:</strong> SQLite WAL mode. Status column: <code>pending → summarised → delivered → error</code>. Prune rows older than 30 days.</li>
+    <li><strong>Telegram:</strong> HTML parse mode. Consolidated message. Suppress link previews. Split by channel if &gt;4,096 chars. Silent on zero-video days.</li>
+    <li><strong>MVP defers:</strong> parallel sub-agents, Whisper fallback, relevance scoring, duration/view count enrichment.</li>
+  </ul>
+</div>
+
+</body>
+</html>
