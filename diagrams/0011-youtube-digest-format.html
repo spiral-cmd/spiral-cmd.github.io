@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Digest — Format Proposal</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f0f0; color: #222; margin: 0; padding: 20px; }
+  h1 { color: #111; font-size: 18px; margin-bottom: 4px; }
+  .subtitle { color: #777; font-size: 13px; margin-bottom: 30px; }
+  .comparison { display: flex; gap: 24px; flex-wrap: wrap; }
+  .panel { flex: 1; min-width: 320px; max-width: 480px; }
+  .panel-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #999; margin-bottom: 10px; }
+
+  /* Telegram phone frame */
+  .phone { background: #e8e8e8; border-radius: 16px; padding: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .tg-header { display: flex; align-items: center; padding: 8px 0 12px; border-bottom: 1px solid #ccc; margin-bottom: 12px; }
+  .tg-channel { font-size: 13px; font-weight: 600; color: #111; }
+  .tg-sub { font-size: 11px; color: #888; }
+
+  /* Message bubble */
+  .bubble { background: #fff; border-radius: 12px 12px 12px 4px; padding: 10px 12px; margin-bottom: 8px; font-size: 14px; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .bubble + .bubble { border-radius: 4px 12px 12px 4px; }
+  .bubble:last-child { border-radius: 4px 12px 12px 12px; }
+
+  /* CURRENT FORMAT */
+  .current .bubble { color: #222; }
+  .current .bubble a { color: #2563eb; }
+  .cur-header { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+  .cur-ch { font-weight: 700; margin: 6px 0 4px; }
+  .cur-entry { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e0e0e0; }
+  .cur-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .cur-title a { color: #2563eb; }
+  .cur-meta { color: #888; font-size: 12px; font-style: italic; margin: 2px 0 4px; }
+  .cur-tldr { font-size: 13px; background: #f0f5ff; border-left: 2px solid #93c5fd; padding: 6px 8px; border-radius: 0 4px 4px 0; color: #444; }
+  .asterisk { color: #aaa; }
+
+  /* PROPOSED FORMAT */
+  .proposed .bubble { color: #222; }
+  .prop-header { font-weight: 700; font-size: 15px; margin-bottom: 2px; color: #111; }
+  .prop-date { font-size: 11px; color: #999; margin-bottom: 10px; }
+  .prop-entry { margin-bottom: 12px; }
+  .prop-entry:last-child { margin-bottom: 0; }
+  .prop-title { font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .prop-title a { color: #2563eb; text-decoration: none; }
+  .prop-meta { font-size: 11px; color: #bbb; margin: 1px 0 4px; }
+  .prop-tldr { font-size: 13px; color: #333; margin: 0; }
+  .prop-bullets { margin: 4px 0 0 0; padding: 0; list-style: none; }
+  .prop-bullets li { font-size: 12px; color: #666; padding: 1px 0; }
+  .prop-bullets li::before { content: "·  "; color: #2563eb; }
+  .prop-divider { border: none; border-top: 1px solid #e8e8e8; margin: 10px 0; }
+  .prop-footer { font-size: 11px; color: #bbb; text-align: right; margin-top: 4px; }
+
+  /* Notes */
+  .notes { margin-top: 24px; background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .notes h2 { font-size: 14px; color: #111; margin: 0 0 12px; }
+  .notes ul { margin: 0; padding: 0 0 0 16px; }
+  .notes li { font-size: 13px; color: #555; margin-bottom: 6px; line-height: 1.5; }
+  .notes li span { color: #ea580c; font-weight: 600; }
+  .notes li .good { color: #16a34a; font-weight: 600; }
+
+  /* Changes needed */
+  .changes { margin-top: 16px; background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .changes h2 { font-size: 14px; color: #111; margin: 0 0 12px; }
+  .change-item { display: flex; gap: 12px; margin-bottom: 10px; font-size: 13px; color: #555; }
+  .change-who { background: #eff6ff; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: #2563eb; white-space: nowrap; height: fit-content; border: 1px solid #bfdbfe; }
+  .change-what { line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h1>YouTube Digest — Format Proposal</h1>
+<p class="subtitle">Current vs proposed Telegram rendering · 17 May 2026</p>
+
+<div class="comparison">
+
+  <!-- CURRENT -->
+  <div class="panel current">
+    <div class="panel-label">Current (broken)</div>
+    <div class="phone">
+      <div class="bubble">
+        <div class="cur-header">YouTube Digest — 17 May 2026</div>
+        <div class="cur-ch"><b>AI Engineer</b></div>
+
+        <div class="cur-entry">
+          <div class="cur-title">• <a href="#">Beyond Code Coverage: Functionality Testing with Playwright — Marlene Mhangami, Microsoft</a> · 19:45 · <i>1d ago</i></div>
+          <div class="cur-tldr">
+            <span class="asterisk">**</span>TL;DR:<span class="asterisk">**</span><br>
+            This presentation discusses how AI can improve developer productivity and the importance of maintaining a clean codebase to maximize those gains. The speaker advocates for using test-driven development (TDD) with tools like Playwright to ensure functionality and code quality, particularly when utilizing AI for code generation.
+          </div>
+        </div>
+
+        <div class="cur-entry">
+          <div class="cur-title">• <a href="#">How to Leverage Domain Expertise — Chris Lovejoy, Notius Labs</a> · 24:45 · <i>1d ago</i></div>
+          <div class="cur-tldr">
+            <span class="asterisk">**</span>TL;DR:<span class="asterisk">**</span><br>
+            Building successful vertical AI products requires a domain-native AI organization that leverages domain expertise effectively. There are three models for incorporating domain expertise: oracle, evaluator, and architect, each with different requirements and applicable at different stages of a product's development.
+          </div>
+        </div>
+
+        <div class="cur-entry">
+          <div class="cur-title">• <a href="#">Connecting the Dots with Context Graphs — Stephen Chin, Neo4j</a> · 17:39 · <i>1d ago</i></div>
+          <div class="cur-tldr">
+            <span class="asterisk">**</span>TL;DR:<span class="asterisk">**</span> The speaker advocates for using context graphs to escape the "AI matrix"...
+          </div>
+        </div>
+
+        <div style="color:#888;font-size:11px;text-align:right;margin-top:6px;">+ 11 more videos in next message</div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:#e87070;">
+      ✗ Markdown asterisks render as literal text<br>
+      ✗ TL;DR is 2–3 full sentences — too long<br>
+      ✗ No visual separation between videos<br>
+      ✗ Title includes speaker/company — very long<br>
+      ✗ Blockquote not used for TL;DR<br>
+      ✗ 14 videos across 2 msgs — no continuity signal
+    </div>
+  </div>
+
+  <!-- PROPOSED -->
+  <div class="panel proposed">
+    <div class="panel-label">Proposed</div>
+    <div class="phone">
+      <!-- Message 1 -->
+      <div class="bubble">
+        <div class="prop-header">AI Engineer</div>
+        <div class="prop-date" style="color:#aaa;">17 May 2026 · 14 videos</div>
+
+        <div class="prop-entry">
+          <div class="prop-title"><a href="#">BEYOND CODE COVERAGE: FUNCTIONALITY TESTING WITH PLAYWRIGHT</a></div>
+          <div class="prop-meta">Marlene Mhangami, Microsoft · 19:45 · 1d ago</div>
+          <div class="prop-tldr">AI boosts dev productivity only in clean codebases — TDD with Playwright keeps it clean, especially when AI is writing the code.</div>
+          <ul class="prop-bullets">
+            <li>AI commits growing fast; entropy grows with them without TDD</li>
+            <li>Playwright Agents (planner/generator/healer) automate test creation</li>
+            <li>Commit before letting AI fix tests — safety rule</li>
+          </ul>
+        </div>
+
+        <hr class="prop-divider">
+
+        <div class="prop-entry">
+          <div class="prop-title"><a href="#">HOW TO LEVERAGE DOMAIN EXPERTISE</a></div>
+          <div class="prop-meta">Chris Lovejoy, Notius Labs · 24:45 · 1d ago</div>
+          <div class="prop-tldr">Winning vertical AI is organisational, not model-driven — hire a principal domain expert early and give them real ownership.</div>
+          <ul class="prop-bullets">
+            <li>Three models: Oracle → Evaluator → Architect (progression)</li>
+            <li>Hire for breadth: domain knowledge + data intuition + LLM experience</li>
+            <li>One accountable person, not a committee</li>
+          </ul>
+        </div>
+
+        <hr class="prop-divider">
+
+        <div class="prop-entry">
+          <div class="prop-title"><a href="#">CONNECTING THE DOTS WITH CONTEXT GRAPHS</a></div>
+          <div class="prop-meta">Stephen Chin, Neo4j · 17:39 · 1d ago</div>
+          <div class="prop-tldr">Context graphs = knowledge graphs + LLMs. Gives agents grounded, connected memory instead of isolated retrieval.</div>
+          <ul class="prop-bullets">
+            <li>Gartner + Foundation Capital both flagging this as key tech</li>
+            <li>Structured agent memory: short-term, long-term, reasoning layers</li>
+            <li>GraphAcademy + neo4j-agent-memory open source to get started</li>
+          </ul>
+        </div>
+
+        <div class="prop-footer">1 of 2 · 3/14 shown</div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:#4ade80;">
+      ✓ No markdown — clean Telegram HTML<br>
+      ✓ TL;DR is one punchy sentence<br>
+      ✓ 3 tight bullets max per video<br>
+      ✓ Speaker/company on its own line (meta)<br>
+      ✓ HR divider between entries<br>
+      ✓ Page indicator (1 of 2 · 3/14 shown)
+    </div>
+  </div>
+
+</div>
+
+<!-- Notes -->
+<div class="notes">
+  <h2>What needs to change</h2>
+  <ul>
+    <li><span>summarise.py prompt</span> — Change output format: TL;DR becomes one sentence max. Bullets capped at 3, each ≤12 words. No markdown — plain text only. Speaker name on separate line.</li>
+    <li><span>deliver.py render_video()</span> — Strip any remaining markdown (<code>**</code>, <code>*</code>, <code>- </code>) before inserting into HTML. Build bullet list as <code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code> from structured output. Add <code>&lt;hr&gt;</code> divider between entries.</li>
+    <li><span>deliver.py build_messages()</span> — Add page indicator footer. Title should be talk title only (strip " — Speaker, Company" suffix).</li>
+    <li><span>summarise.py output structure</span> — Consider switching to structured JSON output from Gemini (title, speaker, tldr, bullets[]) so deliver.py doesn't parse free text. Cleaner separation of concerns. <em>(Decision needed: Martin to confirm if structured output preferred.)</em></li>
+  </ul>
+</div>
+
+<div class="changes">
+  <h2>Open decisions before implementing</h2>
+  <div class="change-item">
+    <div class="change-who">Martin</div>
+    <div class="change-what">Structured JSON output from Gemini (title/speaker/tldr/bullets as fields) vs free-text parsing? JSON is cleaner but requires prompt change and parser in deliver.py.</div>
+  </div>
+  <div class="change-item">
+    <div class="change-who">Martin</div>
+    <div class="change-what">How many bullets per video? Mockup shows 3 — right for a digest?</div>
+  </div>
+  <div class="change-item">
+    <div class="change-who">Martin</div>
+    <div class="change-what">Videos per message? Mockup splits at ~3/msg to stay well under 4096. Or split by char count only?</div>
+  </div>
+  <div class="change-item">
+    <div class="change-who">Martin</div>
+    <div class="change-what">Include duration + relative time in meta line? Or just the title + link?</div>
+  </div>
+</div>
+
+</body>
+</html>

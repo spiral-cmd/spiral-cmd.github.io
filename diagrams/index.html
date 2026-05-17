@@ -9,66 +9,35 @@
         body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 2rem; display: flex; flex-direction: column; align-items: center; }
         .wrap { width: min(100% - 2rem, var(--max)); }
         h1 { font-size: 2rem; margin-bottom: 0.5rem; text-align: center; }
+        .subtitle { text-align: center; color: var(--muted); margin-bottom: 2rem; font-size: 0.9rem; }
         nav { margin-bottom: 2rem; text-align: center; }
         nav a { color: var(--text); text-decoration: none; font-weight: 500; border-bottom: 2px solid var(--accent); }
         .list { list-style: none; padding: 0; margin: 0; }
         .list li { background: white; margin-bottom: 0.75rem; border-radius: .5rem; border: 1px solid var(--line); transition: transform 0.15s ease; }
         .list li:hover { transform: translateX(4px); }
-        .list a { display: flex; align-items: center; padding: 1rem 1.25rem; text-decoration: none; color: inherit; }
+        .list a { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; text-decoration: none; color: inherit; }
         .list .num { color: var(--muted); font-size: 0.8rem; font-weight: 600; margin-right: 0.75rem; min-width: 3em; }
         .list .name { font-weight: 500; color: var(--accent); flex: 1; }
-        .status { text-align: center; color: var(--muted); padding: 2rem 0; font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <div class="wrap">
         <nav><a href="../index.html">← Back to Home</a></nav>
         <h1>System Diagrams</h1>
-        <ul class="list" id="list"><li class="status" id="status">Loading…</li></ul>
+        <ul class="list">
+            <li><a href="0011-youtube-digest-format.html"><span class="num">0011</span><span class="name">YouTube Digest — Format Proposal</span></a></li>
+            <li><a href="0010-agents-overview.html"><span class="num">0010</span><span class="name">OpenClaw Agents</span></a></li>
+            <li><a href="0009-codex-slides.html"><span class="num">0009</span><span class="name">Codex → CaseBooks</span></a></li>
+            <li><a href="0008-reliability-roadmap.html"><span class="num">0008</span><span class="name">Agent Reliability Roadmap — OpenClaw</span></a></li>
+            <li><a href="0007-email-digest-flow.html"><span class="num">0007</span><span class="name">Email Digest Workflow</span></a></li>
+            <li><a href="0006-lta-grade5-calendar.html"><span class="num">0006</span><span class="name">LTA Grade 5 Tournaments — Jun/Jul 2026</span></a></li>
+            <li><a href="0005-lta-grade5-calendar.html"><span class="num">0005</span><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span></a></li>
+            <li><a href="0004-oracle-gate.html"><span class="num">0004</span><span class="name">Oracle Gate — OpenClaw Plugin</span></a></li>
+            <li><a href="0004-polo-protocol.html"><span class="num">0004</span><span class="name">FT Scrape — Polo Productivity Protocol</span></a></li>
+            <li><a href="0003-cron-dash.html"><span class="num">0003</span><span class="name">OpenClaw Cron Dashboard</span></a></li>
+            <li><a href="0002-agent-workflow.html"><span class="num">0002</span><span class="name">OpenClaw Agent Workflow</span></a></li>
+            <li><a href="0001-cc-polo-flow.html"><span class="num">0001</span><span class="name">CC ↔ Polo Communication Flow</span></a></li>
+        </ul>
     </div>
-    <script>
-    const REPO = 'spiral-cmd/spiral-cmd.github.io';
-    const PATH = 'diagrams';
-    const API  = `https://api.github.com/repos/${REPO}/contents/${PATH}`;
-
-    function titleFromFilename(name) {
-        return name
-            .replace(/^[0-9]+-/, '')
-            .replace(/\.html$/, '')
-            .replace(/-/g, ' ')
-            .replace(/\b\w/g, c => c.toUpperCase());
-    }
-
-    async function load() {
-        const list   = document.getElementById('list');
-        const status = document.getElementById('status');
-        try {
-            const res   = await fetch(API);
-            if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-            const files = await res.json();
-
-            const diagrams = files
-                .filter(f => f.type === 'file' && f.name.endsWith('.html') && f.name !== 'index.html')
-                .sort((a, b) => {
-                    const na = parseInt(a.name.match(/^(\d+)/)?.[1] ?? '0', 10);
-                    const nb = parseInt(b.name.match(/^(\d+)/)?.[1] ?? '0', 10);
-                    return nb - na;
-                });
-
-            if (!diagrams.length) { status.textContent = 'No diagrams yet.'; return; }
-
-            list.innerHTML = diagrams.map(f => {
-                const num   = f.name.match(/^(\d+)/)?.[1] ?? '';
-                const label = titleFromFilename(f.name);
-                const numEl = num ? `<span class="num">${num}</span>` : '';
-                return `<li><a href="${f.name}">${numEl}<span class="name">${label}</span></a></li>`;
-            }).join('');
-        } catch (e) {
-            status.textContent = `Failed to load listing: ${e.message}`;
-        }
-    }
-
-    load();
-    </script>
 </body>
 </html>
