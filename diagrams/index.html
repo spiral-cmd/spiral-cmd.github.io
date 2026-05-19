@@ -18,27 +18,64 @@
         .list a { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; text-decoration: none; color: inherit; }
         .list .num { color: var(--muted); font-size: 0.8rem; font-weight: 600; margin-right: 0.75rem; min-width: 3em; }
         .list .name { font-weight: 500; color: var(--accent); flex: 1; }
+        .loading { text-align: center; color: var(--muted); font-style: italic; padding: 2rem; }
+        .error { text-align: center; color: #c00; padding: 2rem; background: #fee; border-radius: 0.5rem; }
     </style>
 </head>
 <body>
     <div class="wrap">
         <nav><a href="../index.html">← Back to Home</a></nav>
         <h1>System Diagrams</h1>
-        <ul class="list">
-            <li><a href="0012-messaging-channels.html"><span class="num">0012</span><span class="name">OpenClaw Messaging Channels</span></a></li>
-            <li><a href="0011-youtube-digest-format.html"><span class="num">0011</span><span class="name">YouTube Digest — Format Proposal</span></a></li>
-            <li><a href="0010-agents-overview.html"><span class="num">0010</span><span class="name">OpenClaw Agents</span></a></li>
-            <li><a href="0009-codex-slides.html"><span class="num">0009</span><span class="name">Codex → CaseBooks</span></a></li>
-            <li><a href="0008-reliability-roadmap.html"><span class="num">0008</span><span class="name">Agent Reliability Roadmap — OpenClaw</span></a></li>
-            <li><a href="0007-email-digest-flow.html"><span class="num">0007</span><span class="name">Email Digest Workflow</span></a></li>
-            <li><a href="0006-lta-grade5-calendar.html"><span class="num">0006</span><span class="name">LTA Grade 5 Tournaments — Jun/Jul 2026</span></a></li>
-            <li><a href="0005-lta-grade5-calendar.html"><span class="num">0005</span><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span></a></li>
-            <li><a href="0004-oracle-gate.html"><span class="num">0004</span><span class="name">Oracle Gate — OpenClaw Plugin</span></a></li>
-            <li><a href="0004-polo-protocol.html"><span class="num">0004</span><span class="name">FT Scrape — Polo Productivity Protocol</span></a></li>
-            <li><a href="0003-cron-dash.html"><span class="num">0003</span><span class="name">OpenClaw Cron Dashboard</span></a></li>
-            <li><a href="0002-agent-workflow.html"><span class="num">0002</span><span class="name">OpenClaw Agent Workflow</span></a></li>
-            <li><a href="0001-cc-polo-flow.html"><span class="num">0001</span><span class="name">CC ↔ Polo Communication Flow</span></a></li>
+        <p class="subtitle">Auto-generated list from GitHub</p>
+        <ul id="diagram-list" class="list">
+            <li class="loading">Loading diagrams...</li>
         </ul>
     </div>
+    <script>
+        const REPO = 'spiral-cmd/spiral-cmd.github.io';
+        const BRANCH = 'main';
+        const DIR = 'diagrams';
+
+        async function fetchDiagrams() {
+            const list = document.getElementById('diagram-list');
+            try {
+                const res = await fetch(
+                    `https://api.github.com/repos/${REPO}/contents/${DIR}?ref=${BRANCH}`
+                );
+                if (!res.ok) throw new Error('Failed to fetch directory');
+
+                const files = await res.json();
+                if (!Array.isArray(files)) throw new Error('Invalid response');
+
+                // Filter to only .html files, exclude index.html
+                const diagrams = files
+                    .filter(f => f.name.endsWith('.html') && f.name.toLowerCase() !== 'index.html')
+                    .sort((a, b) => a.name.localeCompare(b.name));
+
+                if (diagrams.length === 0) {
+                    list.innerHTML = '<li class="loading">No diagrams found</li>';
+                    return;
+                }
+
+                list.innerHTML = diagrams.map(f => {
+                    const match = f.name.match(/^(\d+)-(.+)\.html$/);
+                    const num = match ? match[1] : '';
+                    const rawName = match ? match[2] : f.name.replace(/\.html$/, '');
+                    const name = rawName.replace(/-/g, ' ');
+
+                    return `<li><a href="${DIR}/${f.name}">
+                        <span class="num">${num}</span>
+                        <span class="name">${name}</span>
+                    </a></li>`;
+                }).join('');
+
+            } catch (err) {
+                console.error('Failed to load diagrams:', err);
+                list.innerHTML = `<li class="error">Failed to load diagrams: ${err.message}</li>`;
+            }
+        }
+
+        fetchDiagrams();
+    </script>
 </body>
 </html>
