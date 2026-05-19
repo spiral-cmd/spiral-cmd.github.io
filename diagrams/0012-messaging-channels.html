@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Messaging Channels</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #1a1a1a;
+      --muted: #666666;
+      --accent: #2563eb;
+      --accent-light: #dbeafe;
+      --border: #e5e5e5;
+      --tag-send: #3b82f6;
+      --tag-mailbox: #10b981;
+      --tag-both: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      color: var(--text);
+      line-height: 1.5;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .slide {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 32px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .channel {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+    }
+
+    .channel-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .channel-desc {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .channel-meta {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th {
+      background: #fafafa;
+      color: var(--text);
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .channel-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .tag-send { background: var(--tag-send); }
+    .tag-mailbox { background: var(--tag-mailbox); }
+    .tag-both { background: var(--tag-both); }
+
+    .channel ul {
+      margin: 12px 0 0 20px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .note {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .note strong {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <h1>OpenClaw Messaging Channels</h1>
+
+    <div class="channel">
+      <span class="channel-meta">sessions_send</span>
+      <div class="channel-name">Direct Synchronous</div>
+      <div class="channel-desc">
+        Like a phone call — sends a message directly to another agent session. Waits for response with timeout.
+        <br><strong>Best when:</strong> Target is known to be idle and you need an immediate reply.
+      </div>
+    </div>
+
+    <div class="channel">
+      <span class="channel-meta">mailbox.sqlite</span>
+      <div class="channel-name">Persistent Inbox</div>
+      <div class="channel-desc">
+        Like voicemail — survives across sessions, works when target is offline. Has dedup_key + acked_at for tracking.
+        <br><strong>Best when:</strong> Message must persist, target may be offline, or you need an audit trail.
+      </div>
+    </div>
+
+    <div class="channel">
+      <span class="channel-meta">Sermo</span>
+      <div class="channel-name">Telegram Broadcast / Logging</div>
+      <div class="channel-desc">
+        Human-visible log and broadcast via Telegram topics. Topic 111 = log entries, Topic 10 = directed exchange.
+        <br><strong>Best when:</strong> Human needs to see the message or for permanent logging.
+      </div>
+    </div>
+
+    <h2>When Each Channel Is Used</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>Channel</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Polo → io (review request)</td>
+          <td><span class="channel-tag tag-send">sessions_send</span></td>
+          <td>Direct, immediate, io was idle</td>
+        </tr>
+        <tr>
+          <td>io → Polo (approval)</td>
+          <td><span class="channel-tag tag-send">sessions_send</span></td>
+          <td>Direct, immediate</td>
+        </tr>
+        <tr>
+          <td>CC → io (task brief)</td>
+          <td><span class="channel-tag tag-mailbox">mailbox</span></td>
+          <td>Persistence, CC may not be online when io reads</td>
+        </tr>
+        <tr>
+          <td>CC → agents (architectural decisions)</td>
+          <td><span class="channel-tag tag-mailbox">mailbox</span></td>
+          <td>Audit trail, survives session resets</td>
+        </tr>
+        <tr>
+          <td>Agent → human (log)</td>
+          <td><span class="channel-tag tag-mailbox">Sermo 111</span></td>
+          <td>Human-visible log</td>
+        </tr>
+        <tr>
+          <td>Agent → agent (cross-session, target may be busy)</td>
+          <td><span class="channel-tag tag-both">Both</span></td>
+          <td>sessions_send for immediate, mailbox for persistence</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>When Both Are Used</h2>
+
+    <div class="channel">
+      <div class="channel-desc">
+        Use <strong>sessions_send</strong> for immediate delivery + <strong>mailbox</strong> for persistent record when:
+        <ul>
+          <li>Critical messages that cannot be lost</li>
+          <li>WP completion reports (Polo writes to mailbox + sends via sessions_send)</li>
+          <li>Messages to CC that need tracking via dedup_key</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Note:</strong> sessions_send works reliably when target is idle. During <strong>sessions_yield</strong>, messages can get queued as "pending" — this is why critical messages go to both channels.
+    </div>
+  </div>
+</body>
+</html>
