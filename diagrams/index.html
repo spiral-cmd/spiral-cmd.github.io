@@ -50,7 +50,7 @@
                 // Filter to only .html files, exclude index.html
                 const diagrams = files
                     .filter(f => f.name.endsWith('.html') && f.name.toLowerCase() !== 'index.html')
-                    .sort((a, b) => a.name.localeCompare(b.name));
+                    .sort((a, b) => b.name.localeCompare(a.name));
 
                 if (diagrams.length === 0) {
                     list.innerHTML = '<li class="loading">No diagrams found</li>';
