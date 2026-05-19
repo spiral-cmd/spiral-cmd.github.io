@@ -63,7 +63,7 @@
                     const rawName = match ? match[2] : f.name.replace(/\.html$/, '');
                     const name = rawName.replace(/-/g, ' ');
 
-                    return `<li><a href="${DIR}/${f.name}">
+                    return `<li><a href="${f.name}">
                         <span class="num">${num}</span>
                         <span class="name">${name}</span>
                     </a></li>`;
