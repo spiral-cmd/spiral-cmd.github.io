@@ -285,7 +285,7 @@
 
   <!-- SLIDE 1: TITLE -->
   <div class="slide active" id="slide-1">
-    <div class="slide-num">1 / 7</div>
+    <div class="slide-num">1 / 11</div>
     <span class="source-tag tag-title">Research</span>
     <h1>Telegram History<br>for OpenClaw Agents</h1>
     <p class="subtitle">Findings from 5 research sources · May 2026</p>
@@ -317,7 +317,7 @@
 
   <!-- SLIDE 2: io / general research -->
   <div class="slide" id="slide-2">
-    <div class="slide-num">2 / 7</div>
+    <div class="slide-num">2 / 11</div>
     <span class="source-tag tag-io">Source 02 — io / General</span>
     <h2>The Baseline: What OpenClaw Actually Does</h2>
     <div class="body">
@@ -341,7 +341,7 @@
 
   <!-- SLIDE 3: DeepSeek -->
   <div class="slide" id="slide-3">
-    <div class="slide-num">3 / 7</div>
+    <div class="slide-num">3 / 11</div>
     <span class="source-tag tag-ds">Source 03 — DeepSeek</span>
     <h2>A Ready-Made Skill Already Exists</h2>
     <div class="body">
@@ -360,7 +360,7 @@
 
   <!-- SLIDE 4: Grok -->
   <div class="slide" id="slide-4">
-    <div class="slide-num">4 / 7</div>
+    <div class="slide-num">4 / 11</div>
     <span class="source-tag tag-grok">Source 04 — Grok</span>
     <h2>macOS Daemon Gotchas + Cross-Framework Consensus</h2>
     <div class="body">
@@ -380,7 +380,7 @@
 
   <!-- SLIDE 5: Essay -->
   <div class="slide" id="slide-5">
-    <div class="slide-num">5 / 7</div>
+    <div class="slide-num">5 / 11</div>
     <span class="source-tag tag-essay">Source 05 — "Beyond the Bot" Essay</span>
     <h2>Architectural Deep Dive: No Documented Examples Yet</h2>
     <div class="body">
@@ -406,7 +406,7 @@
 
   <!-- SLIDE 6: Kimi -->
   <div class="slide" id="slide-6">
-    <div class="slide-num">6 / 7</div>
+    <div class="slide-num">6 / 11</div>
     <span class="source-tag tag-kimi">Source 06 — Kimi</span>
     <h2>Bug Numbers, StringSession, and the SOTA Architecture</h2>
     <div class="body">
@@ -427,37 +427,125 @@
     </div>
   </div>
 
-  <!-- SLIDE 7: CONCLUSION -->
+  <!-- SLIDE 7: BUG #54186 DEEP DIVE -->
   <div class="slide" id="slide-7">
-    <div class="slide-num">7 / 7</div>
-    <span class="source-tag tag-concl">Synthesis</span>
-    <h2>Conclusion: What We Know, What to Do Next</h2>
+    <div class="slide-num">7 / 11</div>
+    <span class="source-tag tag-kimi">Sources 08 + 09 — Kimi Deep Research</span>
+    <h2>Bug #54186: Confirmed Unfixed, PR Never Merged</h2>
+    <div class="body">
+      <ul>
+        <li><strong>Root cause pinpointed.</strong> <code>src/commands/message.ts</code> → <code>runMessageAction()</code> called without <code>agentId</code>. In <code>message-action-runner.ts</code>, <code>resolveOutboundSessionRoute</code> is gated on <code>agentId &amp;&amp; !dryRun</code> (~line 489). With <code>agentId</code> undefined: <code>outboundRoute = null</code>, no <code>mirror</code>, <code>appendAssistantMessageToSessionTranscript</code> skipped. <span class="pill pill-red">Affects all channels</span></li>
+        <li><strong>PR #54187 passed CI, was never merged.</strong> Commit <code>6396051</code> — "fix: pass agentId in CLI message command." CI green, Greptile approved. Linked to close #54186 — but merge never happened. Issue shows as closed in some views, open in others. <span class="pill pill-amber">Contradictory status</span></li>
+        <li><strong>Not in 2026.5.7.</strong> Release based on commit <code>eeef486</code> (May 7). Zero changelog entries for #54186, #54187, <code>agentId</code> CLI fix, or <code>appendAssistantMessageToSessionTranscript</code> across all releases through 2026.5.20.</li>
+        <li><strong>#56593 (message inject) — closed without fix.</strong> Issue stated "no effective workaround." Direct JSONL appends carry corruption risk while gateway is running.</li>
+        <li><strong>#54259 (multi-agent transcript) — closed "not planned."</strong> Explicitly rejected. Also wouldn't fix script-send invisibility — different gap (agent-to-agent, not script-to-agent).</li>
+      </ul>
+      <div class="callout callout-red">
+        <strong>Verdict:</strong> Bug present, all upstream escape routes closed. No fix in any stable release. Don't wait passively — but the fix is a one-file formatting change away from merge.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: FOLLOW-UP RESEARCH -->
+  <div class="slide" id="slide-8">
+    <div class="slide-num">8 / 11</div>
+    <span class="source-tag" style="background:#f0eafd;color:#5020a0;">Sources 12 + 13 — Follow-up</span>
+    <h2>PR Stalled on Formatting · Skill Real · --deliver Broken</h2>
+    <div class="body">
+      <ul>
+        <li><strong>Why PR #54187 wasn't merged.</strong> ChatGPT: formatting check failed — author needs to run <code>pnpm format</code> on <code>src/commands/message.ts</code> and push. Greptile: safe to merge once formatted. Kimi: status contradictory, possibly merged and reverted. <span class="pill pill-amber">One-line fix, stalled on housekeeping</span></li>
+        <li><strong><code>telegram-history</code> skill is real.</strong> ClawHub confirmed: rhlsthrm v1.1.0, Feb 2026, 669 downloads, 6 installs. Install: <code>clawhub install telegram-history</code>. Uses Telethon/MTProto. <span class="pill pill-amber">Not a turnkey fix</span> — reads history but doesn't inject into agent session JSONL. Integration work still required. Low install count = limited production vetting.</li>
+        <li><strong><code>openclaw agent --deliver</code> is broken.</strong> Bug #57284 — silently drops messages, exit 0. Flag is documented; in practice the LLM processes the notification text as a user message, often returns <code>NO_REPLY</code>, nothing delivered. <span class="pill pill-red">Do not use in cron/scripts</span></li>
+      </ul>
+      <table style="margin-top:16px;">
+        <thead><tr><th>Path</th><th>Status</th><th>Usable now?</th></tr></thead>
+        <tbody>
+          <tr><td><code>message send</code></td><td>Bug #54186 — no JSONL write</td><td>⚠️ Delivers, invisible to agent</td></tr>
+          <tr><td><code>agent --deliver</code></td><td>Bug #57284 — silent drop</td><td>❌ No</td></tr>
+          <tr><td>PR #54187</td><td>Formatting stall, not merged</td><td>❌ Not in stable</td></tr>
+          <tr><td><code>telegram-history</code> skill</td><td>Real, needs wiring</td><td>⚠️ Partial</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: NOTION + EMAIL -->
+  <div class="slide" id="slide-9">
+    <div class="slide-num">9 / 11</div>
+    <span class="source-tag" style="background:#eafdf0;color:#1a7a40;">Sources 15 + 16 — Notion + Email</span>
+    <h2>Two Low-Effort Paths That Actually Work</h2>
+    <div class="body">
+      <ul>
+        <li><strong>Email channel also broken (#54186).</strong> Bug is at CLI layer, pre-channel. <code>openclaw message send --channel email</code> skips JSONL exactly like Telegram. No channel escape.</li>
+        <li><strong>Inbound email to agent = zero-code workaround.</strong> Outbound <code>message send</code> uses broken CLI path. Inbound email hits the Gateway inbound pipeline — always writes to session JSONL. Route cron notifications to the agent's email address instead of using <code>message send</code>.</li>
+        <li><strong>Agent email via OpenMail skill.</strong> <code>clawhub install openmail</code>. Provisions <code>&lt;agent&gt;@&lt;workspace&gt;.openmail.sh</code>. Caveats: SMTP latency (seconds–minutes); agent may auto-reply (token cost per notification); existing Gmail may be send-only — verify inbound is configured.</li>
+        <li><strong>Notion as structured context store.</strong> ClawHub Notion skill (13.9K downloads) provides native <code>notion-query-database</code>, <code>notion-create-page</code> tools — no shelling out. Cron scripts write rows; agents query by date/topic on demand. Database beats page-append for structured filtering.</li>
+        <li><strong>Notion gap:</strong> entries are not in session JSONL — agent must be explicitly asked. Not automatic context injection.</li>
+      </ul>
+      <div class="arch" style="margin-top:16px;">
+        <div class="arch-box">Cron script<small>sends email to</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box" style="background:#eafdf0;border-color:#aaddbb;">Agent inbox<small>OpenMail → Gateway</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">Session JSONL<small>queryable history</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: UPDATED CONCLUSION -->
+  <div class="slide" id="slide-10">
+    <div class="slide-num">10 / 11</div>
+    <span class="source-tag tag-concl">Updated Conclusion</span>
+    <h2>What We Know · Revised Plan</h2>
     <div class="body">
       <div class="two-col">
         <div class="col-card">
-          <h3>What's confirmed</h3>
+          <h3>Confirmed closed</h3>
           <ul>
-            <li>Gap is <strong>architectural</strong>, not config — Bug #54186</li>
-            <li>Hooks are broken and unreliable</li>
-            <li>Bot API = send-only, full stop</li>
-            <li>No native OC solution exists today</li>
-            <li>No documented OC + Telethon examples</li>
+            <li>Bug #54186 — unfixed in 2026.5.7</li>
+            <li>#56593 (inject) — closed without fix</li>
+            <li>#54259 (multi-agent) — rejected "not planned"</li>
+            <li><code>agent --deliver</code> — broken (#57284)</li>
+            <li>All channels affected equally</li>
           </ul>
         </div>
         <div class="col-card">
-          <h3>Three live options</h3>
+          <h3>Confirmed open</h3>
           <ul>
-            <li><strong>Sidecar JSONL</strong> — quick, low effort, corruption risk, no retro access</li>
-            <li><strong>telegram-history skill</strong> — fastest to capability, needs credentials + StringSession</li>
-            <li><strong>MTProto companion service</strong> — SOTA, complete, most work, most robust</li>
+            <li>PR #54187 — one formatting fix from merge</li>
+            <li><code>telegram-history</code> skill — real, needs wiring</li>
+            <li>Inbound email — zero-code workaround</li>
+            <li>Notion — structured on-demand context</li>
+            <li>Telethon companion — deferred</li>
           </ul>
         </div>
       </div>
-      <div class="callout callout-blue" style="margin-top:16px;">
-        <strong>Recommended path:</strong> Install <code>telegram-history</code> skill as the fastest unlock for on-demand queries. Pair with <code>StringSession</code> from the start. For persistent capture of all script-posted messages, design a lightweight Telethon listener writing to a shared SQLite store — Polo queries it via a custom OC tool. Watch upstream: issues <strong>#54186</strong>, <strong>#56593</strong>, and <strong>#54259</strong> (PR ready).
+      <div class="callout callout-green" style="margin-top:16px;">
+        <strong>Immediate (zero code):</strong> Route cron notifications to agent email inbox via OpenMail. Bypasses #54186 entirely using inbound pipeline.
+      </div>
+      <div class="callout callout-blue" style="margin-top:10px;">
+        <strong>Short term (minimal code):</strong> Set up Notion log database. Cron scripts append rows; agents query on demand via Notion skill.
       </div>
       <div class="callout callout-amber" style="margin-top:10px;">
-        <strong>Biggest risk:</strong> macOS daemon stability + 2FA re-auth on headless. Validate session persistence over 72h before treating any persistent listener as reliable.
+        <strong>Watch:</strong> PR #54187 — stalled on <code>pnpm format</code>, not on maintainer objection. When it merges, <code>message send</code> fixes itself across all channels.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: NEXT STEPS -->
+  <div class="slide" id="slide-11">
+    <div class="slide-num">11 / 11</div>
+    <span class="source-tag tag-title">Plan</span>
+    <h2>Next Steps</h2>
+    <div class="body">
+      <ul>
+        <li><strong>Step 1 — OpenMail setup.</strong> Install <code>clawhub install openmail</code>, provision agent inbox, update cron scripts to email agent address instead of <code>openclaw message send --channel telegram</code>. Verify inbound arrives in session JSONL.</li>
+        <li><strong>Step 2 — Notion log database.</strong> Create a structured database (Timestamp, Source, Channel, Body, Topic). Update cron scripts to append a row on each run. Install ClawHub Notion skill so agents can query it natively.</li>
+        <li><strong>Step 3 — Monitor PR #54187.</strong> Fix is cosmetic (formatting). When merged and released, revert the email routing workaround and use native <code>message send</code> with JSONL writes restored.</li>
+        <li><strong>Step 4 — Telethon companion (deferred).</strong> Revisit if PR #54187 stalls indefinitely or if retroactive history retrieval becomes a hard requirement. <code>telegram-history</code> skill is the fastest on-ramp when needed.</li>
+      </ul>
+      <div class="callout callout-blue" style="margin-top:20px;">
+        <strong>Design principle:</strong> Use the inbound pipeline (email) for agent-visible notifications now. Use Notion for structured queryable context. Keep the build small. Let the upstream fix land before investing in Telethon.
       </div>
     </div>
   </div>
@@ -472,7 +560,7 @@
 </div>
 
 <script>
-  const total = 7;
+  const total = 11;
   let current = 1;
 
   const progress = document.getElementById('progress');
