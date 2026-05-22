@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram History for OpenClaw Agents — Research Findings</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .deck {
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .slide {
+    display: none;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    padding: 48px 56px 40px;
+    min-height: 520px;
+    position: relative;
+  }
+  .slide.active { display: flex; flex-direction: column; }
+
+  /* slide counter badge */
+  .slide-num {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    font-size: 12px;
+    color: #aaa;
+    letter-spacing: 0.5px;
+  }
+
+  /* source badge */
+  .source-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .tag-io      { background: #e8f4fd; color: #1a6fa8; }
+  .tag-ds      { background: #eaf6ea; color: #2a7a2a; }
+  .tag-grok    { background: #fdf3e8; color: #a86020; }
+  .tag-essay   { background: #f3eafd; color: #6020a8; }
+  .tag-kimi    { background: #fdeaea; color: #a82020; }
+  .tag-concl   { background: #e8eafd; color: #2030a8; }
+  .tag-title   { background: #1a1a2e; color: #fff; }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 32px;
+  }
+
+  .body { flex: 1; }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  ul li {
+    padding: 7px 0 7px 20px;
+    font-size: 14.5px;
+    color: #333;
+    line-height: 1.55;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+  }
+  ul li:last-child { border-bottom: none; }
+  ul li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #aaa;
+    font-size: 12px;
+    top: 9px;
+  }
+  ul li strong { color: #1a1a2e; }
+  ul li .pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .pill-red    { background: #fdeaea; color: #a82020; }
+  .pill-green  { background: #eaf6ea; color: #2a7a2a; }
+  .pill-amber  { background: #fdf3e8; color: #a86020; }
+  .pill-blue   { background: #e8f4fd; color: #1a6fa8; }
+
+  /* callout box */
+  .callout {
+    margin-top: 20px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .callout-green  { background: #eaf6ea; border-left: 4px solid #2a7a2a; color: #2a7a2a; }
+  .callout-amber  { background: #fdf3e8; border-left: 4px solid #a86020; color: #7a4010; }
+  .callout-blue   { background: #e8f4fd; border-left: 4px solid #1a6fa8; color: #1a4a70; }
+  .callout-red    { background: #fdeaea; border-left: 4px solid #a82020; color: #7a1010; }
+  .callout strong { font-weight: 700; }
+
+  /* comparison table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+  th {
+    background: #f5f6fa;
+    text-align: left;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #e0e0e0;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+
+  /* title slide extras */
+  .title-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+  }
+  .meta-item {
+    background: #f5f6fa;
+    border-radius: 8px;
+    padding: 12px 20px;
+    text-align: center;
+    flex: 1;
+  }
+  .meta-item .val {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .meta-item .lbl {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* arch diagram */
+  .arch {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  .arch-box {
+    background: #f5f6fa;
+    border: 1px solid #dde;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #1a1a2e;
+    text-align: center;
+    min-width: 110px;
+  }
+  .arch-box small {
+    display: block;
+    font-weight: 400;
+    color: #777;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .arch-arrow {
+    font-size: 20px;
+    color: #aaa;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  /* navigation */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .nav button {
+    background: #fff;
+    border: 1px solid #dde;
+    border-radius: 8px;
+    padding: 9px 24px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+    transition: background 0.15s;
+  }
+  .nav button:hover { background: #f0f2f5; }
+  .nav button:disabled { opacity: 0.35; cursor: default; }
+  .nav .progress {
+    display: flex;
+    gap: 6px;
+  }
+  .nav .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #dde;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .nav .dot.active { background: #1a1a2e; }
+
+  /* conclusion layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .col-card {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .col-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .col-card ul li {
+    font-size: 13px;
+    padding: 4px 0 4px 18px;
+    border-bottom: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-num">1 / 7</div>
+    <span class="source-tag tag-title">Research</span>
+    <h1>Telegram History<br>for OpenClaw Agents</h1>
+    <p class="subtitle">Findings from 5 research sources · May 2026</p>
+    <div class="body">
+      <p style="font-size:14.5px; color:#555; line-height:1.6; max-width:620px;">
+        Can agents read Telegram group topic history — including messages posted by scripts and cron jobs
+        — not just messages received during their own active session? This deck summarises what the research found.
+      </p>
+      <div class="title-meta">
+        <div class="meta-item">
+          <div class="val">5</div>
+          <div class="lbl">Research Sources</div>
+        </div>
+        <div class="meta-item">
+          <div class="val">0</div>
+          <div class="lbl">Native OC Solutions</div>
+        </div>
+        <div class="meta-item">
+          <div class="val">3</div>
+          <div class="lbl">Viable Approaches</div>
+        </div>
+        <div class="meta-item">
+          <div class="val">1</div>
+          <div class="lbl">SOTA Pattern</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: io / general research -->
+  <div class="slide" id="slide-2">
+    <div class="slide-num">2 / 7</div>
+    <span class="source-tag tag-io">Source 02 — io / General</span>
+    <h2>The Baseline: What OpenClaw Actually Does</h2>
+    <div class="body">
+      <ul>
+        <li><strong>No native read support.</strong> GitHub issue #12756 documents it explicitly: <code>openclaw message read</code> returns "Action read is not supported for provider telegram."</li>
+        <li><strong>Bot API ceiling.</strong> Even if a read action existed, the Bot API cannot return messages the bot itself sent — by design, to prevent loops. Gateway uptime only; no retroactive retrieval.</li>
+        <li><strong>Sidecar JSONL = accepted community pattern.</strong> Middleware captures outbound messages into a local JSONL/SQLite at send time. Agents query the local DB — not the Telegram API — for context.</li>
+        <li><strong>MTProto / Telethon = the advanced alternative.</strong> Agent runs as a "User" account rather than a "Bot." Full chat history, including self-sent messages. Higher complexity, risk of account flagging if too aggressive.</li>
+        <li><strong>Local Bot API server doesn't help.</strong> Removes file size limits and rate constraints but does <em>not</em> bypass the bot self-message visibility limitation.</li>
+      </ul>
+      <table>
+        <thead><tr><th>Method</th><th>Feasibility</th><th>Effort</th><th>Limitation</th></tr></thead>
+        <tbody>
+          <tr><td>JSONL / SQLite sidecar</td><td>✓ Standard</td><td>Low</td><td>Requires custom sync logic; doesn't help retroactively</td></tr>
+          <tr><td>MTProto / Telethon</td><td>✓ Advanced</td><td>Medium</td><td>Account ban risk; more complex auth</td></tr>
+          <tr><td>Bot API (native)</td><td>✗ Not supported</td><td>N/A</td><td>Cannot read own/automated messages</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: DeepSeek -->
+  <div class="slide" id="slide-3">
+    <div class="slide-num">3 / 7</div>
+    <span class="source-tag tag-ds">Source 03 — DeepSeek</span>
+    <h2>A Ready-Made Skill Already Exists</h2>
+    <div class="body">
+      <ul>
+        <li><strong>message:sent hook is broken.</strong> Confirmed — it never fires for direct agent responses. Cannot be used for outbound logging. A <code>message:sending</code> pre-send hook is proposed but not yet implemented.</li>
+        <li><strong><code>telegram-history</code> skill by rhlsthrm (v1.1.0, Feb 2026)</strong> <span class="pill pill-green">Key Finding</span> — ClawHub-installable skill using Telethon/MTProto. Fetches full chat history including old messages, group topics, and forum threads invisible to bots.</li>
+        <li><strong>Install:</strong> <code>npx clawhub@latest install telegram-history</code>. Requires <code>api_id</code>/<code>api_hash</code> from my.telegram.org. One-time 2FA login → stores local <code>.session</code> file. Supports: <code>chat_id</code>, <code>topic_id</code>, <code>limit</code>, <code>offset-id</code>, JSON output.</li>
+        <li><strong>Session gotchas.</strong> Unclean exit can corrupt <code>.session</code> file. Concurrent process access fails. macOS cron has limited env — no keychain, different PATH. Always use absolute paths, activate venv explicitly.</li>
+        <li><strong>tg-cli skill</strong> also exists — stores session data and history locally, less documented.</li>
+      </ul>
+      <div class="callout callout-green">
+        <strong>DeepSeek bottom line:</strong> The most mature, OpenClaw-integrated path is the <code>telegram-history</code> skill. It's purpose-built for this exact problem, avoids reinventing the wheel, and handles topic IDs, pagination, and 2FA.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Grok -->
+  <div class="slide" id="slide-4">
+    <div class="slide-num">4 / 7</div>
+    <span class="source-tag tag-grok">Source 04 — Grok</span>
+    <h2>macOS Daemon Gotchas + Cross-Framework Consensus</h2>
+    <div class="body">
+      <ul>
+        <li><strong>Confirms same architectural gap.</strong> Outbound CLI sends frequently miss <code>agentId</code> — <code>mirror</code> object never constructed, JSONL write skipped. Not incidental, systemic.</li>
+        <li><strong>JSONL sidecar confirmed community default</strong> — manual or hook-based appends to session transcripts. Per-topic memory subdirs common in multi-topic setups.</li>
+        <li><strong><code>telegram-history</code> skill confirmed</strong> — <code>openclaw skills install rhlsthrm/telegram-history</code> is the quickest path to full topic history.</li>
+        <li><strong>macOS extra gotcha:</strong> Power Nap / sleep disrupts long-polling connections. A cron job is the wrong execution model for a persistent MTProto listener. <span class="pill pill-amber">Use launchd with KeepAlive</span> so the process restarts automatically on crash or wake.</li>
+        <li><strong>Other frameworks (AutoGen, CrewAI):</strong> Same gap. CrewAI + Composio uses Bot API <code>getUpdates</code> polling — same visibility limits. No major framework has a native solution.</li>
+        <li><strong>General pattern across all frameworks:</strong> External logger (Telethon userbot / webhook archive / bridge DB) + pre-turn context injection.</li>
+      </ul>
+      <div class="callout callout-amber">
+        <strong>Grok summary:</strong> Ranked approaches — (1) <code>telegram-history</code> skill, (2) JSONL sidecar + hooks, (3) userbot channel plugin, (4) companion Telethon service. No single config flag fixes the gap; the ecosystem has mature workarounds.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Essay -->
+  <div class="slide" id="slide-5">
+    <div class="slide-num">5 / 7</div>
+    <span class="source-tag tag-essay">Source 05 — "Beyond the Bot" Essay</span>
+    <h2>Architectural Deep Dive: No Documented Examples Yet</h2>
+    <div class="body">
+      <ul>
+        <li><strong>No documented Telethon + OpenClaw examples exist.</strong> A comprehensive search found no end-to-end case study or open-source project showing this combination. The space is nascent — pioneering territory.</li>
+        <li><strong>MTProto reader as persistent companion service</strong> (not a script) is the most powerful pattern. Maintains real-time connection; exposes a REST or gRPC API the agent queries for context.</li>
+        <li><strong>Forwarding bot pattern</strong> — admin bot copies every message to a private archive channel the agent can read. Easy setup, but brittle: latency, failure risk, needs admin rights.</li>
+        <li><strong>Biggest single risk: macOS daemon session + 2FA.</strong> A daemonized process that gets prompted for a 2FA code has no way to respond. Without an automated re-auth strategy, any headless solution will eventually fail.</li>
+      </ul>
+      <table>
+        <thead><tr><th>Approach</th><th>OC Integration</th><th>Reliability</th><th>Overhead</th></tr></thead>
+        <tbody>
+          <tr><td>Sidecar JSONL</td><td>High</td><td>Logger-dependent</td><td>Low</td></tr>
+          <tr><td>MTProto Reader Service</td><td>Medium</td><td>High (persistent conn)</td><td>Medium</td></tr>
+          <tr><td>Forwarding Bot</td><td>Low</td><td>Medium (fragile)</td><td>Low</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout-blue">
+        <strong>Essay phased recommendation:</strong> (1) Prototype Telethon logger — test unattended stability. (2) Solve session management + 2FA automation before productionising. (3) Design OC integration hook/skill once stability is proven.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Kimi -->
+  <div class="slide" id="slide-6">
+    <div class="slide-num">6 / 7</div>
+    <span class="source-tag tag-kimi">Source 06 — Kimi</span>
+    <h2>Bug Numbers, StringSession, and the SOTA Architecture</h2>
+    <div class="body">
+      <ul>
+        <li><strong>Bug #54186</strong> <span class="pill pill-red">Confirmed</span> — <code>openclaw message send</code> CLI delivers to Telegram but <em>never</em> writes to session JSONL. Root cause: CLI omits <code>agentId</code>/<code>sessionKey</code>, so <code>appendAssistantMessageToSessionTranscript</code> is skipped. Affects all channels. Fix proposed 2026-03-24, status unconfirmed.</li>
+        <li><strong>Feature #56593</strong> — Proposed <code>openclaw message inject</code> (appends to JSONL <em>and</em> sends). Not yet implemented. Direct JSONL appends risk corruption while gateway is running.</li>
+        <li><strong>Feature #54259</strong> <span class="pill pill-amber">PR Ready</span> — "Multi-agent group transcript" with working PR. Auto-logs agent responses to shared transcript; designed for exactly this Bot API limitation. Watch this.</li>
+        <li><strong>Use <code>StringSession</code> for cron/daemon</strong> <span class="pill pill-blue">Critical</span> — not default <code>SQLiteSession</code>. SQLiteSession files bind to filesystem and break across container/cron contexts. StringSession stores auth as portable base64 → store in env var or keychain.</li>
+        <li><strong>Hooks remain unreliable.</strong> Issues #15389, #3945, #14210, #49765, #16596, #29203, #70928, #50126 — <code>message_sending</code>/<code>message_sent</code> hooks fragmented, partially unwired, silently fail. Do not rely on them.</li>
+      </ul>
+      <div class="arch">
+        <div class="arch-box">OC Bot<small>Bot API<br>replies/turns</small></div>
+        <div class="arch-arrow">⟷</div>
+        <div class="arch-box" style="background:#eaf6ea; border-color:#aaddaa;">Telethon Userbot<small>MTProto<br>reads full history</small></div>
+        <div class="arch-arrow">⟷</div>
+        <div class="arch-box">Shared Store<small>SQLite / JSONL<br>OC queries via tool</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: CONCLUSION -->
+  <div class="slide" id="slide-7">
+    <div class="slide-num">7 / 7</div>
+    <span class="source-tag tag-concl">Synthesis</span>
+    <h2>Conclusion: What We Know, What to Do Next</h2>
+    <div class="body">
+      <div class="two-col">
+        <div class="col-card">
+          <h3>What's confirmed</h3>
+          <ul>
+            <li>Gap is <strong>architectural</strong>, not config — Bug #54186</li>
+            <li>Hooks are broken and unreliable</li>
+            <li>Bot API = send-only, full stop</li>
+            <li>No native OC solution exists today</li>
+            <li>No documented OC + Telethon examples</li>
+          </ul>
+        </div>
+        <div class="col-card">
+          <h3>Three live options</h3>
+          <ul>
+            <li><strong>Sidecar JSONL</strong> — quick, low effort, corruption risk, no retro access</li>
+            <li><strong>telegram-history skill</strong> — fastest to capability, needs credentials + StringSession</li>
+            <li><strong>MTProto companion service</strong> — SOTA, complete, most work, most robust</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout callout-blue" style="margin-top:16px;">
+        <strong>Recommended path:</strong> Install <code>telegram-history</code> skill as the fastest unlock for on-demand queries. Pair with <code>StringSession</code> from the start. For persistent capture of all script-posted messages, design a lightweight Telethon listener writing to a shared SQLite store — Polo queries it via a custom OC tool. Watch upstream: issues <strong>#54186</strong>, <strong>#56593</strong>, and <strong>#54259</strong> (PR ready).
+      </div>
+      <div class="callout callout-amber" style="margin-top:10px;">
+        <strong>Biggest risk:</strong> macOS daemon stability + 2FA re-auth on headless. Validate session persistence over 72h before treating any persistent listener as reliable.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end deck -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button id="prev-btn" onclick="navigate(-1)" disabled>← Prev</button>
+  <div class="progress" id="progress"></div>
+  <button id="next-btn" onclick="navigate(1)">Next →</button>
+</div>
+
+<script>
+  const total = 7;
+  let current = 1;
+
+  const progress = document.getElementById('progress');
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    progress.appendChild(d);
+  }
+
+  function goTo(n) {
+    document.getElementById('slide-' + current).classList.remove('active');
+    document.querySelectorAll('.dot')[current - 1].classList.remove('active');
+    current = n;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.querySelectorAll('.dot')[current - 1].classList.add('active');
+    document.getElementById('prev-btn').disabled = current === 1;
+    document.getElementById('next-btn').disabled = current === total;
+  }
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= total) goTo(next);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  });
+</script>
+</body>
+</html>
