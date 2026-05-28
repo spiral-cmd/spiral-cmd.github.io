@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expertise-Reversal Principle</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8fafc;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .slide {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 3rem;
+    max-width: 820px;
+    width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 30px -5px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+  }
+  h1 {
+    color: #0f172a;
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+  .oneliner {
+    font-size: 1.05rem;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: #f1f5f9;
+    border-radius: 0.5rem;
+    border-left: 3px solid #8b5cf6;
+  }
+  .oneliner strong {
+    color: #6d28d9;
+  }
+  .section {
+    margin-bottom: 1.75rem;
+  }
+  .section:last-child {
+    margin-bottom: 0;
+  }
+  .section h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+  }
+  .section p {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.7;
+  }
+  .curve {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: #faf5ff;
+    border-radius: 0.75rem;
+    border: 1px solid #e9d5ff;
+  }
+  .curve-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+  }
+  .curve-row:last-child { margin-bottom: 0; }
+  .curve-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green { background: #22c55e; }
+  .dot-red { background: #ef4444; }
+  .dot-blue { background: #3b82f6; }
+  .curve-label { font-weight: 600; color: #0f172a; min-width: 100px; }
+  .curve-desc { color: #64748b; }
+  .curve-arrow {
+    color: #a1a1aa;
+    font-size: 0.8rem;
+    margin: 0.25rem 0 0.25rem 1.5rem;
+  }
+  .implication {
+    margin-top: 1.75rem;
+    padding: 1rem 1.25rem;
+    background: #f0f9ff;
+    border-radius: 0.5rem;
+    border: 1px solid #bae6fd;
+  }
+  .implication h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0369a1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+  .implication p {
+    font-size: 0.9rem;
+    color: #0c4a6e;
+    line-height: 1.6;
+  }
+  .test {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #f0fdf4;
+    border-radius: 0.5rem;
+    border: 1px solid #bbf7d0;
+  }
+  .test h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #166534;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+  .test p {
+    font-size: 0.9rem;
+    color: #14532d;
+    line-height: 1.6;
+  }
+  .test strong {
+    color: #16a34a;
+  }
+  @media (max-width: 600px) {
+    .slide { padding: 1.5rem; }
+    .curve-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <h1>Expertise-Reversal Principle</h1>
+
+  <div class="oneliner">
+    <strong>Instructional methods that work well for novices can become ineffective — or even harmful — for learners who have gained some expertise.</strong>
+  </div>
+
+  <div class="section">
+    <h2>How it works</h2>
+    <p>
+      When someone is new to a topic, they benefit from heavy guidance: worked examples, step-by-step explanations, direct instruction. Their cognitive load is already high just trying to understand the basics, so reducing the thinking burden helps.
+    </p>
+    <p style="margin-top:0.5rem;">
+      But as the learner gains knowledge, those same supports become a problem. The learner can now handle some of the thinking themselves — but the instruction is still doing it for them. Instead of helping, the guidance <em>prevents</em> the learner from practising the skills they need to develop.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>The U-shaped curve</h2>
+    <div class="curve">
+      <div class="curve-row">
+        <div class="curve-dot dot-green"></div>
+        <span class="curve-label">Novice zone</span>
+        <span class="curve-desc">Heavy guidance helps — cognitive load is high, worked examples reduce it</span>
+      </div>
+      <div class="curve-arrow">↓ as expertise grows ↓</div>
+      <div class="curve-row">
+        <div class="curve-dot dot-red"></div>
+        <span class="curve-label">Reversal zone</span>
+        <span class="curve-desc">Same guidance now hinders — it prevents the learner from practising independence</span>
+      </div>
+      <div class="curve-arrow">↓ as expertise grows further ↓</div>
+      <div class="curve-row">
+        <div class="curve-dot dot-blue"></div>
+        <span class="curve-label">Expert zone</span>
+        <span class="curve-desc">Minimal guidance, self-directed — the learner drives their own problem-solving</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>What this means for Isaac</h2>
+    <p>
+      Isaac is not a novice in maths. His class grade is 7 (on target). He has the underlying knowledge. But his tutoring sessions are still structured as if he were a beginner — step-by-step prompting, frequent hints, the tutor leading the problem-solving.
+    </p>
+    <p style="margin-top:0.5rem;">
+      The expertise-reversal principle says: <strong>that same tutoring approach that helped Isaac build his knowledge is now holding him back from developing independence.</strong> The guidance that was once useful has become a ceiling.
+    </p>
+  </div>
+
+  <div class="test">
+    <h3>✓ The practical test</h3>
+    <p>
+      If a student can solve a problem <strong>with</strong> prompts but not <strong>without</strong> them, expertise reversal may be at play. The fix isn't more guidance — it's <strong>less</strong>, delivered differently. This is exactly what the cold-start protocol and metacognitive prompts are designed to do.
+    </p>
+  </div>
+</div>
+</body>
+</html>
