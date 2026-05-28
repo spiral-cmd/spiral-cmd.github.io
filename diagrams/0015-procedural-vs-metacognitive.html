@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Procedural vs Metacognitive Prompts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .slide {
+    background: #1e293b;
+    border-radius: 1.5rem;
+    padding: 3rem;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+  }
+  h1 {
+    color: #f1f5f9;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+  .subtitle strong {
+    color: #38bdf8;
+  }
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  thead th {
+    padding: 1rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+  }
+  thead th:first-child {
+    background: #7f1d1d;
+    color: #fca5a5;
+  }
+  thead th:last-child {
+    background: #14532d;
+    color: #86efac;
+  }
+  tbody td {
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border-bottom: 1px solid #334155;
+    color: #e2e8f0;
+  }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  tbody td:first-child {
+    background: #1e293b;
+    color: #fca5a5;
+    font-style: italic;
+    width: 45%;
+  }
+  tbody td:last-child {
+    background: #1e293b;
+    color: #86efac;
+    width: 55%;
+  }
+  tbody tr:hover td {
+    background: #334155;
+  }
+  .label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    margin-top: 1.5rem;
+  }
+  .label-red {
+    background: #7f1d1d;
+    color: #fca5a5;
+  }
+  .label-green {
+    background: #14532d;
+    color: #86efac;
+  }
+  .rule {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #0f172a;
+    border-radius: 0.5rem;
+    border-left: 3px solid #38bdf8;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .rule strong {
+    color: #38bdf8;
+  }
+  @media (max-width: 600px) {
+    .slide { padding: 1.5rem; }
+    thead th, tbody td { padding: 0.75rem; font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <h1>Procedural vs Metacognitive Prompts</h1>
+  <p class="subtitle">
+    Procedural prompts tell the student <strong>what to do</strong> — they do the thinking.<br>
+    Metacognitive prompts ask the student <strong>how to think</strong> — they keep the thinking with the student.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>⬤ Procedural</th>
+        <th>⬤ Metacognitive</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"Try multiplying the two numbers."</td>
+        <td>"What operation might connect these values?"</td>
+      </tr>
+      <tr>
+        <td>"Draw a table."</td>
+        <td>"What could you organise on the page to help see the pattern?"</td>
+      </tr>
+      <tr>
+        <td>"Subtract 1 from both sides."</td>
+        <td>"What would you do to isolate the unknown?"</td>
+      </tr>
+      <tr>
+        <td>"The answer is 24."</td>
+        <td>"Does your answer seem reasonable? How could you check?"</td>
+      </tr>
+      <tr>
+        <td>"Use Pythagoras here."</td>
+        <td>"What do you know about right-angled triangles that might apply?"</td>
+      </tr>
+      <tr>
+        <td>"You've made a mistake in step 3."</td>
+        <td>"Which step feels least certain to you? Why?"</td>
+      </tr>
+      <tr>
+        <td>"Try a smaller number."</td>
+        <td>"If this problem had smaller numbers, would it be easier? Try that."</td>
+      </tr>
+      <tr>
+        <td>"The answer is B."</td>
+        <td>"What makes you rule out C?"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rule">
+    <strong>Rule of thumb:</strong> If a prompt can be answered with a single number or step, it's procedural. If it makes the student stop and think before answering, it's metacognitive. Procedural prompts build dependence on the helper. Metacognitive prompts build independence in the student.
+  </div>
+</div>
+</body>
+</html>
