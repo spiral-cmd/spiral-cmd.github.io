@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sainsbury's Best Wines — Susy Atkins, May 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #faf9f7;
+    color: #1a1a1a;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #e8e3dd;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 0.3rem;
+  }
+
+  .byline {
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  .byline a {
+    color: #b8860b;
+    text-decoration: none;
+  }
+
+  .byline a:hover { text-decoration: underline; }
+
+  .offer-banner {
+    background: linear-gradient(135deg, #1a472a, #2d6a4f);
+    color: #fff;
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .offer-banner strong {
+    font-size: 1.1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid;
+    display: inline-block;
+  }
+
+  .section-title.white { border-color: #f5deb3; color: #8b6914; }
+  .section-title.sparkling { border-color: #ffd700; color: #b8860b; }
+  .section-title.rose { border-color: #ffb6c1; color: #c71585; }
+  .section-title.red { border-color: #8b0000; color: #8b0000; }
+  .section-title.swerve { border-color: #dc143c; color: #dc143c; }
+
+  .wine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .wine-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    border: 1px solid #eee;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+  }
+
+  .wine-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .wine-card .name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+  }
+
+  .wine-card .region {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+  }
+
+  .wine-card .meta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .wine-card .badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: #f0eeeb;
+    color: #555;
+  }
+
+  .wine-card .badge.offer {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .wine-card .badge.nectar {
+    background: #fff3e0;
+    color: #e65100;
+  }
+
+  .wine-card .badge.price {
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+
+  .wine-card .badge.price.strikethrough {
+    background: #666;
+    text-decoration: line-through;
+  }
+
+  .wine-card .review {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f0eeeb;
+  }
+
+  .wine-card .review::before {
+    content: "“";
+    color: #b8860b;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .wine-card .review::after {
+    content: "”";
+    color: #b8860b;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .wine-card.swerve {
+    border-color: #ffcdd2;
+    background: #fff5f5;
+  }
+
+  .wine-card.swerve .name::after {
+    content: " 🚫";
+    font-size: 0.9rem;
+  }
+
+  .wine-card.swerve .review::before,
+  .wine-card.swerve .review::after {
+    color: #dc143c;
+  }
+
+  .ttd-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    background: #1a472a;
+    color: #fff;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e8e3dd;
+    font-size: 0.8rem;
+    color: #999;
+  }
+
+  .footer a { color: #b8860b; text-decoration: none; }
+
+  @media (max-width: 600px) {
+    body { padding: 1rem 0.75rem; }
+    h1 { font-size: 1.6rem; }
+    .wine-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>The best wines to buy at Sainsbury's right now</h1>
+  <p class="subtitle">Susy Atkins picks her top 14 from the spring/summer 2026 tasting</p>
+  <p class="byline">Susy Atkins · <a href="https://www.telegraph.co.uk/food-and-drink/wine/best-wines-to-buy-at-sainsburys/">The Telegraph</a> · 28 May 2026</p>
+</header>
+
+<div class="offer-banner">
+  <strong>🍷 Buy six, save 25%</strong> — on until <strong>30 May</strong>. Stack with Nectar card offers for double discount.
+</div>
+
+<!-- WHITE WINE -->
+<h2 class="section-title white">🥂 White Wine</h2>
+<div class="wine-grid">
+
+  <div class="wine-card">
+    <div class="name">Edizione 789 di Mondelli Famoso Pinot Grigio NV</div>
+    <div class="region">Italy</div>
+    <div class="meta">
+      <span class="badge price">£6.25</span>
+      <span class="badge price strikethrough">£5.50</span>
+      <span class="badge nectar">Nectar offer</span>
+      <span class="badge">10.5%</span>
+    </div>
+    <div class="review">There's more bright fruity flavour here — think pears and green apples — than in many a bland supermarket pinot grigio, and it's very keenly priced. One for casual summer parties and picnics.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Gemischter Satz 2025</div>
+    <div class="region">Weinviertel, Austria</div>
+    <div class="meta">
+      <span class="badge price">£10</span>
+      <span class="badge">12.5%</span>
+    </div>
+    <div class="review">A new, worthwhile addition to the TTD range. Gemischter Satz translates to "mixed set" — a field blend of four white grapes. A youthful blend with a merry mix of peach and citrus with a lip-smacking juicy finish.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Rheinhessen Sauvignon Blanc 2024</div>
+    <div class="region">Germany</div>
+    <div class="meta">
+      <span class="badge price">£8.50</span>
+      <span class="badge price strikethrough">£7.75</span>
+      <span class="badge nectar">Nectar offer</span>
+      <span class="badge">11%</span>
+    </div>
+    <div class="review">It's rare to come across a German sauvignon blanc. Tangy with plenty of lemon zest and a whistle-clean finish. It even retained a very light spritz. Refreshing and quite the bargain.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Discovery Marsanne Roussanne 2025</div>
+    <div class="region">Pays d'Oc, France</div>
+    <div class="meta">
+      <span class="badge price">£12</span>
+      <span class="badge price strikethrough">£10</span>
+      <span class="badge nectar">Nectar offer</span>
+    </div>
+    <div class="review">A new wine in the Discovery range featuring lesser-known grapes. A well-made blend of Rhône grapes marsanne and roussanne by the impeccable Jean-Claude Mas. Fresh orange juice aroma, gingery hint, and a little wood-spice. Demands food — grilled chicken or fresh salmon steaks.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Albariño 2024</div>
+    <div class="region">Rías Baixas, Spain</div>
+    <div class="meta">
+      <span class="badge price">£12.50</span>
+      <span class="badge">13%</span>
+    </div>
+    <div class="review">Albariño fans will enjoy this classy example from the grape's spiritual home in north-west Galicia. A whiff of lychee as well as citrus and peach, with a light saline sprinkle on the finish. A great wine for white fish and seafood.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Riverblock Sauvignon Blanc 2025</div>
+    <div class="region">Marlborough, New Zealand</div>
+    <div class="meta">
+      <span class="badge price">£11</span>
+      <span class="badge">12.5%</span>
+    </div>
+    <div class="review">Good to find a high-quality Marlborough sauvignon blanc which is neither too sweet-sour nor pungent. Brent Marris, one of the region's most renowned winemakers, has delivered this. Fresh grapefruit and passionfruit, with a little tomato vine and currant bush leaf.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name">Yalumba Y Series Viognier 2023</div>
+    <div class="region">South Australia</div>
+    <div class="meta">
+      <span class="badge price">£10.75</span>
+      <span class="badge">13%</span>
+    </div>
+    <div class="review">Consistently fine. Well-balanced with much of the grape's ripe apricot and peach but enough acidity to keep things refreshing. Not an aperitif — far better matched with roast chicken, fish in creamy sauces, or Indian kormas.</div>
+  </div>
+
+</div>
+
+<!-- SPARKLING -->
+<h2 class="section-title sparkling">✨ Sparkling Wine</h2>
+<div class="wine-grid">
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Blanc de Noirs Champagne Brut NV</div>
+    <div class="region">France</div>
+    <div class="meta">
+      <span class="badge price">£26</span>
+      <span class="badge price strikethrough">£23</span>
+      <span class="badge nectar">Nectar offer</span>
+      <span class="badge">12%</span>
+    </div>
+    <div class="review">Love the red berries which peek through richer layers of custard and vanilla in this rather luxurious own-label champagne. 53% pinot noir and 47% pinot meunier. Nicely structured and rounded, finishing very nearly dry. Bravo.</div>
+  </div>
+
+</div>
+
+<!-- ROSÉ -->
+<h2 class="section-title rose">🌸 Rosé Wine</h2>
+<div class="wine-grid">
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Fronton Négrette Rosé 2025</div>
+    <div class="region">France</div>
+    <div class="meta">
+      <span class="badge price">£8.75</span>
+      <span class="badge">12.5%</span>
+    </div>
+    <div class="review">How lovely to pour a rosé that's proper candy pink, not pallid, and generously fruity though dry. Raspberry and rhubarb on the scent, a mid-palate of ripe strawberry, then a little salt and white pepper at the end. Perfect for charcuterie, including spicy salami and chorizo.</div>
+  </div>
+
+</div>
+
+<!-- RED WINE -->
+<h2 class="section-title red">🍷 Red Wine</h2>
+<div class="wine-grid">
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Beaujolais Supérieur 2023</div>
+    <div class="region">France</div>
+    <div class="meta">
+      <span class="badge price">£12.50</span>
+      <span class="badge price strikethrough">£10.50</span>
+      <span class="badge nectar">Nectar offer</span>
+      <span class="badge">12.5%</span>
+    </div>
+    <div class="review">Wafting a summery aroma of ripe strawberries and red cherries, this is a juicy Beaujolais with light tannins and a blackcurrant seam. No oak ageing to get in the way. Would be banging with bangers, barbecued burgers and pork.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>Sicilian Nero d'Avola 2024</div>
+    <div class="region">Italy</div>
+    <div class="meta">
+      <span class="badge price">£8.50</span>
+      <span class="badge price strikethrough">£7.75</span>
+      <span class="badge nectar">Nectar offer</span>
+      <span class="badge">13%</span>
+    </div>
+    <div class="review">You can taste the hot Sicilian sun in the ripeness of the local grape nero d'avola. Plenty of black cherry, damson and Victoria plum jam flavours without turning too sweet. Plump and soft with rounded tannins. Delicious with lamb tagine or a rich ragu sauce.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name">Maison Fortant Reserve Syrah 2024</div>
+    <div class="region">Southern France</div>
+    <div class="meta">
+      <span class="badge price">£5.15</span>
+      <span class="badge">11.5%</span>
+    </div>
+    <div class="review">Surprising the abv is so light when the syrah grapes come from such a hot spot. But this works nonetheless and is one heck of a bargain, with brambly ripeness and a bit of tannin, a spicy twist to its tail. A decent party red.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name">Hautes Terres Côtes du Rhône NV</div>
+    <div class="region">France</div>
+    <div class="meta">
+      <span class="badge price">£5.29</span>
+      <span class="badge">12.5%</span>
+    </div>
+    <div class="review">Another great buy from southern France. A blend of grenache, syrah and carignan, unoaked and with inviting blackberry and damson flavours. Enough structure to take on grilled pork, beef and barbecued peppers.</div>
+  </div>
+
+  <div class="wine-card">
+    <div class="name"><span class="ttd-tag">TTD</span>High Altitude Malbec 2023</div>
+    <div class="region">Mendoza, Argentina</div>
+    <div class="meta">
+      <span class="badge price">£13.75</span>
+      <span class="badge">13.5%</span>
+    </div>
+    <div class="review">High altitude vineyards often produce fruit with fresher, more subtle flavours. All the ripe black cherry expected but not jammy, with lifted, clean acidity and good balance. An appealing dark chocolate seam. Grilled steak wine, of course.</div>
+  </div>
+
+</div>
+
+<!-- ONE TO SWERVE -->
+<h2 class="section-title swerve">🚫 One to Swerve</h2>
+<div class="wine-grid">
+
+  <div class="wine-card swerve">
+    <div class="name"><span class="ttd-tag">TTD</span>Prosecco Rosé Brut Millesimato 2025</div>
+    <div class="region">Italy</div>
+    <div class="meta">
+      <span class="badge price">£10</span>
+      <span class="badge">10.5%</span>
+    </div>
+    <div class="review">A pink prosecco that tastes too sweet and confected, like boiled sweets and marshmallows.</div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>Source: <a href="https://www.telegraph.co.uk/food-and-drink/wine/best-wines-to-buy-at-sainsburys/">The Telegraph — Susy Atkins</a> · 28 May 2026</p>
+  <p>TTD = Sainsbury's Taste the Difference range · Nectar offers valid 20 May – 9 June 2026</p>
+</div>
+
+</div>
+</body>
+</html>
