@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Cron Schedule — 25 Jobs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0f0f13;
+    color: #e8e8ed;
+    padding: 2rem;
+  }
+
+  .slide {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #1a1a24;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: #fff;
+  }
+
+  .subtitle {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .dot.every-15m { background: #4fc3f7; }
+  .dot.every-30m { background: #81c784; }
+  .dot.every-2h { background: #ffb74d; }
+  .dot.daily { background: #ce93d8; }
+  .dot.weekday { background: #ef5350; }
+  .dot.weekly { background: #90caf9; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead th {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    background: #252533;
+    color: #aaa;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+  }
+
+  thead th:first-child { border-radius: 8px 0 0 0; }
+  thead th:last-child { border-radius: 0 8px 0 0; }
+
+  tbody tr {
+    border-bottom: 1px solid #2a2a38;
+    transition: background 0.1s;
+  }
+
+  tbody tr:hover { background: #22223a; }
+
+  tbody td {
+    padding: 0.6rem 0.8rem;
+    vertical-align: top;
+  }
+
+  .freq-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .freq-every-15m { background: #1a3a4a; color: #4fc3f7; }
+  .freq-every-30m { background: #1a3a2a; color: #81c784; }
+  .freq-every-2h { background: #3a2a1a; color: #ffb74d; }
+  .freq-daily { background: #2a1a3a; color: #ce93d8; }
+  .freq-weekday { background: #3a1a1a; color: #ef5350; }
+  .freq-weekly { background: #1a2a3a; color: #90caf9; }
+
+  .agent-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    background: #333;
+    color: #ccc;
+  }
+
+  .agent-polo { background: #1a3a5a; color: #64b5f6; }
+  .agent-cato { background: #2a3a1a; color: #aed581; }
+  .agent-main { background: #3a2a1a; color: #ffd54f; }
+  .agent-io { background: #3a1a3a; color: #ce93d8; }
+
+  .payload {
+    font-size: 0.8rem;
+    color: #999;
+    line-height: 1.4;
+    max-width: 350px;
+  }
+
+  .delivery {
+    font-size: 0.75rem;
+    color: #777;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .delivery-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    background: #2a2a38;
+    color: #888;
+    margin-right: 0.2rem;
+  }
+
+  .delivery-tag.telegram { background: #1a3a5a; color: #64b5f6; }
+  .delivery-tag.none { background: #2a2a2a; color: #666; }
+
+  .section-header td {
+    padding: 0.8rem 0.8rem 0.3rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+    border-bottom: none;
+  }
+
+  .section-header:hover { background: transparent; }
+
+  .footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #555;
+  }
+
+  @media (max-width: 800px) {
+    body { padding: 0.5rem; }
+    .slide { padding: 1rem; }
+    table { font-size: 0.75rem; }
+    thead th, tbody td { padding: 0.4rem 0.5rem; }
+    .payload { max-width: 200px; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+
+<h1>⏰ OpenClaw Cron Schedule</h1>
+<p class="subtitle">25 jobs · 6 agents · last updated 29 May 2026</p>
+
+<div class="legend">
+  <span class="legend-item"><span class="dot every-15m"></span> Every 15m</span>
+  <span class="legend-item"><span class="dot every-30m"></span> Every 30m</span>
+  <span class="legend-item"><span class="dot every-2h"></span> Every 2h</span>
+  <span class="legend-item"><span class="dot daily"></span> Daily</span>
+  <span class="legend-item"><span class="dot weekday"></span> Weekday</span>
+  <span class="legend-item"><span class="dot weekly"></span> Weekly</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:30px">#</th>
+      <th style="width:180px">Job</th>
+      <th style="width:70px">Agent</th>
+      <th style="width:90px">Schedule</th>
+      <th>What It Does / Output</th>
+      <th style="width:140px">Delivery</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- EVERY 15 MIN -->
+    <tr class="section-header"><td colspan="6">⏱ Every 15 Minutes</td></tr>
+    <tr>
+      <td>1</td>
+      <td><strong>bible-sync</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-every-15m">*/15 * * * *</span></td>
+      <td class="payload">Syncs backlog.sqlite → backlog.md. Keeps the Bible task database in sync with the markdown view.</td>
+      <td class="delivery"><span class="delivery-tag none">none</span> — silent</td>
+    </tr>
+
+    <!-- EVERY 30 MIN -->
+    <tr class="section-header"><td colspan="6">⏱ Every 30 Minutes</td></tr>
+    <tr>
+      <td>2</td>
+      <td><strong>polo-session-compact</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-every-30m">30 min</span></td>
+      <td class="payload">Checks Polo's main session token count. If ≥120K tokens, compresses old turns into a compact state block, keeping last 20 turns intact. Prevents context saturation.</td>
+      <td class="delivery"><span class="delivery-tag none">none</span> — silent</td>
+    </tr>
+
+    <!-- EVERY 2 HOURS -->
+    <tr class="section-header"><td colspan="6">⏱ Every 2 Hours (08:00–22:00)</td></tr>
+    <tr>
+      <td>3</td>
+      <td><strong>polo-failcheck</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-every-2h">8-22/2 * * *</span></td>
+      <td class="payload">Scans all cron jobs for errors/idle status. Reports any failures to Topic 10 for Martin's visibility.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 10</td>
+    </tr>
+
+    <!-- DAILY -->
+    <tr class="section-header"><td colspan="6">🌅 Daily</td></tr>
+    <tr>
+      <td>4</td>
+      <td><strong>a2a-log-retention</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-daily">0 3 * * *</span></td>
+      <td class="payload">Archives message_log rows older than 30 days to JSON backups in bible/backups/a2a-log-archive/. Sets archived_at on processed rows.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>openrouter-usage</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-daily">30 6 * * *</span></td>
+      <td class="payload">Fetches OpenRouter daily spend data via management API. Appends to CSV. Generates a spend-by-model line graph. Posted to sermo.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>sync-youtube-channels</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">55 6 * * *</span></td>
+      <td class="payload">Syncs YouTube channel list from Google Sheet → local channels.json. Sheet columns: channel_id, name, category, active.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>youtube-digest</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">0 7 * * *</span></td>
+      <td class="payload">Full YouTube digest pipeline: discovers new videos from tracked channels, fetches transcripts, summarises via Gemini, posts digest to Telegram.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>email-digest</strong></td>
+      <td><span class="agent-badge agent-main">main</span></td>
+      <td><span class="freq-badge freq-daily">0 7 * * *</span></td>
+      <td class="payload">Scans Gmail for last 24h. Highlights personal emails, replies. Excludes newsletters/marketing. Posts priority section + actionable items.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 8</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><strong>calnow-check</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">30 7 * * *</span></td>
+      <td class="payload">Runs gog calendar events for risingsoprano@gmail.com from today → Sunday. Writes output to /tmp/calnow_output.txt for the announce job.</td>
+      <td class="delivery"><span class="delivery-tag none">none</span> — writes file</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><strong>thoughtfortheday</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">30 7 * * *</span></td>
+      <td class="payload">Posts a daily mortality/midlife reflection note. Self-sends via openclaw message send to Telegram topic 2. Also writes to Notion croncontent.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 2</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><strong>calnow-announce</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">35 7 * * *</span></td>
+      <td class="payload">Reads /tmp/calnow_output.txt, extracts event summaries (ignores IDs), formats as clean list. Announces to GTD topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 8</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td><strong>todoist recap</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">0 8 * * *</span></td>
+      <td class="payload">Lists all incomplete Todoist tasks grouped by project. Pipes recap to Notion croncontent. Posted to GTD topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 6</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td><strong>memory-review-with-io</strong></td>
+      <td><span class="agent-badge agent-io">io</span></td>
+      <td><span class="freq-badge freq-daily">0 8 * * *</span></td>
+      <td class="payload">Reviews memory architecture. Checks promotion pipeline, identifies gaps, suggests improvements. Reports to sermo.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td><strong>xdigest</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">30 8 * * *</span></td>
+      <td class="payload">X/Twitter digest — fetches tweets from tracked accounts via twikit, summarises, posts to Telegram. Takes ~60-90 min. Runs in background.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 780</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td><strong>oc-version-check</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-daily">0 9 * * *</span></td>
+      <td class="payload">Checks latest OpenClaw version on GitHub. Compares with installed version. Reports if update available.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td><strong>bible-stale-check</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-daily">0 9 * * *</span></td>
+      <td class="payload">Runs bible-task-stale.py to detect in_progress tasks that have gone stale. Posts alert to sermo if found.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td><strong>shareradar daily</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">0 21 * * *</span></td>
+      <td class="payload">Runs shareradar skill: fetches tech stock prices via Twelve Data API. Reports daily changes to stocks topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 60</td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td><strong>xdigest-agenticai</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-daily">30 21 * * *</span></td>
+      <td class="payload">X/Twitter digest for agentic AI accounts. Same pipeline as xdigest but different tracked handles. Posts to AI topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 780</td>
+    </tr>
+
+    <!-- WEEKDAY -->
+    <tr class="section-header"><td colspan="6">📆 Weekdays (Mon–Fri)</td></tr>
+    <tr>
+      <td>19</td>
+      <td><strong>sharesmc</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-weekday">0 17 * * 1-5</span></td>
+      <td class="payload">Fetches share prices from Alpha Vantage, writes to Google Sheets. Reports to stocks topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 60</td>
+    </tr>
+    <tr>
+      <td>20</td>
+      <td><strong>go4schools</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-weekday">0 17 * * 1-5</span></td>
+      <td class="payload">Checks Isaac's behaviour entries on GO 4 Schools via browser automation. Reports to Isaac topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 14</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td><strong>probate reminder</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-weekday">0 8 * * 1-5</span></td>
+      <td class="payload">Checks if any probate action needed this week. Posts reminder to stocks topic.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 60</td>
+    </tr>
+
+    <!-- WEEKLY -->
+    <tr class="section-header"><td colspan="6">📅 Weekly</td></tr>
+    <tr>
+      <td>22</td>
+      <td><strong>bot2bot-monitor</strong></td>
+      <td><span class="agent-badge agent-cato">cato</span></td>
+      <td><span class="freq-badge freq-weekly">0 7 * * 6</span></td>
+      <td class="payload">Weekly bot-to-bot communication health check. Web-searches for OpenClaw Telegram bot-to-bot updates. Reports findings.</td>
+      <td class="delivery"><span class="delivery-tag none">none</span> — silent</td>
+    </tr>
+    <tr>
+      <td>23</td>
+      <td><strong>Learnings Promote</strong></td>
+      <td><span class="agent-badge agent-main">main</span></td>
+      <td><span class="freq-badge freq-weekly">0 7 * * 1</span></td>
+      <td class="payload">Promotes high-signal unreviewed entries from learnings.db into today's memory file. Marks promoted entries as reviewed.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>24</td>
+      <td><strong>agent-meeting-monday</strong></td>
+      <td><span class="agent-badge agent-polo">polo</span></td>
+      <td><span class="freq-badge freq-weekly">0 8 * * 1</span></td>
+      <td class="payload">Agent meeting agenda prompt: reviews waysofworking/ files for updates and improvements.</td>
+      <td class="delivery"><span class="delivery-tag telegram">TG</span> topic 111</td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td><strong>Backlog Review — Wed</strong></td>
+      <td><span class="agent-badge agent-main">main</span></td>
+      <td><span class="freq-badge freq-weekly">0 9 * * 3</span></td>
+      <td class="payload">Reads backlog.md, extracts all open items from ## Open section. Sends to Martin via Telegram.</td>
+      <td class="delivery"><span class="delivery-tag none">none</span> — self-sends</td>
+    </tr>
+
+  </tbody>
+</table>
+
+<div class="footer">
+  Generated 29 May 2026 · 25 jobs across polo, cato, main, and io agents
+</div>
+
+</div>
+</body>
+</html>
