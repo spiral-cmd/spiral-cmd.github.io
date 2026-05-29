@@ -20,8 +20,8 @@
   }
   .diagram {
     position: relative;
-    width: 960px;
-    height: 680px;
+    width: 980px;
+    height: 880px;
     margin: 0 auto;
   }
   svg.arrows {
@@ -44,7 +44,6 @@
   .box strong { display: block; font-size: 13px; font-weight: 600; margin-bottom: 2px; }
   .box small { font-size: 10px; opacity: 0.7; }
 
-  /* Colour palette */
   .input   { background: #e8f4fd; border-color: #90caf9; }
   .ui      { background: #fff9e6; border-color: #ffd54f; }
   .engine  { background: #f3e5f5; border-color: #ce93d8; }
@@ -52,10 +51,11 @@
   .ws      { background: #e8f5e9; border-color: #81c784; }
   .exec    { background: #e3f2fd; border-color: #64b5f6; }
   .output  { background: #fff3e0; border-color: #ffb74d; }
+  .db      { background: #fdf6e3; border-color: #f0c040; }
+  .notify  { background: #e8f5e9; border-color: #66bb6a; }
   .retired { background: #f5f5f5; border-color: #bdbdbd; color: #999; text-decoration: line-through; }
   .legacy  { background: #fafafa; border-color: #bdbdbd; }
 
-  /* Section labels */
   .section-label {
     position: absolute;
     font-size: 10px;
@@ -65,12 +65,11 @@
     color: #999;
   }
 
-  /* Legend */
   .legend {
     display: flex;
     gap: 20px;
     margin: 28px auto 0;
-    width: 960px;
+    width: 980px;
     flex-wrap: wrap;
   }
   .legend-item {
@@ -94,15 +93,15 @@
 <div class="diagram">
 
   <!-- ── SECTION LABELS ── -->
-  <span class="section-label" style="left:0; top:0">Input</span>
+  <span class="section-label" style="left:0;   top:0">Input</span>
   <span class="section-label" style="left:270px; top:0">Classification UI</span>
   <span class="section-label" style="left:560px; top:0">Suggestion Engine</span>
-  <span class="section-label" style="left:0; top:310px">Worksheet</span>
+  <span class="section-label" style="left:0;   top:310px">Worksheet</span>
   <span class="section-label" style="left:270px; top:310px">Execution</span>
-  <span class="section-label" style="left:620px; top:310px">Output</span>
+  <span class="section-label" style="left:560px; top:310px">Output</span>
 
   <!-- ── INPUT SOURCES ── -->
-  <div class="box input" id="b-pdffin"  style="left:0;   top:36px; width:150px">
+  <div class="box input" id="b-pdffin"  style="left:0;   top:36px;  width:150px">
     <strong>pdf-in</strong>
     <small>Google Drive<br>new downloads</small>
   </div>
@@ -116,9 +115,9 @@
   </div>
 
   <!-- ── UI ── -->
-  <div class="box ui" id="b-session"    style="left:270px; top:36px; width:180px">
+  <div class="box ui" id="b-session"    style="left:270px; top:36px;  width:180px">
     <strong>tag_session.py</strong>
-    <small>persistent tkinter UI<br>scan · tag · skip</small>
+    <small>persistent UI<br>scan · tag · skip</small>
   </div>
   <div class="box ui" id="b-batch"      style="left:270px; top:140px; width:180px">
     <strong>Batch View</strong>
@@ -126,90 +125,109 @@
   </div>
   <div class="box ui" id="b-individual" style="left:270px; top:230px; width:180px">
     <strong>Individual Tag</strong>
-    <small>Tag → button<br>per-file manual</small>
+    <small>per-file manual<br>tag selection</small>
   </div>
 
   <!-- ── SUGGESTION ENGINE ── -->
-  <div class="box engine" id="b-taglearn"  style="left:570px; top:36px; width:160px">
+  <div class="box engine" id="b-taglearn"   style="left:570px; top:36px;  width:160px">
     <strong>tag_learn.py</strong>
-    <small>CLI — extract text<br>+ suggest tag</small>
+    <small>extract text (pdftotext)<br>+ call suggestion.py</small>
   </div>
   <div class="box engine" id="b-suggestion" style="left:570px; top:130px; width:160px">
     <strong>suggestion.py</strong>
-    <small>filename-first →<br>kNN → keyword</small>
+    <small>1. filename-stem keyword<br>2. kNN (≥0.85 auto)<br>3. keyword fallback</small>
   </div>
-  <div class="box engine" id="b-embedding"  style="left:570px; top:212px; width:160px">
+  <div class="box engine" id="b-embedding"  style="left:570px; top:230px; width:160px">
     <strong>embedding.py</strong>
     <small>all-MiniLM-L6-v2<br>384-dim local</small>
   </div>
-  <div class="box store"  id="b-criteria"   style="left:770px; top:130px; width:150px">
+  <div class="box store"  id="b-criteria"   style="left:760px; top:130px; width:160px">
     <strong>tag-criteria.md</strong>
-    <small>keyword rules<br>38 tags</small>
+    <small>keyword rules · 43 tags</small>
   </div>
-  <div class="box store"  id="b-db"          style="left:770px; top:212px; width:150px">
-    <strong>database.py</strong>
-    <small>kNN search<br>sqlite-vec</small>
+  <div class="box store"  id="b-db-knn"     style="left:760px; top:230px; width:160px">
+    <strong>tagging_vec</strong>
+    <small>kNN search<br>sqlite-vec · codex.db</small>
   </div>
 
   <!-- ── WORKSHEET ── -->
-  <div class="box ws" id="b-worksheet"   style="left:0; top:356px; width:200px; padding:14px">
+  <div class="box ws" id="b-worksheet"  style="left:0; top:356px; width:200px; padding:14px">
     <strong>tag-worksheet.json</strong>
     <small>path · sha256<br>suggested_tag · final_tag<br>route · approved</small>
   </div>
 
   <!-- ── EXECUTION ── -->
-  <div class="box exec" id="b-run"       style="left:270px; top:356px; width:180px">
+  <div class="box exec" id="b-run"      style="left:270px; top:356px; width:180px">
     <strong>tag-learn run</strong>
-    <small>process_worksheet.py<br>TOKENIZERS_PARALLELISM=false</small>
+    <small>process_worksheet.py<br>move → tag → embed → log</small>
   </div>
 
-  <!-- ── OUTPUT ── -->
-  <div class="box output" id="b-codex"   style="left:570px; top:356px; width:130px">
-    <strong>codex/&lt;tag&gt;/</strong>
-    <small>filed PDFs</small>
+  <!-- ── OUTPUT: FILE ── -->
+  <div class="box output" id="b-codex"  style="left:560px; top:340px; width:200px">
+    <strong>codex/&lt;tag&gt;/filename.pdf</strong>
+    <small>/Volumes/4tb-a/codex/<br>filed PDF at destination</small>
   </div>
-  <div class="box output" id="b-finder"  style="left:720px; top:356px; width:130px">
-    <strong>Finder Tags</strong>
-    <small>macOS tag -a</small>
+  <div class="box output" id="b-finder" style="left:775px; top:340px; width:145px">
+    <strong>Finder Tag</strong>
+    <small>macOS tag -a<br>tag name on file</small>
   </div>
-  <div class="box output" id="b-taggingdb" style="left:570px; top:450px; width:130px">
-    <strong>tagging.db</strong>
-    <small>SQLite log</small>
+
+  <!-- ── TEXT EXTRACTION ── -->
+  <div class="box exec"   id="b-pdftotext" style="left:560px; top:440px; width:200px">
+    <strong>pdftotext</strong>
+    <small>extract full text<br>from filed PDF</small>
   </div>
-  <div class="box output" id="b-vector"  style="left:720px; top:450px; width:130px">
-    <strong>Vector store</strong>
-    <small>embeddings for<br>future kNN</small>
+
+  <!-- ── OUTPUT: TXT FILE ON DISK ── -->
+  <div class="box output" id="b-codextext" style="left:775px; top:440px; width:145px">
+    <strong>codex-text/</strong>
+    <small>{hash[:2]}/{hash}.txt<br>/Volumes/4tb-a/<br>content-addressed</small>
+  </div>
+
+  <!-- ── NOTIFY ── -->
+  <div class="box notify" id="b-notify" style="left:775px; top:560px; width:145px">
+    <strong>Telegram</strong>
+    <small>topic 7417<br>filed + tag notif</small>
+  </div>
+
+  <!-- ── OUTPUT: DB ── -->
+  <div class="box db" id="b-codexdb"    style="left:560px; top:560px; width:200px; padding:14px">
+    <strong>codex.db</strong>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+      <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:5px 8px;font-size:11px">
+        <strong style="font-size:11px">codex_log</strong>
+        <span style="font-size:10px;opacity:0.7;display:block">sha256 · filename · suggested / final tag<br>correction · used_fallback</span>
+      </div>
+      <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:5px 8px;font-size:11px">
+        <strong style="font-size:11px">codex_docs</strong>
+        <span style="font-size:10px;opacity:0.7;display:block">txt_path pointer · file_path · tag<br>document_id (FTS5)</span>
+      </div>
+      <div style="background:#f3e5f5;border:1px solid #ce93d8;border-radius:6px;padding:5px 8px;font-size:11px">
+        <strong style="font-size:11px">tagging_vec</strong>
+        <span style="font-size:10px;opacity:0.7;display:block">384-dim embedding<br>future kNN · learning loop</span>
+      </div>
+    </div>
   </div>
 
   <!-- ── LEGACY ── -->
-  <div class="box legacy" id="b-watcher" style="left:0; top:550px; width:200px">
+  <div class="box legacy"  id="b-watcher" style="left:0;   top:780px; width:200px">
     <strong>tag_watcher.sh</strong>
-    <small>launchd · new downloads<br>direct (bypasses worksheet)</small>
+    <small>launchd · WatchPaths<br>direct (bypasses worksheet)</small>
   </div>
-  <div class="box retired" id="b-auto"   style="left:230px; top:550px; width:180px">
+  <div class="box retired" id="b-auto"    style="left:230px; top:780px; width:180px">
     <strong>tag_watcher_auto.sh</strong>
     <small>RETIRED 2026-04-18</small>
   </div>
 
-
   <!-- ── SVG ARROWS ── -->
   <svg class="arrows">
     <defs>
-      <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-        <polygon points="0 0, 8 3, 0 6" fill="#999"/>
-      </marker>
-      <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-        <polygon points="0 0, 8 3, 0 6" fill="#64b5f6"/>
-      </marker>
-      <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-        <polygon points="0 0, 8 3, 0 6" fill="#81c784"/>
-      </marker>
-      <marker id="arr-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-        <polygon points="0 0, 8 3, 0 6" fill="#ffb74d"/>
-      </marker>
-      <marker id="arr-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-        <polygon points="0 0, 8 3, 0 6" fill="#e57373"/>
-      </marker>
+      <marker id="arr"        markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#999"/></marker>
+      <marker id="arr-blue"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#64b5f6"/></marker>
+      <marker id="arr-green"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#81c784"/></marker>
+      <marker id="arr-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#ffb74d"/></marker>
+      <marker id="arr-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#ce93d8"/></marker>
+      <marker id="arr-gold"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f0c040"/></marker>
     </defs>
 
     <!-- Input → session UI -->
@@ -221,24 +239,25 @@
     <line x1="360" y1="92"  x2="360" y2="138" stroke="#ffd54f" stroke-width="1.5" marker-end="url(#arr)"/>
     <line x1="360" y1="92"  x2="360" y2="228" stroke="#ffd54f" stroke-width="1.5" marker-end="url(#arr)"/>
 
-    <!-- session/batch → tag_learn (suggestion) -->
+    <!-- session → tag_learn -->
     <line x1="450" y1="70"  x2="568" y2="62"  stroke="#ce93d8" stroke-width="1.5" marker-end="url(#arr)"/>
-    <line x1="450" y1="165" x2="568" y2="150" stroke="#ce93d8" stroke-width="1.5" marker-end="url(#arr)"/>
+    <!-- batch → suggestion -->
+    <line x1="450" y1="165" x2="568" y2="155" stroke="#ce93d8" stroke-width="1.5" marker-end="url(#arr)"/>
 
     <!-- tag_learn → suggestion -->
     <line x1="650" y1="92"  x2="650" y2="128" stroke="#ce93d8" stroke-width="1.5" marker-end="url(#arr)"/>
 
     <!-- suggestion → embedding -->
-    <line x1="650" y1="176" x2="650" y2="210" stroke="#ce93d8" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="650" y1="176" x2="650" y2="228" stroke="#ce93d8" stroke-width="1.5" marker-end="url(#arr)"/>
 
     <!-- suggestion ↔ criteria -->
-    <line x1="730" y1="155" x2="768" y2="155" stroke="#999" stroke-width="1.5" marker-end="url(#arr)"/>
+    <line x1="730" y1="155" x2="758" y2="155" stroke="#999" stroke-width="1.5" marker-end="url(#arr)"/>
 
-    <!-- embedding ↔ db -->
-    <line x1="730" y1="237" x2="768" y2="237" stroke="#999" stroke-width="1.5" marker-end="url(#arr)"/>
+    <!-- embedding ↔ db-knn -->
+    <line x1="730" y1="255" x2="758" y2="255" stroke="#999" stroke-width="1.5" marker-end="url(#arr)"/>
 
-    <!-- suggestion → back to session (result) -->
-    <path d="M568,150 Q520,100 450,110" stroke="#ce93d8" stroke-width="1.5" fill="none" marker-end="url(#arr)" stroke-dasharray="4,3"/>
+    <!-- suggestion → back to session (result, dashed) -->
+    <path d="M568,150 Q520,100 450,110" stroke="#ce93d8" stroke-width="1.5" fill="none" marker-end="url(#arr-purple)" stroke-dasharray="4,3"/>
 
     <!-- batch/individual → worksheet -->
     <line x1="360" y1="196" x2="200" y2="375" stroke="#81c784" stroke-width="2" marker-end="url(#arr-green)"/>
@@ -247,19 +266,35 @@
     <!-- worksheet → run -->
     <line x1="200" y1="390" x2="268" y2="390" stroke="#64b5f6" stroke-width="2" marker-end="url(#arr-blue)"/>
 
-    <!-- run → outputs -->
-    <line x1="450" y1="390" x2="568" y2="383" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
-    <line x1="450" y1="390" x2="718" y2="383" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
-    <line x1="450" y1="400" x2="568" y2="460" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
-    <line x1="450" y1="400" x2="718" y2="460" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
+    <!-- run → codex PDF -->
+    <line x1="450" y1="375" x2="558" y2="368" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
+    <!-- run → Finder tag -->
+    <line x1="450" y1="375" x2="773" y2="368" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
+    <!-- run → Telegram -->
+    <line x1="450" y1="400" x2="773" y2="578" stroke="#66bb6a" stroke-width="1.5" marker-end="url(#arr)"/>
 
-    <!-- vector store → db (learning loop) -->
-    <path d="M785,450 Q860,350 860,240 Q860,230 920,230" stroke="#bdbdbd" stroke-width="1.2" fill="none" stroke-dasharray="4,3"/>
-    <text x="866" y="345" font-size="9" fill="#bbb" transform="rotate(-90,866,345)">learning loop</text>
+    <!-- codex PDF → pdftotext -->
+    <line x1="660" y1="396" x2="660" y2="438" stroke="#ffb74d" stroke-width="1.5" marker-end="url(#arr-orange)"/>
 
-    <!-- legacy watcher → codex (direct) -->
-    <path d="M200,575 Q400,575 560,420" stroke="#bdbdbd" stroke-width="1.2" fill="none" marker-end="url(#arr)" stroke-dasharray="5,3"/>
-    <text x="310" y="570" font-size="9" fill="#bbb">direct (bypasses worksheet)</text>
+    <!-- pdftotext → codex-text (txt file on disk) -->
+    <line x1="760" y1="465" x2="773" y2="465" stroke="#ffb74d" stroke-width="2" marker-end="url(#arr-orange)"/>
+
+    <!-- pdftotext → codex.db (text into codex_docs) -->
+    <line x1="660" y1="496" x2="660" y2="558" stroke="#f0c040" stroke-width="2" marker-end="url(#arr-gold)"/>
+
+    <!-- codex-text → codex_docs pointer (dashed) -->
+    <path d="M848,510 Q760,535 760,558" stroke="#f0c040" stroke-width="1.2" fill="none" marker-end="url(#arr-gold)" stroke-dasharray="4,3"/>
+
+    <!-- run → codex_log (direct, dashed — metadata insert) -->
+    <path d="M450,400 Q500,510 558,580" stroke="#64b5f6" stroke-width="1.5" fill="none" marker-end="url(#arr-blue)" stroke-dasharray="4,3"/>
+
+    <!-- tagging_vec → kNN (learning loop) -->
+    <path d="M760,760 Q800,500 760,260" stroke="#bdbdbd" stroke-width="1.2" fill="none" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+    <text x="775" y="510" font-size="9" fill="#bbb" transform="rotate(90,775,510)">learning loop</text>
+
+    <!-- legacy watcher → codex (direct, dashed) -->
+    <path d="M200,795 Q400,720 558,400" stroke="#bdbdbd" stroke-width="1.2" fill="none" marker-end="url(#arr)" stroke-dasharray="5,3"/>
+    <text x="270" y="770" font-size="9" fill="#bbb">direct (bypasses worksheet)</text>
   </svg>
 
 </div>
@@ -272,12 +307,14 @@
   <div class="legend-item"><div class="legend-swatch" style="background:#fce4ec;border-color:#f48fb1"></div> Data stores</div>
   <div class="legend-item"><div class="legend-swatch" style="background:#e8f5e9;border-color:#81c784"></div> Worksheet</div>
   <div class="legend-item"><div class="legend-swatch" style="background:#e3f2fd;border-color:#64b5f6"></div> Execution</div>
-  <div class="legend-item"><div class="legend-swatch" style="background:#fff3e0;border-color:#ffb74d"></div> Output</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fff3e0;border-color:#ffb74d"></div> Output (file)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fdf6e3;border-color:#f0c040"></div> Output (DB)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#e8f5e9;border-color:#66bb6a"></div> Notification</div>
   <div class="legend-item"><div class="legend-swatch" style="background:#fafafa;border-color:#bdbdbd"></div> Legacy (direct)</div>
   <div class="legend-item"><div class="legend-swatch" style="background:#f5f5f5;border-color:#bdbdbd"></div> Retired</div>
 </div>
 
-<p style="margin:20px auto;width:960px;font-size:10px;color:#aaa">Generated 2026-04-18 · tag-learn workflow · CC</p>
+<p style="margin:20px auto;width:980px;font-size:10px;color:#aaa">Updated 2026-05-29 · tag-learn workflow · CC</p>
 
 </body>
 </html>
