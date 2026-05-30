@@ -528,6 +528,15 @@
     </div>
 
     <div class="bypass-row">
+      <div class="bypass-line" style="border-color:#6a7a3a;">
+        <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+        <span style="color:#6a7a3a;font-size:16px;padding:0 6px;">↓</span>
+        <div class="node node-default" style="font-size:12px;padding:4px 10px;">codo<span class="node-role" style="font-size:11px;">code generation</span></div>
+        <span style="margin-left:6px;">spawned for complex code tasks — returns fenced code block, not a persistent session</span>
+      </div>
+    </div>
+
+    <div class="bypass-row">
       <div class="bypass-line">
         <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
         <span style="color:#9a9890;font-size:14px;">- - - - ▶</span>
@@ -607,6 +616,7 @@
         </div>
         <div class="phase-desc">
           Send brief with ETA contract. Polo acknowledges.
+          <div class="phase-note">io sends task_id via sessions_send · Polo fetches full brief from coordination.sqlite · same claim-check pattern, io→polo hop</div>
         </div>
       </div>
 
@@ -617,7 +627,7 @@
         </div>
         <div class="phase-desc">
           Execute work package step by step. Emit structured events.
-          <div class="phase-note">tasks &gt;20 lines → spawn codo for code generation</div>
+          <div class="phase-note">complex code tasks → spawn codo · silence escalation: 15 min → sermo reminder · 30 min → escalate · 2 h → CC auto-executes read-only fallback</div>
         </div>
       </div>
 
@@ -627,8 +637,9 @@
           <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
         </div>
         <div class="phase-desc">
-          Watchdog polls every 5 min. Heartbeat check: 3+ missed cycles = stall alert to CC.
-          <div class="phase-note">escalation: 5 min timeout → sermo reminder → CC alert</div>
+          IO watchdog polls every 5 min for progress events. Polo session heartbeat fires every 60 min.
+          <div class="phase-note">IO watchdog: 5 min silence → sermo reminder → CC alert</div>
+          <div class="phase-note">Polo heartbeat: 3+ missed cycles = context-saturation stall → CC alert · different failure mode from watchdog silence</div>
         </div>
       </div>
 
@@ -652,13 +663,12 @@
       <div class="civ-gate-body">
         <div class="civ-gate-title">CIV Gate — CC must explicitly ACK before IO sends Polo the next phase</div>
         <div class="civ-chains">
-          <div class="civ-chain">
-            <strong>polo → cc silence</strong>
-            15 min → sermo reminder · 30 min → escalate · 2 h → CC auto-executes read-only fallback
+          <div class="civ-chain" style="flex: none; min-width: 0;">
+            <strong>io → polo at gate · silence timeout</strong>
+            30 min → <strong style="color:#e0ddd8;">sermo reminder to CC</strong> · holds indefinitely — no auto-proceed
           </div>
-          <div class="civ-chain">
-            <strong>io → polo at gate</strong>
-            30 min → sermo reminder to CC · holds indefinitely — no auto-proceed
+          <div class="civ-chain" style="flex: none; min-width: 0; background: #222220; font-size: 11px; color: #7a7870;">
+            execution silence (Phase 06): polo→cc chain — see phase 06 note above
           </div>
         </div>
       </div>
@@ -743,7 +753,7 @@
           CIV Gate
           <span class="gate-tag tag-p0">P0</span>
         </div>
-        <p>Enforces CC approval between phases. IO cannot send Polo the next work package until CC sends an explicit ACK. Two independent timeout chains (see lifecycle §9 above).</p>
+        <p>Enforces CC approval between phases. IO cannot send Polo the next work package until CC sends an explicit ACK. Gate timeout: 30 min → sermo reminder to CC → holds indefinitely. Execution silence chain (polo→cc during Phase 06) is separate — see phase 06.</p>
       </div>
 
       <div class="gate">
