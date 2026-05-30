@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ocaisa task workflow</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #FFFFFF;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+  svg { overflow: visible; }
+
+  /* Node styles */
+  .node-ink { fill: #1A1A18; }
+  .node-ink text { fill: #FFFFFF; }
+  .node-white { fill: #FFFFFF; stroke: #1A1A18; stroke-width: 1.5px; }
+  .node-white text { fill: #1A1A18; }
+  .node-coral { fill: #FAECE7; stroke: #C25C3A; stroke-width: 1.5px; }
+  .node-coral text { fill: #7A3520; }
+  .node-blue { fill: #E6F1FB; stroke: #4A7AB5; stroke-width: 1.5px; }
+  .node-blue text { fill: #185FA5; }
+  .node-olive { fill: #EAF3DE; stroke: #6A7A3A; stroke-width: 1.5px; }
+  .node-olive text { fill: #3B6D11; }
+
+  .node-label { font-size: 14px; font-weight: 600; }
+  .role-label { font-size: 12px; font-style: italic; fill: #9A9890; }
+  .annotation { font-size: 12px; font-style: italic; fill: #9A9890; }
+  .section-header { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; fill: #9A9890; }
+  .task-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; fill: #6A7A3A; }
+
+  /* Arrow marker */
+  .arrow { fill: #1A1A18; }
+  .arrow-ghost { fill: #9A9890; }
+</style>
+</head>
+<body>
+<svg width="1100" height="1600" viewBox="0 0 1100 1600">
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="arrow" d="M 0 0 L 10 5 L 0 10 Z"/>
+    </marker>
+    <marker id="arrow-ghost" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="arrow-ghost" d="M 0 0 L 10 5 L 0 10 Z"/>
+    </marker>
+    <marker id="arrow-rev" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="arrow" d="M 10 0 L 0 5 L 10 10 Z"/>
+    </marker>
+  </defs>
+
+  <!-- ===== SECTION 1: AGENT HIERARCHY ===== -->
+  <text x="550" y="40" text-anchor="middle" class="section-header">AGENT HIERARCHY</text>
+
+  <!-- CC -->
+  <rect x="425" y="60" width="250" height="56" rx="10" class="node-ink"/>
+  <text x="550" y="86" text-anchor="middle" class="node-label" fill="#FFFFFF">cc</text>
+  <text x="550" y="104" text-anchor="middle" class="role-label" fill="#CCCCCC">architect — plans, designs, validates</text>
+
+  <!-- Arrow CC → io -->
+  <line x1="550" y1="116" x2="550" y2="160" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="560" y="142" class="annotation">tasks / requirements</text>
+
+  <!-- io -->
+  <rect x="425" y="165" width="250" height="56" rx="10" class="node-coral"/>
+  <text x="550" y="191" text-anchor="middle" class="node-label">io</text>
+  <text x="550" y="209" text-anchor="middle" class="role-label" fill="#9A9890">orchestrator — briefs, monitors, gates</text>
+
+  <!-- Arrow io → Polo -->
+  <line x1="550" y1="221" x2="550" y2="265" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="560" y="247" class="annotation">briefs / instructions</text>
+
+  <!-- Polo -->
+  <rect x="425" y="270" width="250" height="56" rx="10" class="node-blue"/>
+  <text x="550" y="296" text-anchor="middle" class="node-label">polo</text>
+  <text x="550" y="314" text-anchor="middle" class="role-label" fill="#9A9890">executor — runs scripts, edits files</text>
+
+  <!-- Arrow Polo → codo -->
+  <line x1="550" y1="326" x2="550" y2="370" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="560" y="352" class="annotation">coding briefs (new code &gt;20 lines)</text>
+
+  <!-- codo -->
+  <rect x="425" y="375" width="250" height="56" rx="10" class="node-olive"/>
+  <text x="550" y="401" text-anchor="middle" class="node-label">codo</text>
+  <text x="550" y="419" text-anchor="middle" class="role-label" fill="#9A9890">code generation — returns fenced code block</text>
+
+  <!-- Delegation rule annotation -->
+  <text x="550" y="460" text-anchor="middle" class="annotation">delegation rule: cc → io → polo — never skip a layer</text>
+
+  <!-- ===== SECTION 2: TASK LIFECYCLE ===== -->
+  <text x="550" y="510" text-anchor="middle" class="section-header">TASK LIFECYCLE</text>
+
+  <!-- Phase 1: CC defines task -->
+  <rect x="100" y="530" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="550" class="task-label">PHASE 1 — CC DEFINES TASK</text>
+  <text x="120" y="572" class="annotation">cc writes task to backlog.sqlite with: task id, description, priority, critical-path flag, correlation id</text>
+  <text x="120" y="592" class="annotation">cc briefs io via sessions_send with ETA contract: task name, critical-path, success criteria, ETA, check-in cadence</text>
+  <text x="120" y="612" class="annotation">cc posts sermo: [cc] delegated &lt;task-id&gt; to io (eta: &lt;time&gt;, critical: yes/no)</text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="620" x2="550" y2="650" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 2: io health check -->
+  <rect x="100" y="655" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="675" class="task-label">PHASE 2 — IO HEALTH CHECK (HARD RULE)</text>
+  <text x="120" y="697" class="annotation">io pings polo via sessions_send to agent:main:main with 15s timeout</text>
+  <text x="120" y="717" class="annotation">only a ping response confirms polo alive — sermo activity does not substitute</text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="725" x2="550" y2="755" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 3: io briefs Polo -->
+  <rect x="100" y="760" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="780" class="task-label">PHASE 3 — IO BRIEFS POLO</text>
+  <text x="120" y="802" class="annotation">io sends brief via sessions_send to agent:main:main with ETA contract</text>
+  <text x="120" y="822" class="annotation">polo emits started event to io-inbox.md within 10 min of receipt</text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="830" x2="550" y2="860" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 4: Execution -->
+  <rect x="100" y="865" width="900" height="130" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="885" class="task-label">PHASE 4 — EXECUTION</text>
+  <text x="120" y="907" class="annotation">polo executes task step by step, emitting structured events to io-inbox.md for each step</text>
+  <text x="120" y="927" class="annotation">if new code &gt;20 lines: polo spawns codo via sessions_spawn with self-contained coding brief</text>
+  <text x="120" y="947" class="annotation">codo returns one fenced code block — no prose, no questions. max 2 spawns per task</text>
+  <text x="120" y="967" class="annotation">long steps (&gt;5 min): polo emits heartbeat every 5 min with progress</text>
+  <text x="120" y="987" class="annotation">on failure: polo emits error with retries count. after 2 retries: emits blocked and stops</text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="995" x2="550" y2="1025" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 5: io watchdog -->
+  <rect x="100" y="1030" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1050" class="task-label">PHASE 5 — IO WATCHDOG (POLLS EVERY 5 MIN)</text>
+  <text x="120" y="1072" class="annotation">latest event &gt;10 min ago and not done → check-in to polo-inbox.md</text>
+  <text x="120" y="1092" class="annotation">latest event &gt;20 min ago, no response → escalate to cc via mailbox + sermo</text>
+  <text x="120" y="1112" class="annotation">error with retries:2 or blocked → escalate immediately to cc</text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="1120" x2="550" y2="1150" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 6: CIV Gate -->
+  <rect x="100" y="1155" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1175" class="task-label">PHASE 6 — CIV GATE (CC VERIFICATION)</text>
+  <text x="120" y="1197" class="annotation">polo emits phase_complete → io writes to mailbox.sqlite for cc review</text>
+  <text x="120" y="1217" class="annotation">cc reviews and responds — io does NOT send next instruction until cc acknowledges</text>
+  <text x="120" y="1237" class="annotation">if cc silent &gt;30 min: io posts sermo and waits — no self-authorization</text>
+
+  <!-- Arrow -->
+  <line x1="550" y1="1245" x2="550" y2="1275" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Phase 7: Completion -->
+  <rect x="100" y="1280" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1300" class="task-label">PHASE 7 — COMPLETION</text>
+  <text x="120" y="1322" class="annotation">polo emits done → io posts sermo: [io] polo completed &lt;task-id&gt;: &lt;result&gt;</text>
+  <text x="120" y="1342" class="annotation">io updates polo-active-tasks.md — marks task ✅</text>
+
+  <!-- ===== SECTION 3: COMMUNICATION CHANNELS ===== -->
+  <text x="550" y="1400" text-anchor="middle" class="section-header">COMMUNICATION CHANNELS</text>
+
+  <!-- Channel table as nodes -->
+  <rect x="60" y="1420" width="220" height="40" rx="10" class="node-white"/>
+  <text x="170" y="1446" text-anchor="middle" class="node-label">cc → io</text>
+  <text x="170" y="1470" text-anchor="middle" class="annotation">sessions_send (uuid)</text>
+
+  <rect x="310" y="1420" width="220" height="40" rx="10" class="node-white"/>
+  <text x="420" y="1446" text-anchor="middle" class="node-label">io → polo</text>
+  <text x="420" y="1470" text-anchor="middle" class="annotation">sessions_send</text>
+
+  <rect x="560" y="1420" width="220" height="40" rx="10" class="node-white"/>
+  <text x="670" y="1446" text-anchor="middle" class="node-label">polo → io</text>
+  <text x="670" y="1470" text-anchor="middle" class="annotation">sessions_send + io-inbox.md</text>
+
+  <rect x="810" y="1420" width="220" height="40" rx="10" class="node-white"/>
+  <text x="920" y="1446" text-anchor="middle" class="node-label">→ cc</text>
+  <text x="920" y="1470" text-anchor="middle" class="annotation">mailbox.sqlite + signal</text>
+
+  <rect x="60" y="1475" width="220" height="40" rx="10" class="node-white"/>
+  <text x="170" y="1501" text-anchor="middle" class="node-label">polo → codo</text>
+  <text x="170" y="1525" text-anchor="middle" class="annotation">sessions_spawn only</text>
+
+  <rect x="310" y="1475" width="220" height="40" rx="10" class="node-white"/>
+  <text x="420" y="1501" text-anchor="middle" class="node-label">all → martin</text>
+  <text x="420" y="1525" text-anchor="middle" class="annotation">sermo (topic 111)</text>
+
+  <rect x="560" y="1475" width="220" height="40" rx="10" class="node-white"/>
+  <text x="670" y="1501" text-anchor="middle" class="node-label">mirror</text>
+  <text x="670" y="1525" text-anchor="middle" class="annotation">topic 10 (pace notation)</text>
+
+  <!-- Footer -->
+  <text x="550" y="1580" text-anchor="middle" class="section-header">OCAISA TASK WORKFLOW — A2A BIBLE V2026-05-26</text>
+
+</svg>
+</body>
+</html>
