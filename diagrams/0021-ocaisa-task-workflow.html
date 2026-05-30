@@ -3,238 +3,838 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ocaisa task workflow</title>
+<title>OCAISA Task Workflow</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    background: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 60px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #ffffff;
+    color: #1a1a18;
+    font-size: 14px;
+    line-height: 1.5;
   }
-  svg { overflow: visible; }
 
-  .node-ink { fill: #1A1A18; }
-  .node-ink text { fill: #FFFFFF; }
-  .node-white { fill: #FFFFFF; stroke: #1A1A18; stroke-width: 1.5px; }
-  .node-white text { fill: #1A1A18; }
-  .node-coral { fill: #FAECE7; stroke: #C25C3A; stroke-width: 1.5px; }
-  .node-coral text { fill: #7A3520; }
-  .node-blue { fill: #E6F1FB; stroke: #4A7AB5; stroke-width: 1.5px; }
-  .node-blue text { fill: #185FA5; }
-  .node-olive { fill: #EAF3DE; stroke: #6A7A3A; stroke-width: 1.5px; }
-  .node-olive text { fill: #3B6D11; }
+  header {
+    background: #fff;
+    border-bottom: 1.5px solid #1a1a18;
+    padding: 28px 48px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
 
-  .node-label { font-size: 14px; font-weight: 600; }
-  .role-label { font-size: 12px; font-style: italic; fill: #9A9890; }
-  .annotation { font-size: 12px; font-style: italic; fill: #9A9890; }
-  .section-header { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; fill: #9A9890; }
-  .task-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; fill: #6A7A3A; }
+  header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: #1a1a18;
+  }
 
-  .arrow { fill: #1A1A18; }
-  .arrow-ghost { fill: #9A9890; }
+  header span {
+    font-size: 12px;
+    color: #9a9890;
+    font-style: italic;
+  }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 48px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  /* Section wrapper */
+  .section { display: flex; flex-direction: column; gap: 14px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9a9890;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e6e0;
+  }
+
+  /* ─── Node styles (styleguide) ─── */
+  .node {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .node-role {
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .node-primary {
+    background: #1a1a18;
+    color: #ffffff;
+  }
+  .node-primary .node-role { color: #9a9890; }
+
+  .node-coral {
+    background: #faece7;
+    border: 1.5px solid #c25c3a;
+    color: #7a3520;
+  }
+  .node-coral .node-role { color: #b07060; }
+
+  .node-blue {
+    background: #e6f1fb;
+    border: 1.5px solid #4a7ab5;
+    color: #185fa5;
+  }
+  .node-blue .node-role { color: #6090c0; }
+
+  .node-olive {
+    background: #eaf3de;
+    border: 1.5px solid #6a7a3a;
+    color: #3b6d11;
+  }
+  .node-olive .node-role { color: #7a9a50; }
+
+  .node-default {
+    background: #ffffff;
+    border: 1.5px solid #1a1a18;
+    color: #1a1a18;
+  }
+  .node-default .node-role { color: #9a9890; }
+
+  /* ─── Agent row ─── */
+  .agent-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .arrow {
+    font-size: 18px;
+    color: #1a1a18;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+
+  .arrow-ghost {
+    font-size: 14px;
+    color: #9a9890;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+
+  .arrow-label {
+    font-size: 11px;
+    color: #9a9890;
+    font-style: italic;
+    margin-left: 4px;
+  }
+
+  .bypass-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding-left: 2px;
+  }
+
+  .bypass-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #9a9890;
+    font-style: italic;
+    padding: 6px 12px;
+    border: 1px dashed #9a9890;
+    border-radius: 8px;
+  }
+
+  .bypass-line .node {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  /* ─── Phase list ─── */
+  .phases {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .phase {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid #f0ede8;
+  }
+
+  .phase:last-child { border-bottom: none; }
+
+  .phase-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9a9890;
+    width: 22px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .phase-agents {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    width: 220px;
+  }
+
+  .phase-agents .node {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .phase-agents .arrow {
+    font-size: 14px;
+    padding: 0 4px;
+  }
+
+  .phase-desc {
+    font-size: 13px;
+    color: #1a1a18;
+    flex: 1;
+    padding-top: 3px;
+  }
+
+  .phase-note {
+    font-size: 11px;
+    color: #9a9890;
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  /* CIV Gate — highlighted row */
+  .civ-gate {
+    background: #1a1a18;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .civ-gate-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #ffffff;
+    flex-shrink: 0;
+    width: 22px;
+    padding-top: 2px;
+  }
+
+  .civ-gate-body {
+    flex: 1;
+  }
+
+  .civ-gate-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  .civ-chains {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .civ-chain {
+    font-size: 12px;
+    color: #9a9890;
+    background: #2e2e2c;
+    border-radius: 6px;
+    padding: 6px 10px;
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .civ-chain strong {
+    color: #e0ddd8;
+    display: block;
+    margin-bottom: 3px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── Claim-Check ─── */
+  .claim-check {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    background: #f7f6f2;
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+
+  .cc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+  }
+
+  .cc-box {
+    background: #ffffff;
+    border: 1.5px solid #1a1a18;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a1a18;
+    white-space: nowrap;
+  }
+
+  .cc-sub {
+    font-size: 11px;
+    color: #9a9890;
+    font-style: italic;
+  }
+
+  .cc-arrow {
+    font-size: 16px;
+    color: #1a1a18;
+    padding: 0 10px;
+    align-self: center;
+    margin-top: -12px;
+  }
+
+  /* ─── Control gates ─── */
+  .gates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .gate {
+    border-radius: 10px;
+    padding: 16px 18px;
+    border: 1.5px solid #1a1a18;
+  }
+
+  .gate-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a18;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .gate-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .tag-p0 { background: #1a1a18; color: #ffffff; }
+  .tag-p1 { background: #faece7; color: #7a3520; border: 1px solid #c25c3a; }
+  .tag-p2 { background: #e6f1fb; color: #185fa5; border: 1px solid #4a7ab5; }
+
+  .gate p {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .gate code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    background: #f0ede8;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #3a3a38;
+  }
+
+  /* ─── Comms layer ─── */
+  .comms-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .comms-card {
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1.5px solid #1a1a18;
+  }
+
+  .comms-card.visibility {
+    background: #ffffff;
+    border-color: #9a9890;
+    border-style: dashed;
+  }
+
+  .comms-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .comms-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a18;
+  }
+
+  .comms-card.visibility .comms-name { color: #555; }
+
+  .comms-body {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  .comms-body code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    background: #f0ede8;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #3a3a38;
+  }
+
+  /* Obligation banner */
+  .obligation {
+    background: #faece7;
+    border: 1.5px solid #c25c3a;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 12px;
+    color: #7a3520;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .obligation strong {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1.5px solid #1a1a18;
+    padding: 20px 48px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #555;
+  }
+
+  .legend-swatch {
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .caption {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9a9890;
+  }
+
+  /* Cato aside */
+  .cato-aside {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #f7f6f2;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 4px;
+  }
+
+  .cato-aside .node {
+    font-size: 12px;
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
+
+  .cato-desc {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+    padding-top: 4px;
+  }
 </style>
 </head>
 <body>
-<svg width="1100" height="2200" viewBox="0 0 1100 2200">
 
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path class="arrow" d="M 0 0 L 10 5 L 0 10 Z"/>
-    </marker>
-    <marker id="arrow-ghost" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path class="arrow-ghost" d="M 0 0 L 10 5 L 0 10 Z"/>
-    </marker>
-    <marker id="arrow-rev" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path class="arrow" d="M 10 0 L 0 5 L 10 10 Z"/>
-    </marker>
-  </defs>
+<header>
+  <h1>OCAISA Task Workflow</h1>
+  <span>cc → io → polo · 11 phases · CIV gate · claim-check dispatch</span>
+</header>
 
-  <!-- ===== SECTION 1: AGENT HIERARCHY ===== -->
-  <text x="550" y="40" text-anchor="middle" class="section-header">AGENT HIERARCHY</text>
+<main>
 
-  <!-- CC -->
-  <rect x="425" y="60" width="250" height="56" rx="10" class="node-ink"/>
-  <text x="550" y="86" text-anchor="middle" class="node-label" fill="#FFFFFF">cc</text>
-  <text x="550" y="104" text-anchor="middle" class="role-label" fill="#CCCCCC">architect — plans, designs, validates</text>
+  <!-- ─── AGENTS ─── -->
+  <div class="section">
+    <div class="section-label">Agents</div>
 
-  <!-- Arrow CC → io -->
-  <line x1="550" y1="116" x2="550" y2="160" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="560" y="142" class="annotation">tasks / requirements</text>
+    <div class="agent-row">
+      <div class="node node-primary">martin<span class="node-role">human principal</span></div>
+      <span class="arrow">→</span>
+      <div class="node node-coral">cc<span class="node-role">architect</span></div>
+      <span class="arrow">→</span>
+      <div class="node node-blue">io<span class="node-role">orchestrator</span></div>
+      <span class="arrow">→</span>
+      <div class="node node-olive">polo<span class="node-role">executor</span></div>
+    </div>
 
-  <!-- io -->
-  <rect x="425" y="165" width="250" height="56" rx="10" class="node-coral"/>
-  <text x="550" y="191" text-anchor="middle" class="node-label">io</text>
-  <text x="550" y="209" text-anchor="middle" class="role-label" fill="#9A9890">orchestrator — briefs, monitors, gates</text>
+    <div class="bypass-row">
+      <div class="bypass-line">
+        <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+        <span style="color:#9a9890;font-size:14px;">- - - - ▶</span>
+        <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+        <span style="margin-left:6px;">bypass — urgent corrections, diagnosis, context-saturated recovery only. never for implementation.</span>
+      </div>
+    </div>
 
-  <!-- Arrow io → Polo -->
-  <line x1="550" y1="221" x2="550" y2="265" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="560" y="247" class="annotation">briefs / instructions</text>
+    <div class="cato-aside">
+      <div class="node node-default">cato<span class="node-role">cron agent</span></div>
+      <div class="cato-desc">
+        Runs independently on schedule (xdigest, sharesmc, email-digest, model-check). Not task-driven. Writes to <code>to-cc.md</code> and posts sermo on errors. Parallel to the cc→io→polo chain — does not participate in task phases.
+      </div>
+    </div>
+  </div>
 
-  <!-- Polo -->
-  <rect x="425" y="270" width="250" height="56" rx="10" class="node-blue"/>
-  <text x="550" y="296" text-anchor="middle" class="node-label">polo</text>
-  <text x="550" y="314" text-anchor="middle" class="role-label" fill="#9A9890">executor — runs scripts, edits files</text>
+  <!-- ─── TASK LIFECYCLE ─── -->
+  <div class="section">
+    <div class="section-label">Task Lifecycle</div>
+    <div class="phases">
 
-  <!-- Arrow Polo → codo -->
-  <line x1="550" y1="326" x2="550" y2="370" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="560" y="352" class="annotation">coding briefs (new code &gt;20 lines)</text>
+      <div class="phase">
+        <div class="phase-num">01</div>
+        <div class="phase-agents">
+          <div class="node node-primary" style="font-size:12px;padding:4px 10px;">martin</div>
+          <span class="arrow" style="font-size:14px;padding:0 4px;">→</span>
+          <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+        </div>
+        <div class="phase-desc">
+          Martin briefs CC with problem + desired outcomes
+        </div>
+      </div>
 
-  <!-- codo -->
-  <rect x="425" y="375" width="250" height="56" rx="10" class="node-olive"/>
-  <text x="550" y="401" text-anchor="middle" class="node-label">codo</text>
-  <text x="550" y="419" text-anchor="middle" class="role-label" fill="#9A9890">code generation — returns fenced code block</text>
+      <div class="phase">
+        <div class="phase-num">02</div>
+        <div class="phase-agents">
+          <div class="node node-primary" style="font-size:12px;padding:4px 10px;">martin</div>
+          <span style="font-size:12px;padding:0 4px;color:#9a9890;">+</span>
+          <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+        </div>
+        <div class="phase-desc">
+          Chunk work into packages. Define measurable eval criteria for each.
+        </div>
+      </div>
 
-  <!-- Delegation rule annotation -->
-  <text x="550" y="460" text-anchor="middle" class="annotation">delegation rule: cc → io → polo — never skip a layer</text>
+      <div class="phase">
+        <div class="phase-num">03</div>
+        <div class="phase-agents">
+          <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+          <span class="arrow" style="font-size:14px;padding:0 4px;">→</span>
+          <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
+        </div>
+        <div class="phase-desc">
+          Formal brief via claim-check dispatch
+          <div class="phase-note">full task written to coordination.sqlite · only task_id sent via sessions_send · io fetches from DB</div>
+        </div>
+      </div>
 
-  <!-- ===== SECTION 2: TASK LIFECYCLE ===== -->
-  <text x="550" y="520" text-anchor="middle" class="section-header">TASK LIFECYCLE</text>
+      <div class="phase">
+        <div class="phase-num">04</div>
+        <div class="phase-agents">
+          <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
+          <span class="arrow" style="font-size:14px;padding:0 4px;">→</span>
+          <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+        </div>
+        <div class="phase-desc">
+          IO health-checks Polo before delegation
+        </div>
+      </div>
 
-  <!-- Phase 1: Martin briefs CC -->
-  <rect x="150" y="540" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="560" class="task-label">PHASE 1 — MARTIN BRIEFS CC</text>
-  <text x="170" y="582" class="annotation">martin talks to agents and then briefs cc — defines the problem, desired outcome, constraints</text>
-  <text x="170" y="602" class="annotation">cc listens, asks clarifying questions, captures the brief in structured form</text>
+      <div class="phase">
+        <div class="phase-num">05</div>
+        <div class="phase-agents">
+          <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
+          <span class="arrow" style="font-size:14px;padding:0 4px;">→</span>
+          <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+        </div>
+        <div class="phase-desc">
+          Send brief with ETA contract. Polo acknowledges.
+        </div>
+      </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="610" x2="550" y2="645" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <div class="phase">
+        <div class="phase-num">06</div>
+        <div class="phase-agents">
+          <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+        </div>
+        <div class="phase-desc">
+          Execute work package step by step. Emit structured events.
+          <div class="phase-note">tasks &gt;20 lines → spawn codo for code generation</div>
+        </div>
+      </div>
 
-  <!-- Phase 2: CC + Martin joint definition — chunking + evals -->
-  <rect x="150" y="650" width="800" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="670" class="task-label">PHASE 2 — CC + MARTIN JOINT DEFINITION (CHUNKING)</text>
-  <text x="170" y="692" class="annotation">cc and martin jointly craft how the service/product works</text>
-  <text x="170" y="712" class="annotation">cc proposes work packages (wps) — numbered chunks of work with scope, deliverables, dependencies</text>
-  <text x="170" y="732" class="annotation">cc proposes evals — verifiable checks per wp (specific commands, queries, outputs)</text>
-  <text x="170" y="752" class="annotation">io reviews wps and evals, discusses with cc — this is the "chunking" conversation</text>
+      <div class="phase">
+        <div class="phase-num">07</div>
+        <div class="phase-agents">
+          <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
+        </div>
+        <div class="phase-desc">
+          Watchdog polls every 5 min. Heartbeat check: 3+ missed cycles = stall alert to CC.
+          <div class="phase-note">escalation: 5 min timeout → sermo reminder → CC alert</div>
+        </div>
+      </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="760" x2="550" y2="795" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <div class="phase">
+        <div class="phase-num">08</div>
+        <div class="phase-agents">
+          <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+          <span class="arrow" style="font-size:14px;padding:0 4px;">→</span>
+          <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
+        </div>
+        <div class="phase-desc">
+          Polo reports <code style="font-family:monospace;font-size:11px;background:#f0ede8;padding:1px 4px;border-radius:3px;">phase_complete</code> to IO. IO notifies CC via to-cc.md + sermo.
+        </div>
+      </div>
 
-  <!-- Phase 3: CC defines task -->
-  <rect x="150" y="800" width="800" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="820" class="task-label">PHASE 3 — CC DEFINES TASK</text>
-  <text x="170" y="842" class="annotation">cc writes task to backlog.sqlite with: task id, description, priority, critical-path flag, correlation id</text>
-  <text x="170" y="862" class="annotation">cc briefs io via sessions_send with ETA contract: task name, critical-path, success criteria, ETA, check-in cadence</text>
-  <text x="170" y="882" class="annotation">cc posts sermo: [cc] delegated &lt;task-id&gt; to io (eta: &lt;time&gt;, critical: yes/no)</text>
+    </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="890" x2="550" y2="925" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <!-- CIV Gate -->
+    <div class="civ-gate">
+      <div class="civ-gate-label">§9</div>
+      <div class="civ-gate-body">
+        <div class="civ-gate-title">CIV Gate — CC must explicitly ACK before IO sends Polo the next phase</div>
+        <div class="civ-chains">
+          <div class="civ-chain">
+            <strong>polo → cc silence</strong>
+            15 min → sermo reminder · 30 min → escalate · 2 h → CC auto-executes read-only fallback
+          </div>
+          <div class="civ-chain">
+            <strong>io → polo at gate</strong>
+            30 min → sermo reminder to CC · holds indefinitely — no auto-proceed
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!-- Phase 4: io health check -->
-  <rect x="150" y="930" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="950" class="task-label">PHASE 4 — IO HEALTH CHECK (HARD RULE)</text>
-  <text x="170" y="972" class="annotation">io pings polo via sessions_send to agent:main:main with 15s timeout</text>
-  <text x="170" y="992" class="annotation">only a ping response confirms polo alive — sermo activity does not substitute</text>
+    <div class="phases">
+      <div class="phase">
+        <div class="phase-num">09</div>
+        <div class="phase-agents">
+          <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+        </div>
+        <div class="phase-desc">
+          CC verifies work package against predefined eval criteria
+        </div>
+      </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1000" x2="550" y2="1035" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <div class="phase">
+        <div class="phase-num">10</div>
+        <div class="phase-agents">
+          <div class="node node-primary" style="font-size:12px;padding:4px 10px;">martin</div>
+          <span style="font-size:12px;padding:0 4px;color:#9a9890;">+</span>
+          <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+        </div>
+        <div class="phase-desc">
+          Review outcomes against original vision. May loop back to phase 2.
+        </div>
+      </div>
 
-  <!-- Phase 5: io briefs Polo -->
-  <rect x="150" y="1040" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1060" class="task-label">PHASE 5 — IO BRIEFS POLO</text>
-  <text x="170" y="1082" class="annotation">io sends brief via sessions_send to agent:main:main with ETA contract</text>
-  <text x="170" y="1102" class="annotation">polo emits started event to io-inbox.md within 10 min of receipt</text>
+      <div class="phase">
+        <div class="phase-num">11</div>
+        <div class="phase-agents" style="gap:4px;">
+          <div class="node node-coral" style="font-size:12px;padding:4px 10px;">cc</div>
+          <div class="node node-blue" style="font-size:12px;padding:4px 10px;">io</div>
+          <div class="node node-olive" style="font-size:12px;padding:4px 10px;">polo</div>
+        </div>
+        <div class="phase-desc">
+          Retrospective — all agents document lessons learned
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1110" x2="550" y2="1145" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- ─── DISPATCH ─── -->
+  <div class="section">
+    <div class="section-label">Claim-Check Dispatch</div>
 
-  <!-- Phase 6: Execution (per WP) -->
-  <rect x="150" y="1150" width="800" height="130" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1170" class="task-label">PHASE 6 — EXECUTION (PER WP)</text>
-  <text x="170" y="1192" class="annotation">polo executes current work package step by step, emitting structured events to io-inbox.md</text>
-  <text x="170" y="1212" class="annotation">if new code &gt;20 lines: polo spawns codo via sessions_spawn with self-contained coding brief</text>
-  <text x="170" y="1232" class="annotation">codo returns one fenced code block — no prose, no questions. max 2 spawns per task</text>
-  <text x="170" y="1252" class="annotation">long steps (&gt;5 min): polo emits heartbeat every 5 min with progress</text>
-  <text x="170" y="1272" class="annotation">on failure: polo emits error with retries count. after 2 retries: emits blocked and stops</text>
+    <div class="claim-check">
+      <div class="cc-step">
+        <div class="cc-box">dispatchTask()</div>
+        <div class="cc-sub">cc or io</div>
+      </div>
+      <div class="cc-arrow">→</div>
+      <div class="cc-step">
+        <div class="cc-box">coordination.sqlite</div>
+        <div class="cc-sub">full task written here</div>
+      </div>
+      <div class="cc-arrow">→</div>
+      <div class="cc-step">
+        <div class="cc-box">sessions_send</div>
+        <div class="cc-sub">{task_id} only — no payload</div>
+      </div>
+      <div class="cc-arrow">→</div>
+      <div class="cc-step">
+        <div class="cc-box">worker fetches</div>
+        <div class="cc-sub">reads full task from DB</div>
+      </div>
+      <div class="cc-arrow">→</div>
+      <div class="cc-step">
+        <div class="cc-box">results → DB</div>
+        <div class="cc-sub">written directly, not via sessions_send</div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1280" x2="550" y2="1315" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- ─── CONTROL GATES ─── -->
+  <div class="section">
+    <div class="section-label">Control Gates</div>
 
-  <!-- Phase 7: io watchdog (parallel) -->
-  <rect x="150" y="1320" width="800" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1340" class="task-label">PHASE 7 — IO WATCHDOG (POLLS EVERY 5 MIN)</text>
-  <text x="170" y="1362" class="annotation">latest event &gt;10 min ago and not done → check-in to polo-inbox.md</text>
-  <text x="170" y="1382" class="annotation">latest event &gt;20 min ago, no response → escalate to cc via mailbox + sermo</text>
-  <text x="170" y="1402" class="annotation">error with retries:2 or blocked → escalate immediately to cc</text>
+    <div class="gates">
+      <div class="gate">
+        <div class="gate-title">
+          CIV Gate
+          <span class="gate-tag tag-p0">P0</span>
+        </div>
+        <p>Enforces CC approval between phases. IO cannot send Polo the next work package until CC sends an explicit ACK. Two independent timeout chains (see lifecycle §9 above).</p>
+      </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1410" x2="550" y2="1445" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <div class="gate">
+        <div class="gate-title">
+          "vai" Gate
+          <span class="gate-tag tag-p1">P1</span>
+        </div>
+        <p>Irreversible actions (config changes, upgrades, DB ops) require Martin's direct approval via Telegram — the word <code>vai</code>. Not relayed through agents. Not via files. HITL checkpoint, no bypass.</p>
+      </div>
+    </div>
+  </div>
 
-  <!-- Phase 8: CC verifies WP (loop) -->
-  <rect x="150" y="1450" width="800" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1470" class="task-label">PHASE 8 — CC VERIFIES WP (LOOP)</text>
-  <text x="170" y="1492" class="annotation">polo emits wp_complete → io writes to mailbox.sqlite for cc review</text>
-  <text x="170" y="1512" class="annotation">cc reviews the wp against evals and ok's it — io does NOT proceed until cc acknowledges</text>
-  <text x="170" y="1532" class="annotation">if cc ok's → io briefs polo on next wp, loop back to phase 6</text>
-  <text x="170" y="1552" class="annotation">if all wps complete → proceed to phase 9 (completion)</text>
-  <!-- WP loop arrow: Phase 8 → back to Phase 6 -->
-  <path d="M 950 1505 L 980 1505 L 980 1215 L 950 1215" fill="none" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="990" y="1370" class="annotation" font-size="11">loop: next wp</text>
+  <!-- ─── COMMS & VISIBILITY ─── -->
+  <div class="section">
+    <div class="section-label">Comms &amp; Visibility</div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1560" x2="550" y2="1595" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <div class="obligation">
+      <strong>hard rule</strong>
+      Every message CC sends to Polo or IO must end with "Reply via mailbox and sermo" — no exceptions.
+    </div>
 
-  <!-- Phase 9: Completion -->
-  <rect x="150" y="1600" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1620" class="task-label">PHASE 9 — COMPLETION</text>
-  <text x="170" y="1642" class="annotation">polo emits done → io posts sermo: [io] polo completed &lt;task-id&gt;: &lt;result&gt;</text>
-  <text x="170" y="1662" class="annotation">io updates polo-active-tasks.md — marks task ✅</text>
+    <div class="comms-grid">
+      <div class="comms-card">
+        <div class="comms-header">
+          <div class="comms-name">to-cc.md</div>
+          <span class="gate-tag tag-p2">return path</span>
+        </div>
+        <div class="comms-body">
+          Polo and Cato write replies here. CC reads at session start (hook) or via <code>/csn</code> mid-session. Archived to <code>to-cc-log.md</code> before clearing.
+          <br><br>
+          <strong>Auto-ACK watcher:</strong> launchd WatchPaths on <code>mailbox.sqlite</code> — fires <code>to-cc-watcher.sh</code>, posts <code>[CC] Auto-ACK</code> to sermo within ~90 s. High-priority messages also posted to topic 1.
+        </div>
+      </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1670" x2="550" y2="1705" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <div class="comms-card">
+        <div class="comms-header">
+          <div class="comms-name">a2alog</div>
+          <span class="gate-tag tag-p2">shared context</span>
+        </div>
+        <div class="comms-body">
+          Every substantive <code>sessions_send</code> logged to <code>message_log</code>. Agents in Topic 10 read last 8 entries on first turn. Not just logging — it's the shared context layer that makes multi-agent coordination coherent across session boundaries.
+        </div>
+      </div>
 
-  <!-- Phase 10: Review -->
-  <rect x="150" y="1710" width="800" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1730" class="task-label">PHASE 10 — REVIEW AGAINST PROJECT VISION</text>
-  <text x="170" y="1752" class="annotation">martin and cc review completed work against the original task/project vision</text>
-  <text x="170" y="1772" class="annotation">if done:done → move to retro (phase 11)</text>
-  <text x="170" y="1792" class="annotation">if not done → make changes/fixes, loop back to execution (phase 6)</text>
+      <div class="comms-card visibility">
+        <div class="comms-header">
+          <div class="comms-name">sermo</div>
+          <span class="gate-tag" style="background:#f0ede8;color:#9a9890;border:1px solid #d0cdc8;">visibility only</span>
+        </div>
+        <div class="comms-body">
+          Telegram topic 111 in ocaisa group. Martin's visibility layer — not an action channel. Polo does <strong>not</strong> act on <code>[CC]</code> sermo posts by design. CC posts after every direct agent message so Martin can see what was asked. Polo posts <code>[Polo]</code> prefix for same reason.
+        </div>
+      </div>
 
-  <!-- Arrow -->
-  <line x1="550" y1="1800" x2="550" y2="1835" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <div class="comms-card visibility">
+        <div class="comms-header">
+          <div class="comms-name">mailbox.sqlite</div>
+          <span class="gate-tag" style="background:#f0ede8;color:#9a9890;border:1px solid #d0cdc8;">persistent queue</span>
+        </div>
+        <div class="comms-body">
+          Durable message store. ACK watcher monitors this file via WatchPaths. Survives session restarts. Used alongside <code>to-cc.md</code> — mailbox for delivery guarantees, to-cc for human-readable queue CC reads at startup.
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Phase 11: Retro -->
-  <rect x="150" y="1840" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="170" y="1860" class="task-label">PHASE 11 — RETRO</text>
-  <text x="170" y="1882" class="annotation">all agents write up thoughts about the project via notion page under [project name]</text>
-  <text x="170" y="1902" class="annotation">child page of Dev (36fa9823ea2a804b827cdda9409a26a9)</text>
+</main>
 
-  <!-- ===== SECTION 3: COMMUNICATION CHANNELS ===== -->
-  <text x="550" y="1960" text-anchor="middle" class="section-header">COMMUNICATION CHANNELS</text>
+<footer>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:#faece7;border:1.5px solid #c25c3a;"></div>
+    cc — architect
+  </div>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:#e6f1fb;border:1.5px solid #4a7ab5;"></div>
+    io — orchestrator
+  </div>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:#eaf3de;border:1.5px solid #6a7a3a;"></div>
+    polo — executor
+  </div>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:#ffffff;border:1.5px solid #1a1a18;"></div>
+    cato — cron agent
+  </div>
+  <div class="legend-item">
+    <div class="legend-swatch" style="background:#1a1a18;"></div>
+    martin / gates
+  </div>
+  <div class="caption">OCAISA TASK WORKFLOW · 0021</div>
+</footer>
 
-  <rect x="60" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="170" y="1986" text-anchor="middle" class="node-label">cc → io</text>
-  <text x="170" y="2010" text-anchor="middle" class="annotation">sessions_send (uuid)</text>
-
-  <rect x="310" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="420" y="1986" text-anchor="middle" class="node-label">io → polo</text>
-  <text x="420" y="2010" text-anchor="middle" class="annotation">sessions_send</text>
-
-  <rect x="560" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="670" y="1986" text-anchor="middle" class="node-label">polo → io</text>
-  <text x="670" y="2010" text-anchor="middle" class="annotation">sessions_send + io-inbox.md</text>
-
-  <rect x="810" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="920" y="1986" text-anchor="middle" class="node-label">→ cc</text>
-  <text x="920" y="2010" text-anchor="middle" class="annotation">mailbox.sqlite + signal</text>
-
-  <rect x="60" y="2015" width="220" height="40" rx="10" class="node-white"/>
-  <text x="170" y="2041" text-anchor="middle" class="node-label">polo → codo</text>
-  <text x="170" y="2065" text-anchor="middle" class="annotation">sessions_spawn only</text>
-
-  <rect x="310" y="2015" width="220" height="40" rx="10" class="node-white"/>
-  <text x="420" y="2041" text-anchor="middle" class="node-label">all → martin</text>
-  <text x="420" y="2065" text-anchor="middle" class="annotation">sermo (topic 111)</text>
-
-  <rect x="560" y="2015" width="220" height="40" rx="10" class="node-white"/>
-  <text x="670" y="2041" text-anchor="middle" class="node-label">mirror</text>
-  <text x="670" y="2065" text-anchor="middle" class="annotation">topic 10 (pace notation)</text>
-
-  <!-- Footer with generous whitespace below -->
-  <text x="550" y="2120" text-anchor="middle" class="section-header">OCAISA TASK WORKFLOW — A2A BIBLE V2026-05-26</text>
-
-</svg>
 </body>
 </html>
