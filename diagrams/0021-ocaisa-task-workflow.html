@@ -37,7 +37,7 @@
 </style>
 </head>
 <body>
-<svg width="1100" height="2450" viewBox="0 0 1100 2450">
+<svg width="1100" height="2600" viewBox="0 0 1100 2600">
 
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
@@ -93,110 +93,113 @@
   <text x="550" y="520" text-anchor="middle" class="section-header">TASK LIFECYCLE</text>
 
   <!-- Phase 1: Martin briefs CC -->
-  <rect x="100" y="540" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="560" class="task-label">PHASE 1 — MARTIN BRIEFS CC</text>
-  <text x="120" y="582" class="annotation">martin talks to agents and then briefs cc — defines the problem, desired outcome, constraints</text>
-  <text x="120" y="602" class="annotation">cc listens, asks clarifying questions, captures the brief in structured form</text>
+  <rect x="150" y="540" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="560" class="task-label">PHASE 1 — MARTIN BRIEFS CC</text>
+  <text x="170" y="582" class="annotation">martin talks to agents and then briefs cc — defines the problem, desired outcome, constraints</text>
+  <text x="170" y="602" class="annotation">cc listens, asks clarifying questions, captures the brief in structured form</text>
 
   <!-- Arrow -->
   <line x1="550" y1="610" x2="550" y2="645" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 2: CC + Martin joint definition — chunking + evals -->
-  <rect x="100" y="650" width="900" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="670" class="task-label">PHASE 2 — CC + MARTIN JOINT DEFINITION (CHUNKING)</text>
-  <text x="120" y="692" class="annotation">cc and martin jointly craft how the service/product works</text>
-  <text x="120" y="712" class="annotation">cc proposes work packages (wps) — numbered chunks of work with scope, deliverables, dependencies</text>
-  <text x="120" y="732" class="annotation">cc proposes evals — verifiable checks per wp (specific commands, queries, outputs)</text>
-  <text x="120" y="752" class="annotation">io reviews wps and evals, discusses with cc — this is the "chunking" conversation</text>
+  <rect x="150" y="650" width="800" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="670" class="task-label">PHASE 2 — CC + MARTIN JOINT DEFINITION (CHUNKING)</text>
+  <text x="170" y="692" class="annotation">cc and martin jointly craft how the service/product works</text>
+  <text x="170" y="712" class="annotation">cc proposes work packages (wps) — numbered chunks of work with scope, deliverables, dependencies</text>
+  <text x="170" y="732" class="annotation">cc proposes evals — verifiable checks per wp (specific commands, queries, outputs)</text>
+  <text x="170" y="752" class="annotation">io reviews wps and evals, discusses with cc — this is the "chunking" conversation</text>
 
   <!-- Arrow -->
   <line x1="550" y1="760" x2="550" y2="795" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 3: CC defines task -->
-  <rect x="100" y="800" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="820" class="task-label">PHASE 3 — CC DEFINES TASK</text>
-  <text x="120" y="842" class="annotation">cc writes task to backlog.sqlite with: task id, description, priority, critical-path flag, correlation id</text>
-  <text x="120" y="862" class="annotation">cc briefs io via sessions_send with ETA contract: task name, critical-path, success criteria, ETA, check-in cadence</text>
-  <text x="120" y="882" class="annotation">cc posts sermo: [cc] delegated &lt;task-id&gt; to io (eta: &lt;time&gt;, critical: yes/no)</text>
+  <rect x="150" y="800" width="800" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="820" class="task-label">PHASE 3 — CC DEFINES TASK</text>
+  <text x="170" y="842" class="annotation">cc writes task to backlog.sqlite with: task id, description, priority, critical-path flag, correlation id</text>
+  <text x="170" y="862" class="annotation">cc briefs io via sessions_send with ETA contract: task name, critical-path, success criteria, ETA, check-in cadence</text>
+  <text x="170" y="882" class="annotation">cc posts sermo: [cc] delegated &lt;task-id&gt; to io (eta: &lt;time&gt;, critical: yes/no)</text>
 
   <!-- Arrow -->
   <line x1="550" y1="890" x2="550" y2="925" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 4: io health check -->
-  <rect x="100" y="930" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="950" class="task-label">PHASE 4 — IO HEALTH CHECK (HARD RULE)</text>
-  <text x="120" y="972" class="annotation">io pings polo via sessions_send to agent:main:main with 15s timeout</text>
-  <text x="120" y="992" class="annotation">only a ping response confirms polo alive — sermo activity does not substitute</text>
+  <rect x="150" y="930" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="950" class="task-label">PHASE 4 — IO HEALTH CHECK (HARD RULE)</text>
+  <text x="170" y="972" class="annotation">io pings polo via sessions_send to agent:main:main with 15s timeout</text>
+  <text x="170" y="992" class="annotation">only a ping response confirms polo alive — sermo activity does not substitute</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1000" x2="550" y2="1035" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 5: io briefs Polo -->
-  <rect x="100" y="1040" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1060" class="task-label">PHASE 5 — IO BRIEFS POLO</text>
-  <text x="120" y="1082" class="annotation">io sends brief via sessions_send to agent:main:main with ETA contract</text>
-  <text x="120" y="1102" class="annotation">polo emits started event to io-inbox.md within 10 min of receipt</text>
+  <rect x="150" y="1040" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1060" class="task-label">PHASE 5 — IO BRIEFS POLO</text>
+  <text x="170" y="1082" class="annotation">io sends brief via sessions_send to agent:main:main with ETA contract</text>
+  <text x="170" y="1102" class="annotation">polo emits started event to io-inbox.md within 10 min of receipt</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1110" x2="550" y2="1145" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 6: Execution (per WP) -->
-  <rect x="100" y="1150" width="900" height="130" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1170" class="task-label">PHASE 6 — EXECUTION (PER WP)</text>
-  <text x="120" y="1192" class="annotation">polo executes current work package step by step, emitting structured events to io-inbox.md</text>
-  <text x="120" y="1212" class="annotation">if new code &gt;20 lines: polo spawns codo via sessions_spawn with self-contained coding brief</text>
-  <text x="120" y="1232" class="annotation">codo returns one fenced code block — no prose, no questions. max 2 spawns per task</text>
-  <text x="120" y="1252" class="annotation">long steps (&gt;5 min): polo emits heartbeat every 5 min with progress</text>
-  <text x="120" y="1272" class="annotation">on failure: polo emits error with retries count. after 2 retries: emits blocked and stops</text>
+  <rect x="150" y="1150" width="800" height="130" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1170" class="task-label">PHASE 6 — EXECUTION (PER WP)</text>
+  <text x="170" y="1192" class="annotation">polo executes current work package step by step, emitting structured events to io-inbox.md</text>
+  <text x="170" y="1212" class="annotation">if new code &gt;20 lines: polo spawns codo via sessions_spawn with self-contained coding brief</text>
+  <text x="170" y="1232" class="annotation">codo returns one fenced code block — no prose, no questions. max 2 spawns per task</text>
+  <text x="170" y="1252" class="annotation">long steps (&gt;5 min): polo emits heartbeat every 5 min with progress</text>
+  <text x="170" y="1272" class="annotation">on failure: polo emits error with retries count. after 2 retries: emits blocked and stops</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1280" x2="550" y2="1315" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 7: io watchdog (parallel) -->
-  <rect x="100" y="1320" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1340" class="task-label">PHASE 7 — IO WATCHDOG (POLLS EVERY 5 MIN)</text>
-  <text x="120" y="1362" class="annotation">latest event &gt;10 min ago and not done → check-in to polo-inbox.md</text>
-  <text x="120" y="1382" class="annotation">latest event &gt;20 min ago, no response → escalate to cc via mailbox + sermo</text>
-  <text x="120" y="1402" class="annotation">error with retries:2 or blocked → escalate immediately to cc</text>
+  <rect x="150" y="1320" width="800" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1340" class="task-label">PHASE 7 — IO WATCHDOG (POLLS EVERY 5 MIN)</text>
+  <text x="170" y="1362" class="annotation">latest event &gt;10 min ago and not done → check-in to polo-inbox.md</text>
+  <text x="170" y="1382" class="annotation">latest event &gt;20 min ago, no response → escalate to cc via mailbox + sermo</text>
+  <text x="170" y="1402" class="annotation">error with retries:2 or blocked → escalate immediately to cc</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1410" x2="550" y2="1445" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 8: CC verifies WP (loop) -->
-  <rect x="100" y="1450" width="900" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1470" class="task-label">PHASE 8 — CC VERIFIES WP (LOOP)</text>
-  <text x="120" y="1492" class="annotation">polo emits wp_complete → io writes to mailbox.sqlite for cc review</text>
-  <text x="120" y="1512" class="annotation">cc reviews the wp against evals and ok's it — io does NOT proceed until cc acknowledges</text>
-  <text x="120" y="1532" class="annotation">if cc ok's → io briefs polo on next wp, loop back to phase 6</text>
-  <text x="120" y="1552" class="annotation">if all wps complete → proceed to phase 9 (completion)</text>
+  <rect x="150" y="1450" width="800" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1470" class="task-label">PHASE 8 — CC VERIFIES WP (LOOP)</text>
+  <text x="170" y="1492" class="annotation">polo emits wp_complete → io writes to mailbox.sqlite for cc review</text>
+  <text x="170" y="1512" class="annotation">cc reviews the wp against evals and ok's it — io does NOT proceed until cc acknowledges</text>
+  <text x="170" y="1532" class="annotation">if cc ok's → io briefs polo on next wp, loop back to phase 6</text>
+  <text x="170" y="1552" class="annotation">if all wps complete → proceed to phase 9 (completion)</text>
+  <!-- WP loop arrow: Phase 8 → back to Phase 6 -->
+  <path d="M 1010 1505 L 1000 1505 L 1000 1215 L 960 1215" fill="none" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="1010" y="1370" class="annotation" font-size="11">loop: next wp</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1560" x2="550" y2="1595" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 9: Completion -->
-  <rect x="100" y="1600" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1620" class="task-label">PHASE 9 — COMPLETION</text>
-  <text x="120" y="1642" class="annotation">polo emits done → io posts sermo: [io] polo completed &lt;task-id&gt;: &lt;result&gt;</text>
-  <text x="120" y="1662" class="annotation">io updates polo-active-tasks.md — marks task ✅</text>
+  <rect x="150" y="1600" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1620" class="task-label">PHASE 9 — COMPLETION</text>
+  <text x="170" y="1642" class="annotation">polo emits done → io posts sermo: [io] polo completed &lt;task-id&gt;: &lt;result&gt;</text>
+  <text x="170" y="1662" class="annotation">io updates polo-active-tasks.md — marks task ✅</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1670" x2="550" y2="1705" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 10: Review -->
-  <rect x="100" y="1710" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1730" class="task-label">PHASE 10 — REVIEW AGAINST PROJECT VISION</text>
-  <text x="120" y="1752" class="annotation">martin and cc review completed work against the original task/project vision</text>
-  <text x="120" y="1772" class="annotation">if done:done → move to retro (phase 11)</text>
-  <text x="120" y="1792" class="annotation">if not done → make changes/fixes, loop back to execution (phase 6)</text>
+  <rect x="150" y="1710" width="800" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1730" class="task-label">PHASE 10 — REVIEW AGAINST PROJECT VISION</text>
+  <text x="170" y="1752" class="annotation">martin and cc review completed work against the original task/project vision</text>
+  <text x="170" y="1772" class="annotation">if done:done → move to retro (phase 11)</text>
+  <text x="170" y="1792" class="annotation">if not done → make changes/fixes, loop back to execution (phase 6)</text>
 
   <!-- Arrow -->
   <line x1="550" y1="1800" x2="550" y2="1835" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 11: Retro -->
-  <rect x="100" y="1840" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1860" class="task-label">PHASE 11 — RETRO</text>
-  <text x="120" y="1882" class="annotation">all agents write up thoughts about the project via notion page under [project name]</text>
-  <text x="120" y="1902" class="annotation">child page of Dev (36fa9823ea2a804b827cdda9409a26a9)</text>
+  <rect x="150" y="1840" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="1860" class="task-label">PHASE 11 — RETRO</text>
+  <text x="170" y="1882" class="annotation">all agents write up thoughts about the project via notion page under [project name]</text>
+  <text x="170" y="1902" class="annotation">child page of Dev (36fa9823ea2a804b827cdda9409a26a9)</text>
 
   <!-- ===== SECTION 3: COMMUNICATION CHANNELS ===== -->
   <text x="550" y="1980" text-anchor="middle" class="section-header">COMMUNICATION CHANNELS</text>
@@ -230,7 +233,7 @@
   <text x="670" y="2085" text-anchor="middle" class="annotation">topic 10 (pace notation)</text>
 
   <!-- Footer with generous whitespace below -->
-  <text x="550" y="2150" text-anchor="middle" class="section-header">OCAISA TASK WORKFLOW — A2A BIBLE V2026-05-26</text>
+  <text x="550" y="2300" text-anchor="middle" class="section-header">OCAISA TASK WORKFLOW — A2A BIBLE V2026-05-26</text>
 
 </svg>
 </body>
