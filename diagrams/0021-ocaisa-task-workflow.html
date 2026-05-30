@@ -37,7 +37,7 @@
 </style>
 </head>
 <body>
-<svg width="1100" height="2400" viewBox="0 0 1100 2400">
+<svg width="1100" height="2450" viewBox="0 0 1100 2450">
 
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
@@ -140,10 +140,10 @@
   <!-- Arrow -->
   <line x1="550" y1="1110" x2="550" y2="1145" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- Phase 6: Execution -->
+  <!-- Phase 6: Execution (per WP) -->
   <rect x="100" y="1150" width="900" height="130" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1170" class="task-label">PHASE 6 — EXECUTION</text>
-  <text x="120" y="1192" class="annotation">polo executes task step by step, emitting structured events to io-inbox.md for each step</text>
+  <text x="120" y="1170" class="task-label">PHASE 6 — EXECUTION (PER WP)</text>
+  <text x="120" y="1192" class="annotation">polo executes current work package step by step, emitting structured events to io-inbox.md</text>
   <text x="120" y="1212" class="annotation">if new code &gt;20 lines: polo spawns codo via sessions_spawn with self-contained coding brief</text>
   <text x="120" y="1232" class="annotation">codo returns one fenced code block — no prose, no questions. max 2 spawns per task</text>
   <text x="120" y="1252" class="annotation">long steps (&gt;5 min): polo emits heartbeat every 5 min with progress</text>
@@ -152,7 +152,7 @@
   <!-- Arrow -->
   <line x1="550" y1="1280" x2="550" y2="1315" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- Phase 7: io watchdog -->
+  <!-- Phase 7: io watchdog (parallel) -->
   <rect x="100" y="1320" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
   <text x="120" y="1340" class="task-label">PHASE 7 — IO WATCHDOG (POLLS EVERY 5 MIN)</text>
   <text x="120" y="1362" class="annotation">latest event &gt;10 min ago and not done → check-in to polo-inbox.md</text>
@@ -162,74 +162,75 @@
   <!-- Arrow -->
   <line x1="550" y1="1410" x2="550" y2="1445" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <!-- Phase 8: CIV Gate -->
-  <rect x="100" y="1450" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1470" class="task-label">PHASE 8 — CIV GATE (CC VERIFICATION)</text>
-  <text x="120" y="1492" class="annotation">polo emits phase_complete → io writes to mailbox.sqlite for cc review</text>
-  <text x="120" y="1512" class="annotation">cc reviews and responds — io does NOT send next instruction until cc acknowledges</text>
-  <text x="120" y="1532" class="annotation">if cc silent &gt;30 min: io posts sermo and waits — no self-authorization</text>
+  <!-- Phase 8: CC verifies WP (loop) -->
+  <rect x="100" y="1450" width="900" height="110" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1470" class="task-label">PHASE 8 — CC VERIFIES WP (LOOP)</text>
+  <text x="120" y="1492" class="annotation">polo emits wp_complete → io writes to mailbox.sqlite for cc review</text>
+  <text x="120" y="1512" class="annotation">cc reviews the wp against evals and ok's it — io does NOT proceed until cc acknowledges</text>
+  <text x="120" y="1532" class="annotation">if cc ok's → io briefs polo on next wp, loop back to phase 6</text>
+  <text x="120" y="1552" class="annotation">if all wps complete → proceed to phase 9 (completion)</text>
 
   <!-- Arrow -->
-  <line x1="550" y1="1540" x2="550" y2="1575" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="550" y1="1560" x2="550" y2="1595" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 9: Completion -->
-  <rect x="100" y="1580" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1600" class="task-label">PHASE 9 — COMPLETION</text>
-  <text x="120" y="1622" class="annotation">polo emits done → io posts sermo: [io] polo completed &lt;task-id&gt;: &lt;result&gt;</text>
-  <text x="120" y="1642" class="annotation">io updates polo-active-tasks.md — marks task ✅</text>
+  <rect x="100" y="1600" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1620" class="task-label">PHASE 9 — COMPLETION</text>
+  <text x="120" y="1642" class="annotation">polo emits done → io posts sermo: [io] polo completed &lt;task-id&gt;: &lt;result&gt;</text>
+  <text x="120" y="1662" class="annotation">io updates polo-active-tasks.md — marks task ✅</text>
 
   <!-- Arrow -->
-  <line x1="550" y1="1650" x2="550" y2="1685" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="550" y1="1670" x2="550" y2="1705" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 10: Review -->
-  <rect x="100" y="1690" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1710" class="task-label">PHASE 10 — REVIEW AGAINST PROJECT VISION</text>
-  <text x="120" y="1732" class="annotation">martin and cc review completed work against the original task/project vision</text>
-  <text x="120" y="1752" class="annotation">if done:done → move to retro (phase 11)</text>
-  <text x="120" y="1772" class="annotation">if not done → make changes/fixes, loop back to execution (phase 6)</text>
+  <rect x="100" y="1710" width="900" height="90" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1730" class="task-label">PHASE 10 — REVIEW AGAINST PROJECT VISION</text>
+  <text x="120" y="1752" class="annotation">martin and cc review completed work against the original task/project vision</text>
+  <text x="120" y="1772" class="annotation">if done:done → move to retro (phase 11)</text>
+  <text x="120" y="1792" class="annotation">if not done → make changes/fixes, loop back to execution (phase 6)</text>
 
   <!-- Arrow -->
-  <line x1="550" y1="1780" x2="550" y2="1815" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="550" y1="1800" x2="550" y2="1835" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Phase 11: Retro -->
-  <rect x="100" y="1820" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
-  <text x="120" y="1840" class="task-label">PHASE 11 — RETRO</text>
-  <text x="120" y="1862" class="annotation">all agents write up thoughts about the project via notion page under [project name]</text>
-  <text x="120" y="1882" class="annotation">child page of Dev (36fa9823ea2a804b827cdda9409a26a9)</text>
+  <rect x="100" y="1840" width="900" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="120" y="1860" class="task-label">PHASE 11 — RETRO</text>
+  <text x="120" y="1882" class="annotation">all agents write up thoughts about the project via notion page under [project name]</text>
+  <text x="120" y="1902" class="annotation">child page of Dev (36fa9823ea2a804b827cdda9409a26a9)</text>
 
   <!-- ===== SECTION 3: COMMUNICATION CHANNELS ===== -->
-  <text x="550" y="1940" text-anchor="middle" class="section-header">COMMUNICATION CHANNELS</text>
+  <text x="550" y="1980" text-anchor="middle" class="section-header">COMMUNICATION CHANNELS</text>
 
-  <rect x="60" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="170" y="1986" text-anchor="middle" class="node-label">cc → io</text>
-  <text x="170" y="2010" text-anchor="middle" class="annotation">sessions_send (uuid)</text>
+  <rect x="60" y="1980" width="220" height="40" rx="10" class="node-white"/>
+  <text x="170" y="2006" text-anchor="middle" class="node-label">cc → io</text>
+  <text x="170" y="2030" text-anchor="middle" class="annotation">sessions_send (uuid)</text>
 
-  <rect x="310" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="420" y="1986" text-anchor="middle" class="node-label">io → polo</text>
-  <text x="420" y="2010" text-anchor="middle" class="annotation">sessions_send</text>
+  <rect x="310" y="1980" width="220" height="40" rx="10" class="node-white"/>
+  <text x="420" y="2006" text-anchor="middle" class="node-label">io → polo</text>
+  <text x="420" y="2030" text-anchor="middle" class="annotation">sessions_send</text>
 
-  <rect x="560" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="670" y="1986" text-anchor="middle" class="node-label">polo → io</text>
-  <text x="670" y="2010" text-anchor="middle" class="annotation">sessions_send + io-inbox.md</text>
+  <rect x="560" y="1980" width="220" height="40" rx="10" class="node-white"/>
+  <text x="670" y="2006" text-anchor="middle" class="node-label">polo → io</text>
+  <text x="670" y="2030" text-anchor="middle" class="annotation">sessions_send + io-inbox.md</text>
 
-  <rect x="810" y="1960" width="220" height="40" rx="10" class="node-white"/>
-  <text x="920" y="1986" text-anchor="middle" class="node-label">→ cc</text>
-  <text x="920" y="2010" text-anchor="middle" class="annotation">mailbox.sqlite + signal</text>
+  <rect x="810" y="1980" width="220" height="40" rx="10" class="node-white"/>
+  <text x="920" y="2006" text-anchor="middle" class="node-label">→ cc</text>
+  <text x="920" y="2030" text-anchor="middle" class="annotation">mailbox.sqlite + signal</text>
 
-  <rect x="60" y="2015" width="220" height="40" rx="10" class="node-white"/>
-  <text x="170" y="2041" text-anchor="middle" class="node-label">polo → codo</text>
-  <text x="170" y="2065" text-anchor="middle" class="annotation">sessions_spawn only</text>
+  <rect x="60" y="2035" width="220" height="40" rx="10" class="node-white"/>
+  <text x="170" y="2061" text-anchor="middle" class="node-label">polo → codo</text>
+  <text x="170" y="2085" text-anchor="middle" class="annotation">sessions_spawn only</text>
 
-  <rect x="310" y="2015" width="220" height="40" rx="10" class="node-white"/>
-  <text x="420" y="2041" text-anchor="middle" class="node-label">all → martin</text>
-  <text x="420" y="2065" text-anchor="middle" class="annotation">sermo (topic 111)</text>
+  <rect x="310" y="2035" width="220" height="40" rx="10" class="node-white"/>
+  <text x="420" y="2061" text-anchor="middle" class="node-label">all → martin</text>
+  <text x="420" y="2085" text-anchor="middle" class="annotation">sermo (topic 111)</text>
 
-  <rect x="560" y="2015" width="220" height="40" rx="10" class="node-white"/>
-  <text x="670" y="2041" text-anchor="middle" class="node-label">mirror</text>
-  <text x="670" y="2065" text-anchor="middle" class="annotation">topic 10 (pace notation)</text>
+  <rect x="560" y="2035" width="220" height="40" rx="10" class="node-white"/>
+  <text x="670" y="2061" text-anchor="middle" class="node-label">mirror</text>
+  <text x="670" y="2085" text-anchor="middle" class="annotation">topic 10 (pace notation)</text>
 
   <!-- Footer with generous whitespace below -->
-  <text x="550" y="2130" text-anchor="middle" class="section-header">OCAISA TASK WORKFLOW — A2A BIBLE V2026-05-26</text>
+  <text x="550" y="2150" text-anchor="middle" class="section-header">OCAISA TASK WORKFLOW — A2A BIBLE V2026-05-26</text>
 
 </svg>
 </body>
