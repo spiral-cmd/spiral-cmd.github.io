@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Plan — Get GN20 UKV Back on Road</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: #1a1a2e;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 40px;
+  }
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-width: 900px;
+    width: 100%;
+  }
+  .step {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+    position: relative;
+  }
+  .step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 48px;
+    background: #4361ee;
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 20px;
+  }
+  .step-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid #4361ee;
+    margin: 10px 0;
+  }
+  .step-card h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #4361ee;
+  }
+  .step-card .details {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+  }
+  .step-card .details ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 6px;
+  }
+  .step-card .details ul li {
+    padding: 3px 0 3px 16px;
+    position: relative;
+  }
+  .step-card .details ul li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #4361ee;
+  }
+  .step-card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+  .tag-cost { background: #e8f5e9; color: #2e7d32; }
+  .tag-time { background: #e3f2fd; color: #1565c0; }
+  .tag-warn { background: #fff3e0; color: #e65100; }
+
+  /* Arrow between steps */
+  .arrow {
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 16px solid #4361ee;
+    margin: 0 auto;
+    opacity: 0.5;
+    position: relative;
+    left: 24px;
+  }
+
+  /* Side info boxes */
+  .side-info {
+    display: flex;
+    gap: 16px;
+    margin: 16px 0 8px 68px;
+    flex-wrap: wrap;
+  }
+  .info-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #e0e0e0;
+    flex: 1;
+    min-width: 180px;
+  }
+  .info-box h3 {
+    font-size: 13px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .info-box .value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+  .info-box .value.red { color: #d32f2f; }
+  .info-box .value.green { color: #2e7d32; }
+  .info-box .value.amber { color: #e65100; }
+
+  /* Final box */
+  .final-box {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    color: #fff;
+    border-radius: 14px;
+    padding: 24px 32px;
+    text-align: center;
+    margin-top: 20px;
+    box-shadow: 0 4px 16px rgba(67,97,238,0.3);
+    width: 100%;
+    max-width: 500px;
+  }
+  .final-box h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .final-box p {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  /* Timeline row */
+  .timeline-row {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0 10px 68px;
+    flex-wrap: wrap;
+  }
+  .timeline-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #e0e0e0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .timeline-item .icon { font-size: 16px; }
+
+  @media (max-width: 600px) {
+    body { padding: 20px 12px; }
+    .step { flex-direction: column; gap: 8px; }
+    .step-number { margin: 0 auto; }
+    .side-info { margin-left: 0; }
+    .timeline-row { margin-left: 0; }
+    .arrow { left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🚗 Get GN20 UKV Back on the Road</h1>
+<p class="subtitle">Suzuki Jimny — 4 steps to road-legal, in order</p>
+
+<div class="flow">
+
+  <!-- Step 1: MOT -->
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-card">
+      <h2>🔧 MOT Test</h2>
+      <div class="details">
+        Book an MOT — this is the first thing. You can't tax or drive without it.
+        <ul>
+          <li>Find a local garage with availability</li>
+          <li>Can drive to pre-arranged test (no insurance/tax needed for that journey)</li>
+          <li>If car won't start, arrange a tow</li>
+        </ul>
+        <span class="tag tag-cost">~£40-55</span>
+        <span class="tag tag-time">Same-week slot likely</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- Step 2: Insurance -->
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-card">
+      <h2>📄 Insurance</h2>
+      <div class="details">
+        Get a new policy. You have 9+ years No Claims Discount confirmed.
+        <ul>
+          <li>Use NCD proof from Hastings (policy XA20013456229)</li>
+          <li>Shop around — comparison sites or direct</li>
+          <li>Need insurance before you can tax the car</li>
+        </ul>
+        <span class="tag tag-cost">Varies (NCD helps)</span>
+        <span class="tag tag-time">Can sort same day</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- Step 3: Car Tax -->
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-card">
+      <h2>💰 Car Tax (VED)</h2>
+      <div class="details">
+        Tax online at gov.uk/vehicle-tax. Need MOT + insurance first.
+        <ul>
+          <li>Have V5C reference number ready</li>
+          <li>Pay by card or direct debit</li>
+        </ul>
+        <span class="tag tag-cost">Varies by emissions</span>
+        <span class="tag tag-time">5 mins online</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- Step 4: Parking Permit -->
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-card">
+      <h2>🅿️ Parking Permit</h2>
+      <div class="details">
+        Current permit (ZNX63390621) is active — but expires soon.
+        <ul>
+          <li>Expires <strong>7 Jun 2026</strong> — renew via haringey.tarantopermits.com</li>
+          <li>Need proof of address + V5C for renewal</li>
+        </ul>
+        <span class="tag tag-cost">~£100-200/yr</span>
+        <span class="tag tag-warn">⚠️ Expires in 6 days</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side info: current status -->
+  <div class="side-info">
+    <div class="info-box">
+      <h3>MOT</h3>
+      <div class="value red">Expired 30 May</div>
+    </div>
+    <div class="info-box">
+      <h3>Insurance</h3>
+      <div class="value red">Ended 29 May</div>
+    </div>
+    <div class="info-box">
+      <h3>Car Tax</h3>
+      <div class="value red">Expired 31 May</div>
+    </div>
+    <div class="info-box">
+      <h3>Permit</h3>
+      <div class="value amber">Expires 7 Jun</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-row">
+    <div class="timeline-item"><span class="icon">📅</span> Day 1: Book MOT + get insurance quotes</div>
+    <div class="timeline-item"><span class="icon">🔧</span> MOT day: Pass MOT</div>
+    <div class="timeline-item"><span class="icon">📄</span> Buy insurance</div>
+    <div class="timeline-item"><span class="icon">💰</span> Tax online</div>
+    <div class="timeline-item"><span class="icon">✅</span> Road legal!</div>
+  </div>
+
+  <!-- Final box -->
+  <div class="final-box">
+    <h2>✅ Back on the road same day as MOT</h2>
+    <p>If MOT passes, you can insure → tax → drive in one afternoon.<br>If repairs needed, add time for the fix.</p>
+  </div>
+
+</div>
+
+</body>
+</html>
