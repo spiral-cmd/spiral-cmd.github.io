@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Email Digest — Pipeline Flow</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f8f8f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px;
+  }
+  .slide {
+    background: #fff;
+    width: 1100px;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 40px 48px 44px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 32px;
+  }
+
+  /* ── Layout ── */
+  .flow {
+    display: grid;
+    grid-template-columns: 160px 24px 1fr 24px 200px;
+    grid-template-rows: auto auto auto;
+    gap: 0;
+    align-items: start;
+  }
+
+  /* ── Boxes ── */
+  .box {
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    border: 1.5px solid transparent;
+  }
+  .box-title {
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .box-body { color: #444; font-size: 12px; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* Colours */
+  .c-trigger  { background: #eef4ff; border-color: #b3ccf5; }
+  .c-sheet    { background: #edfaf0; border-color: #9dd9b0; }
+  .c-gmail    { background: #fff7ed; border-color: #f5c98a; }
+  .c-priority { background: #fef2f2; border-color: #f5a3a3; }
+  .c-review   { background: #fff8e6; border-color: #f0cc7a; }
+  .c-uncat    { background: #f5f5f5; border-color: #ccc; }
+  .c-label    { background: #f0f4ff; border-color: #a8c0f0; }
+  .c-output   { background: #f3f0ff; border-color: #c4aff5; }
+  .c-notion   { background: #f5faf5; border-color: #aad4b0; }
+
+  .tag-priority { background: #fde8e8; color: #c0392b; }
+  .tag-review   { background: #fef3cd; color: #9a6f00; }
+  .tag-48h      { background: #e8f0fe; color: #2c5ea8; }
+  .tag-auto     { background: #e8f5e9; color: #2e7d32; }
+  .tag-h        { background: #fde8e8; color: #b71c1c; }
+  .tag-l        { background: #f3e5f5; color: #6a1b9a; }
+
+  /* ── Arrow ── */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #bbb;
+    padding-top: 12px;
+  }
+  .arrow-down {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #bbb;
+    height: 28px;
+  }
+
+  /* ── Main layout sections ── */
+  .col-left   { grid-column: 1; }
+  .col-arr1   { grid-column: 2; }
+  .col-mid    { grid-column: 3; }
+  .col-arr2   { grid-column: 4; }
+  .col-right  { grid-column: 5; }
+
+  .mid-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+
+  /* ── Steps column ── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Output column ── */
+  .outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Trigger + Sheet stack ── */
+  .left-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── Connector lines ── */
+  .connector {
+    position: relative;
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 1px dashed #ddd;
+    margin: 20px 0;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #555;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <h1>Email Digest — Pipeline Flow</h1>
+  <p class="subtitle">Daily at 07:00 BST &nbsp;·&nbsp; Polo agent &nbsp;·&nbsp; email-digest-run.sh</p>
+
+  <div style="display:grid; grid-template-columns: 170px 32px 1fr 32px 210px; gap:0; align-items:start;">
+
+    <!-- LEFT: Trigger + Sheet -->
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div>
+        <div class="section-label">Trigger</div>
+        <div class="box c-trigger">
+          <div class="box-title">Cron scheduler</div>
+          <div class="box-body">07:00 BST daily</div>
+          <div class="box-body" style="margin-top:4px; color:#666;">Polo agent<br>isolated session</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">Step 0</div>
+        <div class="box c-sheet">
+          <div class="box-title">Triage sheet</div>
+          <div class="box-body">Google Sheets</div>
+          <div style="margin-top:6px;">
+            <span class="tag tag-h">h = priority senders</span><br>
+            <span class="tag tag-l" style="margin-top:3px;">l/n = suppress</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; padding-top:60px; height:100%;">
+      <div style="font-size:20px; color:#bbb;">→</div>
+    </div>
+
+    <!-- MIDDLE: 3 Gmail searches + labelling -->
+    <div>
+      <div class="section-label">Gmail searches &nbsp;<span style="font-weight:400; text-transform:none; letter-spacing:0;">(-label:Reviewed, last 48h)</span></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+
+        <div class="box c-priority">
+          <div class="box-title">Step 1 — Priority</div>
+          <div class="box-body">Matches h-tagged<br>senders from sheet</div>
+          <span class="tag tag-priority">max 20</span>
+          <div class="box-body" style="margin-top:6px; font-size:11px; color:#888;">Not auto-labelled<br>— resurfaces daily</div>
+        </div>
+
+        <div class="box c-review">
+          <div class="box-title">Step 2 — Review</div>
+          <div class="box-body">Subject/body keywords:<br>Re:, invoice, urgent,<br>family names, probate…</div>
+          <span class="tag tag-review">max 30</span>
+          <div class="box-body" style="margin-top:6px; font-size:11px; color:#888;">Auto-labelled Reviewed<br>after surfacing</div>
+        </div>
+
+        <div class="box c-uncat">
+          <div class="box-title">Step 3 — All unreviewed</div>
+          <div class="box-body">Full inbox sweep<br>for unknown sender<br>detection</div>
+          <span class="tag tag-48h">max 200</span>
+        </div>
+
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="box c-label">
+          <div class="box-title">Step 5b — Apply labels</div>
+          <div class="box-body">
+            <b>Reviewed</b> → all REVIEW email IDs<br>
+            <span style="font-size:11px; color:#888;">(suppresses from future runs)</span>
+          </div>
+        </div>
+        <div class="box c-sheet" style="border-color:#9dd9b0;">
+          <div class="box-title">Step 4 — New senders</div>
+          <div class="box-body">Unknown senders (not<br>in sheet) appended to<br>triage sheet for classification</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARROW 2 -->
+    <div style="display:flex; align-items:center; justify-content:center; height:100%; padding-bottom:60px;">
+      <div style="font-size:20px; color:#bbb;">→</div>
+    </div>
+
+    <!-- RIGHT: Outputs -->
+    <div>
+      <div class="section-label">Output</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="box c-output">
+          <div class="box-title">Telegram topic 2843</div>
+          <div class="box-body">
+            Header: date, period, scanned count<br><br>
+            <b>Priority</b> — sender + subject<br>
+            <b>Review</b> — sender + subject<br>
+            <b>Unknown senders</b> — list + sheet link
+          </div>
+        </div>
+        <div class="box c-notion">
+          <div class="box-title">Notion log</div>
+          <div class="box-body">Full verbatim output<br>written to croncontent</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#b3ccf5;"></div> Scheduler / session</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9dd9b0;"></div> Google Sheets (triage)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f5c98a;"></div> Gmail search</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f5a3a3;"></div> Priority (h) — not auto-suppressed</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f0cc7a;"></div> Review — auto-labelled after surfacing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a8c0f0;"></div> Gmail label operation</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c4aff5;"></div> Delivery</div>
+  </div>
+</div>
+</body>
+</html>
