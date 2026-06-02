@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orchestrator Models — June 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .slide {
+    max-width: 1100px;
+    width: 100%;
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .title-group h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  .title-group .subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  .badge {
+    background: rgba(99,102,241,0.15);
+    color: #818cf8;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(99,102,241,0.2);
+  }
+
+  .context-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  .context-box strong {
+    color: #c7d2fe;
+  }
+
+  .tier-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #64748b;
+    margin: 28px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .tier-label:first-of-type {
+    margin-top: 0;
+  }
+
+  .tier-label .price-range {
+    color: #818cf8;
+    font-weight: 500;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #64748b;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: rgba(99,102,241,0.04);
+  }
+
+  .model-name {
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+
+  .model-provider {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  .price {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-input { color: #6ee7b7; }
+  .price-output { color: #fbbf24; }
+  .price-cache { color: #67e8f9; font-size: 12px; }
+
+  .context-win {
+    font-size: 13px;
+    color: #94a3b8;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .tag-current { background: rgba(99,102,241,0.15); color: #818cf8; }
+  .tag-recommend { background: rgba(52,211,153,0.15); color: #34d399; }
+  .tag-avoid { background: rgba(251,191,36,0.12); color: #fbbf24; }
+
+  .rec-row {
+    background: rgba(52,211,153,0.04) !important;
+    border-left: 3px solid #34d399;
+  }
+
+  .rec-row td:first-child {
+    padding-left: 9px;
+  }
+
+  .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 24px 0;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .summary-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  .summary-card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .summary-card .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .summary-card .value.green { color: #34d399; }
+  .summary-card .value.amber { color: #fbbf24; }
+  .summary-card .value.purple { color: #818cf8; }
+
+  .summary-card .note {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+  }
+
+  .footer {
+    margin-top: 32px;
+    font-size: 12px;
+    color: #475569;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 700px) {
+    .slide { padding: 24px; }
+    .header { flex-direction: column; gap: 12px; }
+    .title-group h1 { font-size: 22px; }
+    .summary-grid { grid-template-columns: 1fr; }
+    table { font-size: 12px; }
+    td, th { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide">
+
+  <div class="header">
+    <div class="title-group">
+      <h1>Orchestrator Models</h1>
+      <div class="subtitle">Budget options for io — June 2026</div>
+    </div>
+    <span class="badge">v1.0</span>
+  </div>
+
+  <div class="context-box">
+    <strong>Context:</strong> Polo runs on <strong>DeepSeek V4 Flash</strong> ($0.098/$0.197). Cato runs on <strong>GPT-4o-mini</strong> ($0.15/$0.60). io needs a <strong>different model</strong> for role diversity — budget-friendly, reliable for orchestration/research, distinct from both.
+  </div>
+
+  <!-- TIER 1: Ultra-cheap -->
+  <div class="tier-label">Tier 1 — Ultra-cheap <span class="price-range">($0.10/M input)</span></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Input /M</th>
+        <th>Output /M</th>
+        <th>Context</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="model-name">Mistral Small 3</div>
+          <div class="model-provider">OpenRouter / Mistral AI</div>
+        </td>
+        <td class="price price-input">$0.10</td>
+        <td class="price price-output">$0.30</td>
+        <td class="context-win">128k</td>
+        <td><span class="tag tag-recommend">★ Best output value</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">Gemini 2.0 Flash</div>
+          <div class="model-provider">OpenRouter / Google</div>
+        </td>
+        <td class="price price-input">$0.10</td>
+        <td class="price price-output">$0.40</td>
+        <td class="context-win">1M</td>
+        <td>Fast, huge context</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">GPT-4.1 Nano</div>
+          <div class="model-provider">OpenRouter / OpenAI</div>
+        </td>
+        <td class="price price-input">$0.10</td>
+        <td class="price price-output">$0.40</td>
+        <td class="context-win">128k</td>
+        <td>Newest budget model</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- TIER 2: Budget workhorses -->
+  <div class="tier-label">Tier 2 — Budget Workhorses <span class="price-range">($0.14–$0.20/M input)</span></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Input /M</th>
+        <th>Output /M</th>
+        <th>Context</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="model-name">DeepSeek V3.2</div>
+          <div class="model-provider">OpenRouter / DeepSeek</div>
+        </td>
+        <td class="price price-input">$0.14</td>
+        <td class="price price-output">$0.28</td>
+        <td class="context-win">128k</td>
+        <td>Cache hits: $0.028/M</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">GPT-4o-mini</div>
+          <div class="model-provider">OpenRouter / OpenAI</div>
+        </td>
+        <td class="price price-input">$0.15</td>
+        <td class="price price-output">$0.60</td>
+        <td class="context-win">128k</td>
+        <td><span class="tag tag-current">Cato's model</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">Minimax M2.5</div>
+          <div class="model-provider">OpenRouter / MiniMax</div>
+        </td>
+        <td class="price price-input">$0.15</td>
+        <td class="price price-output">$1.15</td>
+        <td class="context-win">204k</td>
+        <td>Same input as gpt-4o-mini</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">Gemini 2.5 Flash Lite</div>
+          <div class="model-provider">OpenRouter / Google</div>
+        </td>
+        <td class="price price-input">$0.10</td>
+        <td class="price price-output">$0.40</td>
+        <td class="context-win">1M</td>
+        <td>1M context, fast</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- TIER 3: Mid-range -->
+  <div class="tier-label">Tier 3 — Mid-Range Orchestration <span class="price-range">($0.20–$0.45/M input)</span></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Input /M</th>
+        <th>Output /M</th>
+        <th>Context</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="model-name">DeepSeek V3-0324</div>
+          <div class="model-provider">OpenRouter / DeepSeek</div>
+        </td>
+        <td class="price price-input">$0.20</td>
+        <td class="price price-output">$0.77</td>
+        <td class="context-win">128k</td>
+        <td>DeepInfra recommends for automation</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">Kimi K2.5</div>
+          <div class="model-provider">OpenRouter / Moonshot AI</div>
+        </td>
+        <td class="price price-input">$0.45</td>
+        <td class="price price-output">$2.25</td>
+        <td class="context-win">256k</td>
+        <td><span class="tag tag-recommend">#1 OpenClaw pick</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">Qwen3 Coder 480B</div>
+          <div class="model-provider">OpenRouter / Alibaba</div>
+        </td>
+        <td class="price price-input">$0.40</td>
+        <td class="price price-output">$1.60</td>
+        <td class="context-win">262k</td>
+        <td>Best for coding agents</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- DRAINED MODELS -->
+  <div class="tier-label">Drained / Too Expensive <span class="price-range">(avoid)</span></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Input /M</th>
+        <th>Output /M</th>
+        <th>Context</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="model-name">Minimax M2.7</div>
+          <div class="model-provider">OpenRouter / MiniMax</div>
+        </td>
+        <td class="price price-input">$0.28</td>
+        <td class="price price-output">$1.20</td>
+        <td class="context-win">204k</td>
+        <td><span class="tag tag-avoid">Drained — $13.54 burned</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="model-name">Mimo V2.5 Pro</div>
+          <div class="model-provider">OpenRouter / Xiaomi</div>
+        </td>
+        <td class="price price-input">$0.44</td>
+        <td class="price price-output">$0.87</td>
+        <td class="context-win">128k</td>
+        <td><span class="tag tag-avoid">Drained — $26.78 burned</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+
+  <!-- RECOMMENDATION -->
+  <div class="tier-label" style="color: #34d399; border-bottom-color: rgba(52,211,153,0.2);">Recommendation for io</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Input /M</th>
+        <th>Output /M</th>
+        <th>Context</th>
+        <th>Why</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="rec-row">
+        <td>
+          <div class="model-name" style="color: #34d399;">Mistral Small 3</div>
+          <div class="model-provider">OpenRouter / Mistral AI</div>
+        </td>
+        <td class="price price-input">$0.10</td>
+        <td class="price price-output">$0.30</td>
+        <td class="context-win">128k</td>
+        <td style="color: #a7f3d0; font-size: 13px;">
+          Cheapest output on market. Different family from Polo (DeepSeek) and Cato (OpenAI). Good for research/coordination.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h3>Current Monthly Burn</h3>
+      <div class="value amber">$86.52</div>
+      <div class="note">Lifetime OpenRouter total. ~$0.25/day on gpt-4o-mini</div>
+    </div>
+    <div class="summary-card">
+      <h3>Estimated with Mistral Small 3</h3>
+      <div class="value green">~$0.10/day</div>
+      <div class="note">60% cheaper than gpt-4o-mini for io's workload</div>
+    </div>
+    <div class="summary-card">
+      <h3>OpenRouter Balance</h3>
+      <div class="value purple">$3.51</div>
+      <div class="note">~14 days runway at current burn rate</div>
+    </div>
+    <div class="summary-card">
+      <h3>Role Diversity</h3>
+      <div class="value" style="color: #c7d2fe;">3 providers</div>
+      <div class="note">Polo: DeepSeek · Cato: OpenAI · io: Mistral</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Data from OpenRouter API, Brave Search, Artificial Analysis, DeepInfra guide · June 2026
+  </div>
+
+</div>
+
+</body>
+</html>
