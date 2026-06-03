@@ -61,16 +61,22 @@
   <rect x="75" y="95" width="250" height="56" rx="10" class="node-coral"/>
   <text x="200" y="121" text-anchor="middle" class="node-label">biz-mc</text>
   <text x="200" y="139" text-anchor="middle" class="role-label" fill="#9A9890">google drive — business docs</text>
+  <!-- biz-mc trigger note -->
+  <text x="80" y="162" class="annotation">↻ cron 0 11 * * * @ Europe/London — polls watch root, hash-dedup skips unchanged</text>
 
   <!-- pdf-in (between pipelines) -->
   <rect x="700" y="175" width="220" height="56" rx="10" class="node-blue"/>
   <text x="810" y="201" text-anchor="middle" class="node-label">pdf-in</text>
   <text x="810" y="219" text-anchor="middle" class="role-label" fill="#9A9890">downloads — misc pdfs</text>
+  <!-- pdf-in trigger note -->
+  <text x="705" y="248" class="annotation">⚡ launchd WatchPaths — fires when new file added to pdf-in</text>
 
   <!-- codex corpus (between pipelines) -->
   <rect x="700" y="255" width="220" height="56" rx="10" class="node-olive"/>
   <text x="810" y="281" text-anchor="middle" class="node-label">codex corpus</text>
   <text x="810" y="299" text-anchor="middle" class="role-label" fill="#9A9890">/Volumes/4tb-a/codex/ — 43 tags</text>
+  <!-- codex corpus note -->
+  <text x="705" y="322" class="annotation">← moved here by tag_watcher.sh on tag assignment</text>
 
   <!-- ===== PIPELINE 1: BIZCODEX ===== -->
   <text x="550" y="80" text-anchor="middle" class="task-label">BIZCODEX PIPELINE</text>
