@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0027 — Agent Architecture (June 2026)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f8f9fa; color: #222; padding: 24px; }
+  h1 { font-size: 1.2rem; font-weight: 600; color: #333; margin-bottom: 4px; }
+  .meta { font-size: 0.78rem; color: #777; margin-bottom: 24px; }
+
+  /* ── Layer bands ─────────────────────────────────── */
+  .layers { display: flex; flex-direction: column; gap: 2px; margin-bottom: 28px; }
+  .layer { display: flex; align-items: stretch; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+  .layer-label {
+    writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg);
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 12px 8px; color: #fff; min-width: 32px; display: flex; align-items: center; justify-content: center;
+  }
+  .layer-content { flex: 1; display: flex; flex-wrap: wrap; gap: 12px; padding: 14px 16px; background: #fff; align-items: flex-start; }
+  .layer-vis   .layer-label { background: #5c6bc0; }
+  .layer-ctrl  .layer-label { background: #7b5ea7; }
+  .layer-disp  .layer-label { background: #388e3c; }
+  .layer-infra .layer-label { background: #0277bd; }
+
+  /* ── Agent cards ─────────────────────────────────── */
+  .agent {
+    border-radius: 8px; padding: 10px 14px; min-width: 160px; max-width: 220px;
+    border: 1.5px solid; position: relative;
+  }
+  .agent-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 3px; }
+  .agent-sub  { font-size: 0.7rem; color: #555; line-height: 1.5; }
+  .agent-tag  { display: inline-block; font-size: 0.62rem; font-weight: 600; border-radius: 3px; padding: 1px 5px; margin-top: 4px; }
+
+  .card-martin { background: #e8eaf6; border-color: #5c6bc0; }
+  .card-cc     { background: #e8eaf6; border-color: #5c6bc0; }
+  .card-io     { background: #f3e5f5; border-color: #9c27b0; }
+  .card-polo   { background: #e8f5e9; border-color: #388e3c; }
+  .card-codo   { background: #f1f8e9; border-color: #7cb342; }
+  .card-cato   { background: #e3f2fd; border-color: #1976d2; }
+  .card-gw     { background: #e3f2fd; border-color: #1976d2; }
+  .card-db     { background: #e3f2fd; border-color: #1976d2; }
+
+  .tag-human { background: #5c6bc0; color: #fff; }
+  .tag-claude { background: #7e57c2; color: #fff; }
+  .tag-orchestrator { background: #9c27b0; color: #fff; }
+  .tag-implementer { background: #388e3c; color: #fff; }
+  .tag-coder { background: #7cb342; color: #fff; }
+  .tag-cron { background: #1976d2; color: #fff; }
+  .tag-new { background: #e65100; color: #fff; }
+
+  /* ── Channels section ────────────────────────────── */
+  .section-title { font-size: 0.82rem; font-weight: 700; color: #444; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #e0e0e0; padding-bottom: 4px; }
+  .channels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-bottom: 28px; }
+
+  .channel {
+    border-radius: 6px; padding: 10px 12px; border: 1.5px solid;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .ch-header { display: flex; align-items: center; gap: 8px; }
+  .ch-arrow { font-size: 0.95rem; color: #555; }
+  .ch-from { font-weight: 700; font-size: 0.8rem; }
+  .ch-to   { font-size: 0.8rem; }
+  .ch-medium { font-size: 0.68rem; font-weight: 600; color: #fff; border-radius: 3px; padding: 1px 6px; display: inline-block; }
+  .ch-note { font-size: 0.68rem; color: #666; margin-top: 2px; }
+
+  .ch-primary   { background: #f9fbe7; border-color: #aed581; }
+  .ch-fallback  { background: #fff8e1; border-color: #ffca28; }
+  .ch-gate      { background: #fff3e0; border-color: #ff9800; }
+  .ch-vis       { background: #f3e5f5; border-color: #ce93d8; }
+  .ch-cron      { background: #e3f2fd; border-color: #90caf9; }
+
+  .med-sessions { background: #1565c0; }
+  .med-mailbox  { background: #2e7d32; }
+  .med-file     { background: #e65100; }
+  .med-telegram { background: #1e88e5; }
+  .med-spawn    { background: #6a1b9a; }
+
+  /* ── Gate flow ───────────────────────────────────── */
+  .gate-flow { background: #fff8f0; border: 1.5px solid #ff9800; border-radius: 8px; padding: 14px 16px; margin-bottom: 28px; }
+  .gate-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .gate-step { background: #fff; border: 1.5px solid #ff9800; border-radius: 6px; padding: 6px 10px; font-size: 0.72rem; text-align: center; min-width: 100px; }
+  .gate-step strong { display: block; font-size: 0.78rem; color: #e65100; }
+  .gate-sep { font-size: 1.1rem; color: #ff9800; font-weight: 700; }
+
+  /* ── Scout/state ─────────────────────────────────── */
+  .workplan-row { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+  .wp-box { border-radius: 8px; padding: 12px 16px; flex: 1; min-width: 200px; border: 1.5px solid; }
+  .wp-scout { background: #e8f5e9; border-color: #81c784; }
+  .wp-state { background: #fce4ec; border-color: #f48fb1; }
+  .wp-title { font-size: 0.78rem; font-weight: 700; margin-bottom: 6px; }
+  .wp-items { font-size: 0.7rem; color: #555; line-height: 1.8; }
+  .wp-switch { background: #fff9c4; border: 1.5px solid #f9a825; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: #555; }
+  .wp-switch-icon { font-size: 1.4rem; }
+
+  /* ── New from council ────────────────────────────── */
+  .new-badge { font-size: 0.6rem; font-weight: 700; background: #e65100; color: #fff; border-radius: 3px; padding: 1px 5px; vertical-align: middle; margin-left: 4px; }
+
+  footer { font-size: 0.68rem; color: #aaa; margin-top: 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>Agent Architecture — OpenClaw</h1>
+<p class="meta">Council position paper adopted 2026-06-03 &nbsp;·&nbsp; Diagram 0027</p>
+
+<!-- ── LAYER DIAGRAM ───────────────────────────────────── -->
+<div class="section-title">Agent Layers</div>
+<div class="layers">
+
+  <div class="layer layer-vis">
+    <div class="layer-label">Visibility</div>
+    <div class="layer-content">
+      <div class="agent card-martin">
+        <div class="agent-name">Martin</div>
+        <div class="agent-sub">Human principal<br>Telegram: HIL + sermo</div>
+        <span class="agent-tag tag-human">human</span>
+      </div>
+      <div class="agent card-cc">
+        <div class="agent-name">CC</div>
+        <div class="agent-sub">Claude Code (Sonnet 4.6)<br>Architect · council chair<br>Reads: mailbox, sermo hook</div>
+        <span class="agent-tag tag-claude">claude code</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer layer-ctrl">
+    <div class="layer-label">Control</div>
+    <div class="layer-content">
+      <div class="agent card-io">
+        <div class="agent-name">io</div>
+        <div class="agent-sub">Mistral Small 3.2-24b<br>128k ctx · OpenRouter<br>io-session-compact @30m <span class="new-badge">NEW</span></div>
+        <span class="agent-tag tag-orchestrator">orchestrator</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer layer-disp">
+    <div class="layer-label">Dispatch</div>
+    <div class="layer-content">
+      <div class="agent card-polo">
+        <div class="agent-name">Polo</div>
+        <div class="agent-sub">DeepSeek V4-Flash<br>1M ctx · direct API<br>polo-session-compact @30m</div>
+        <span class="agent-tag tag-implementer">implementer</span>
+      </div>
+      <div class="agent card-codo">
+        <div class="agent-name">Codo</div>
+        <div class="agent-sub">Spawned by Polo<br>Triggered: &gt;20 lines of code<br>No persistent session</div>
+        <span class="agent-tag tag-coder">coder</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer layer-infra">
+    <div class="layer-label">Infrastructure</div>
+    <div class="layer-content">
+      <div class="agent card-cato">
+        <div class="agent-name">Cato</div>
+        <div class="agent-sub">gpt-4o-mini · OpenRouter<br>Cron runner · isolated sessions<br>Runs polo/io compact jobs</div>
+        <span class="agent-tag tag-cron">cron</span>
+      </div>
+      <div class="agent card-gw">
+        <div class="agent-name">OpenClaw Gateway</div>
+        <div class="agent-sub">Session routing<br>Channel bindings<br>Cron scheduler</div>
+        <span class="agent-tag tag-cron">gateway</span>
+      </div>
+      <div class="agent card-db">
+        <div class="agent-name">SQLite DBs</div>
+        <div class="agent-sub">mailbox.sqlite — CC inbox<br>coordination.sqlite — HEQ, tasks<br>bizcodex.db · learnings.db</div>
+        <span class="agent-tag tag-cron">data</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── CHANNELS ────────────────────────────────────────── -->
+<div class="section-title">Communication Channels</div>
+<div class="channels-grid">
+
+  <div class="channel ch-primary">
+    <div class="ch-header">
+      <span class="ch-from">CC</span><span class="ch-arrow">→</span><span class="ch-to">io</span>
+      <span class="ch-medium med-sessions">sessions_send</span>
+    </div>
+    <div class="ch-note">Primary delegation channel. All implementation tasks via this route.</div>
+  </div>
+
+  <div class="channel ch-primary">
+    <div class="ch-header">
+      <span class="ch-from">io</span><span class="ch-arrow">→</span><span class="ch-to">Polo</span>
+      <span class="ch-medium med-sessions">sessions_send</span>
+    </div>
+    <div class="ch-note">Task briefs (plan only). Separate GO message after Polo ACK.</div>
+  </div>
+
+  <div class="channel ch-fallback">
+    <div class="ch-header">
+      <span class="ch-from">Polo</span><span class="ch-arrow">→</span><span class="ch-to">io</span>
+      <span class="ch-medium med-sessions">sessions_send</span>
+      <span class="ch-medium med-file" style="margin-left:2px">polo-io-handoff.md <span class="new-badge" style="background:#fff;color:#e65100">NEW</span></span>
+    </div>
+    <div class="ch-note">Both written simultaneously. Handoff file readable even if io session overflows.</div>
+  </div>
+
+  <div class="channel ch-primary">
+    <div class="ch-header">
+      <span class="ch-from">Polo / io</span><span class="ch-arrow">→</span><span class="ch-to">CC</span>
+      <span class="ch-medium med-mailbox">mailbox.sqlite</span>
+    </div>
+    <div class="ch-note">Write-verify mandatory (SELECT COUNT(*) after every INSERT). to-cc.md fallback retiring 2026-06-10.</div>
+  </div>
+
+  <div class="channel ch-primary">
+    <div class="ch-header">
+      <span class="ch-from">Polo</span><span class="ch-arrow">→</span><span class="ch-to">Codo</span>
+      <span class="ch-medium med-spawn">sessions_spawn</span>
+    </div>
+    <div class="ch-note">Triggered when code change &gt;20 lines. Polo briefs → Codo builds → Polo reviews → integrates.</div>
+  </div>
+
+  <div class="channel ch-gate">
+    <div class="ch-header">
+      <span class="ch-from">All agents</span><span class="ch-arrow">→</span><span class="ch-to">Martin</span>
+      <span class="ch-medium" style="background:#e65100">HIL topic 12687</span>
+    </div>
+    <div class="ch-note">Hard gates only (HEQ entries, destructive ops, council adoptions). Mirror one-liner to sermo after posting.</div>
+  </div>
+
+  <div class="channel ch-vis">
+    <div class="ch-header">
+      <span class="ch-from">All agents</span><span class="ch-arrow">→</span><span class="ch-to">Martin</span>
+      <span class="ch-medium med-telegram">sermo topic 111</span>
+    </div>
+    <div class="ch-note">Visibility log only. Polo does not act on CC posts. One-line summaries.</div>
+  </div>
+
+  <div class="channel ch-cron">
+    <div class="ch-header">
+      <span class="ch-from">Cato (cron)</span><span class="ch-arrow">→</span><span class="ch-to">Polo / io</span>
+      <span class="ch-medium med-sessions">sessions_send</span>
+    </div>
+    <div class="ch-note">Runs polo-session-compact and io-session-compact every 30 min via isolated sessions.</div>
+  </div>
+
+</div>
+
+<!-- ── HARD GATE FLOW ───────────────────────────────────── -->
+<div class="gate-flow">
+  <div class="section-title" style="border-color:#ff9800">Hard Gate Protocol (Position 2)</div>
+  <div class="gate-steps">
+    <div class="gate-step"><strong>Destructive op</strong>ALTER TABLE / DROP / schema rebuild / &gt;10 file delete</div>
+    <div class="gate-sep">→</div>
+    <div class="gate-step"><strong>HEQ entry</strong>Write to coordination.sqlite human_escalation_queue</div>
+    <div class="gate-sep">→</div>
+    <div class="gate-step"><strong>HIL notification</strong>Post to Telegram topic 12687 with op details</div>
+    <div class="gate-sep">→</div>
+    <div class="gate-step"><strong>Wait</strong>Max 30 min. Sermo reminder if no response. BLOCKED if still silent.</div>
+    <div class="gate-sep">→</div>
+    <div class="gate-step"><strong>Martin: vai</strong>Direct reply in HIL or to io/CC</div>
+    <div class="gate-sep">→</div>
+    <div class="gate-step"><strong>Execute</strong>Only after explicit ack received</div>
+  </div>
+</div>
+
+<!-- ── WORKPLAN: SCOUT vs STATE ────────────────────────── -->
+<div class="section-title">Workplan Convention (Position 4)</div>
+<div class="workplan-row">
+  <div class="wp-box wp-scout">
+    <div class="wp-title">🔭 Scout Mode — Design &amp; Planning</div>
+    <div class="wp-items">
+      · Scope is provisional<br>
+      · Steps change as you learn<br>
+      · Map drawn as you go<br>
+      · No strict state tracking<br>
+      · Brief is the deliverable
+    </div>
+  </div>
+  <div class="wp-switch">
+    <span class="wp-switch-icon">🔑</span>
+    <div><strong>Switching signal:</strong> CC says vai on the brief.<br>Polo writes <code>Current phase: implementation</code> to state header.</div>
+  </div>
+  <div class="wp-box wp-state">
+    <div class="wp-title">⚙️ State Machine — Delivery</div>
+    <div class="wp-items">
+      · Scope is fixed<br>
+      · Deviations must be flagged<br>
+      · State header mandatory<br>
+      · Phase transitions logged<br>
+      · Blocked on → CC check ≤2h
+    </div>
+  </div>
+</div>
+<div style="background:#fff;border:1.5px solid #bdbdbd;border-radius:6px;padding:10px 14px;font-size:0.7rem;color:#555;margin-bottom:28px">
+  <strong>State header (every workplan at <code>project/[name]/workplan.md</code>):</strong><br><br>
+  <code style="background:#f5f5f5;padding:6px 10px;border-radius:4px;display:inline-block;line-height:1.8">
+    ## State<br>
+    Current phase: [design | planning | implementation | review | done]<br>
+    Blocked on: [description or "none"]<br>
+    Cross-layer deps: [agents waiting, or "none"]<br>
+    Last updated: [ISO date]
+  </code>
+</div>
+
+<!-- ── TASK COMPLETION FORMAT ────────────────────────────── -->
+<div class="section-title">Minimum Task Completion Report (Position 6)</div>
+<div style="background:#fff;border:1.5px solid #a5d6a7;border-radius:8px;padding:14px 16px;margin-bottom:28px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  <div>
+    <div style="font-size:0.72rem;font-weight:700;color:#2e7d32;margin-bottom:6px">Required fields (all tasks)</div>
+    <div style="font-size:0.7rem;color:#444;line-height:1.9">
+      <strong>Completed:</strong> bullet list of changes<br>
+      <strong>Wall-clock time:</strong> active / elapsed if different<br>
+      <strong>Not done:</strong> deferred/deprioritised scope<br>
+      <strong>Not verified:</strong> claims without direct evidence<br>
+      <strong>Blockers:</strong> anything preventing further progress
+    </div>
+  </div>
+  <div>
+    <div style="font-size:0.72rem;font-weight:700;color:#c62828;margin-bottom:6px">What this prevents</div>
+    <div style="font-size:0.7rem;color:#444;line-height:1.9">
+      "Done in 7 minutes" + 3 items in Not done = visible contradiction<br><br>
+      Applies to: Polo→CC, Polo→io, io→CC, CC→Martin briefings
+    </div>
+  </div>
+</div>
+
+<!-- ── CHANNEL LEGEND ─────────────────────────────────────── -->
+<div class="section-title">Key Paths</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-bottom:24px;font-size:0.7rem">
+  <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 12px"><strong>HIL (gates):</strong> Telegram -1003678179601 / thread 12687</div>
+  <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 12px"><strong>Sermo (visibility):</strong> Telegram -1003678179601 / thread 111</div>
+  <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 12px"><strong>Mailbox:</strong> workspace/data/mailbox.sqlite</div>
+  <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 12px"><strong>Handoff file:</strong> workspace/polo-io-handoff.md</div>
+  <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 12px"><strong>HEQ:</strong> workspace/data/coordination.sqlite → human_escalation_queue</div>
+  <div style="background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 12px"><strong>io compact:</strong> workspace/scripts/io-session-compact.sh · cron every 30m</div>
+</div>
+
+<footer>OpenClaw · Architecture Council 2026-06-03 · 7 adopted positions · Diagram 0027</footer>
+
+</body>
+</html>
