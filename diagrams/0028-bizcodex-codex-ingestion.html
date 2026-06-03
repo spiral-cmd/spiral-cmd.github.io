@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bizcodex + codex ingestion</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #FFFFFF;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+  svg { overflow: visible; }
+
+  .node-ink { fill: #1A1A18; }
+  .node-ink text { fill: #FFFFFF; }
+  .node-white { fill: #FFFFFF; stroke: #1A1A18; stroke-width: 1.5px; }
+  .node-white text { fill: #1A1A18; }
+  .node-coral { fill: #FAECE7; stroke: #C25C3A; stroke-width: 1.5px; }
+  .node-coral text { fill: #7A3520; }
+  .node-blue { fill: #E6F1FB; stroke: #4A7AB5; stroke-width: 1.5px; }
+  .node-blue text { fill: #185FA5; }
+  .node-olive { fill: #EAF3DE; stroke: #6A7A3A; stroke-width: 1.5px; }
+  .node-olive text { fill: #3B6D11; }
+
+  .node-label { font-size: 14px; font-weight: 600; }
+  .role-label { font-size: 12px; font-style: italic; fill: #9A9890; }
+  .annotation { font-size: 12px; font-style: italic; fill: #9A9890; }
+  .section-header { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; fill: #9A9890; }
+  .task-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; fill: #6A7A3A; }
+
+  .arrow { fill: #1A1A18; }
+  .arrow-ghost { fill: #9A9890; }
+</style>
+</head>
+<body>
+<svg width="1100" height="1200" viewBox="0 0 1100 1200">
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="arrow" d="M 0 0 L 10 5 L 0 10 Z"/>
+    </marker>
+    <marker id="arrow-ghost" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="arrow-ghost" d="M 0 0 L 10 5 L 0 10 Z"/>
+    </marker>
+    <marker id="arrow-rev" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path class="arrow" d="M 10 0 L 0 5 L 10 10 Z"/>
+    </marker>
+  </defs>
+
+  <!-- ===== TITLE ===== -->
+  <text x="550" y="40" text-anchor="middle" class="section-header">DOCUMENT INGESTION — BIZCODEX + CODEX</text>
+
+  <!-- ===== SOURCE COLUMN ===== -->
+  <text x="200" y="80" text-anchor="middle" class="task-label">SOURCES</text>
+
+  <!-- biz-mc (Google Drive) -->
+  <rect x="75" y="95" width="250" height="56" rx="10" class="node-coral"/>
+  <text x="200" y="121" text-anchor="middle" class="node-label">biz-mc</text>
+  <text x="200" y="139" text-anchor="middle" class="role-label" fill="#9A9890">google drive — business docs</text>
+
+  <!-- pdf-in (downloads) -->
+  <rect x="75" y="175" width="250" height="56" rx="10" class="node-blue"/>
+  <text x="200" y="201" text-anchor="middle" class="node-label">pdf-in</text>
+  <text x="200" y="219" text-anchor="middle" class="role-label" fill="#9A9890">downloads — misc pdfs</text>
+
+  <!-- codex corpus -->
+  <rect x="75" y="255" width="250" height="56" rx="10" class="node-olive"/>
+  <text x="200" y="281" text-anchor="middle" class="node-label">codex corpus</text>
+  <text x="200" y="299" text-anchor="middle" class="role-label" fill="#9A9890">/Volumes/4tb-a/codex/ — 43 tags</text>
+
+  <!-- ===== PIPELINE 1: BIZCODEX ===== -->
+  <text x="550" y="80" text-anchor="middle" class="task-label">BIZCODEX PIPELINE</text>
+
+  <!-- Arrow biz-mc → bizcodex ingest -->
+  <line x1="325" y1="123" x2="430" y2="123" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- bizcodex_ingest.py -->
+  <rect x="435" y="95" width="230" height="56" rx="10" class="node-ink"/>
+  <text x="550" y="121" text-anchor="middle" class="node-label" fill="#FFFFFF">bizcodex_ingest.py</text>
+  <text x="550" y="139" text-anchor="middle" class="role-label" fill="#CCCCCC">walks watch root, extracts, chunks</text>
+
+  <!-- Extract step -->
+  <line x1="550" y1="151" x2="550" y2="175" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="435" y="180" width="230" height="40" rx="10" class="node-white"/>
+  <text x="550" y="206" text-anchor="middle" class="node-label">extract.py</text>
+
+  <!-- OCR fallback -->
+  <line x1="550" y1="220" x2="550" y2="240" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="435" y="245" width="230" height="40" rx="10" class="node-white"/>
+  <text x="550" y="271" text-anchor="middle" class="node-label">pdftotext → ocr fallback</text>
+
+  <!-- Chunk + embed -->
+  <line x1="550" y1="285" x2="550" y2="305" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="435" y="310" width="230" height="40" rx="10" class="node-white"/>
+  <text x="550" y="336" text-anchor="middle" class="node-label">chunk (4096b) + embed (minilm)</text>
+
+  <!-- bizcodex.db -->
+  <line x1="550" y1="350" x2="550" y2="375" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="435" y="380" width="230" height="56" rx="10" class="node-coral"/>
+  <text x="550" y="406" text-anchor="middle" class="node-label">bizcodex.db</text>
+  <text x="550" y="424" text-anchor="middle" class="role-label" fill="#9A9890">fts5 + vec0 — business docs</text>
+
+  <!-- ===== PIPELINE 2: CODEX ===== -->
+  <text x="900" y="80" text-anchor="middle" class="task-label">CODEX PIPELINE</text>
+
+  <!-- Arrow pdf-in → codex ingest -->
+  <line x1="325" y1="203" x2="770" y2="203" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="550" y="197" class="annotation">pdf-in files route to codex, not bizcodex</text>
+
+  <!-- codex ingest -->
+  <rect x="775" y="175" width="250" height="56" rx="10" class="node-ink"/>
+  <text x="900" y="201" text-anchor="middle" class="node-label" fill="#FFFFFF">codex ingest</text>
+  <text x="900" y="219" text-anchor="middle" class="role-label" fill="#CCCCCC">tag-learn pipeline</text>
+
+  <!-- Arrow codex corpus → codex ingest -->
+  <line x1="325" y1="283" x2="770" y2="283" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Extract + tag -->
+  <line x1="900" y1="231" x2="900" y2="255" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="775" y="260" width="250" height="40" rx="10" class="node-white"/>
+  <text x="900" y="286" text-anchor="middle" class="node-label">extract + tag assignment</text>
+
+  <!-- Chunk + embed -->
+  <line x1="900" y1="300" x2="900" y2="320" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="775" y="325" width="250" height="40" rx="10" class="node-white"/>
+  <text x="900" y="351" text-anchor="middle" class="node-label">chunk + embed (minilm)</text>
+
+  <!-- codex.db -->
+  <line x1="900" y1="365" x2="900" y2="390" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="775" y="395" width="250" height="56" rx="10" class="node-olive"/>
+  <text x="900" y="421" text-anchor="middle" class="node-label">codex.db</text>
+  <text x="900" y="439" text-anchor="middle" class="role-label" fill="#9A9890">fts5 + vec0 — 1187 docs, 43 tags</text>
+
+  <!-- ===== SEPARATION RULE ===== -->
+  <line x1="550" y1="470" x2="550" y2="500" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+
+  <rect x="150" y="510" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="170" y="530" class="task-label">SEPARATION RULE</text>
+  <text x="170" y="552" class="annotation">biz-mc → bizcodex.db (business documents: finance, legal, admin)</text>
+  <text x="170" y="572" class="annotation">pdf-in → codex.db (general reading: articles, research, misc pdfs)</text>
+
+  <!-- ===== QUERY LAYER ===== -->
+  <line x1="550" y1="580" x2="550" y2="610" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <text x="550" y="630" text-anchor="middle" class="task-label">QUERY LAYER</text>
+
+  <!-- bizcodex query -->
+  <rect x="150" y="645" width="350" height="56" rx="10" class="node-coral"/>
+  <text x="325" y="671" text-anchor="middle" class="node-label">bizcodex query</text>
+  <text x="325" y="689" text-anchor="middle" class="role-label" fill="#9A9890">bizcodex_apply.py — business search</text>
+
+  <!-- codex query -->
+  <rect x="600" y="645" width="350" height="56" rx="10" class="node-olive"/>
+  <text x="775" y="671" text-anchor="middle" class="node-label">codex query</text>
+  <text x="775" y="689" text-anchor="middle" class="role-label" fill="#9A9890">codex_apply.py — general search</text>
+
+  <!-- ===== FOOTER ===== -->
+  <text x="550" y="780" text-anchor="middle" class="section-header">BIZCODEX + CODEX INGESTION — JUNE 2026</text>
+
+</svg>
+</body>
+</html>
