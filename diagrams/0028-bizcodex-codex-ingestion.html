@@ -55,22 +55,22 @@
   <text x="550" y="40" text-anchor="middle" class="section-header">DOCUMENT INGESTION — BIZCODEX + CODEX</text>
 
   <!-- ===== SOURCE COLUMN ===== -->
-  <text x="200" y="80" text-anchor="middle" class="task-label">SOURCES</text>
+  <text x="200" y="80" text-anchor="middle" class="task-label">BIZ SOURCE</text>
 
   <!-- biz-mc (Google Drive) -->
   <rect x="75" y="95" width="250" height="56" rx="10" class="node-coral"/>
   <text x="200" y="121" text-anchor="middle" class="node-label">biz-mc</text>
   <text x="200" y="139" text-anchor="middle" class="role-label" fill="#9A9890">google drive — business docs</text>
 
-  <!-- pdf-in (downloads) -->
-  <rect x="75" y="175" width="250" height="56" rx="10" class="node-blue"/>
-  <text x="200" y="201" text-anchor="middle" class="node-label">pdf-in</text>
-  <text x="200" y="219" text-anchor="middle" class="role-label" fill="#9A9890">downloads — misc pdfs</text>
+  <!-- pdf-in (between pipelines) -->
+  <rect x="565" y="175" width="180" height="56" rx="10" class="node-blue"/>
+  <text x="655" y="201" text-anchor="middle" class="node-label">pdf-in</text>
+  <text x="655" y="219" text-anchor="middle" class="role-label" fill="#9A9890">downloads — misc pdfs</text>
 
-  <!-- codex corpus -->
-  <rect x="75" y="255" width="250" height="56" rx="10" class="node-olive"/>
-  <text x="200" y="281" text-anchor="middle" class="node-label">codex corpus</text>
-  <text x="200" y="299" text-anchor="middle" class="role-label" fill="#9A9890">/Volumes/4tb-a/codex/ — 43 tags</text>
+  <!-- codex corpus (between pipelines) -->
+  <rect x="565" y="255" width="180" height="56" rx="10" class="node-olive"/>
+  <text x="655" y="281" text-anchor="middle" class="node-label">codex corpus</text>
+  <text x="655" y="299" text-anchor="middle" class="role-label" fill="#9A9890">/Volumes/4tb-a/codex/ — 43 tags</text>
 
   <!-- ===== PIPELINE 1: BIZCODEX ===== -->
   <text x="550" y="80" text-anchor="middle" class="task-label">BIZCODEX PIPELINE</text>
@@ -111,17 +111,18 @@
   <!-- ===== PIPELINE 2: CODEX ===== -->
   <text x="900" y="80" text-anchor="middle" class="task-label">CODEX PIPELINE</text>
 
-  <!-- Arrow pdf-in → codex ingest -->
-  <line x1="325" y1="203" x2="770" y2="203" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="550" y="197" class="annotation">pdf-in files route to codex, not bizcodex</text>
+
+  <!-- Arrow pdf-in → codex ingest (short, no crossing) -->
+  <line x1="745" y1="203" x2="770" y2="203" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Arrow codex corpus → extract+tag (short, no crossing) -->
+  <line x1="745" y1="283" x2="770" y2="283" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- codex ingest -->
   <rect x="775" y="175" width="250" height="56" rx="10" class="node-ink"/>
   <text x="900" y="201" text-anchor="middle" class="node-label" fill="#FFFFFF">codex ingest</text>
   <text x="900" y="219" text-anchor="middle" class="role-label" fill="#CCCCCC">tag-learn pipeline</text>
 
-  <!-- Arrow codex corpus → codex ingest -->
-  <line x1="325" y1="283" x2="770" y2="283" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Extract + tag -->
   <line x1="900" y1="231" x2="900" y2="255" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
