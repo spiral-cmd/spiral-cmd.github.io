@@ -37,7 +37,7 @@
 </style>
 </head>
 <body>
-<svg width="1100" height="1200" viewBox="0 0 1100 1200">
+<svg width="1400" height="1200" viewBox="0 0 1400 1200">
 
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
@@ -52,10 +52,10 @@
   </defs>
 
   <!-- ===== TITLE ===== -->
-  <text x="550" y="40" text-anchor="middle" class="section-header">DOCUMENT INGESTION — BIZCODEX + CODEX</text>
+  <text x="700" y="40" text-anchor="middle" class="section-header">DOCUMENT INGESTION — BIZCODEX + CODEX</text>
 
   <!-- ===== SOURCE COLUMN ===== -->
-  <text x="200" y="80" text-anchor="middle" class="task-label">BIZ SOURCE</text>
+  <text x="250" y="80" text-anchor="middle" class="task-label">BIZ SOURCE</text>
 
   <!-- biz-mc (Google Drive) -->
   <rect x="75" y="95" width="250" height="56" rx="10" class="node-coral"/>
@@ -63,14 +63,14 @@
   <text x="200" y="139" text-anchor="middle" class="role-label" fill="#9A9890">google drive — business docs</text>
 
   <!-- pdf-in (between pipelines) -->
-  <rect x="565" y="175" width="180" height="56" rx="10" class="node-blue"/>
-  <text x="655" y="201" text-anchor="middle" class="node-label">pdf-in</text>
-  <text x="655" y="219" text-anchor="middle" class="role-label" fill="#9A9890">downloads — misc pdfs</text>
+  <rect x="700" y="175" width="220" height="56" rx="10" class="node-blue"/>
+  <text x="810" y="201" text-anchor="middle" class="node-label">pdf-in</text>
+  <text x="810" y="219" text-anchor="middle" class="role-label" fill="#9A9890">downloads — misc pdfs</text>
 
   <!-- codex corpus (between pipelines) -->
-  <rect x="565" y="255" width="180" height="56" rx="10" class="node-olive"/>
-  <text x="655" y="281" text-anchor="middle" class="node-label">codex corpus</text>
-  <text x="655" y="299" text-anchor="middle" class="role-label" fill="#9A9890">/Volumes/4tb-a/codex/ — 43 tags</text>
+  <rect x="700" y="255" width="220" height="56" rx="10" class="node-olive"/>
+  <text x="810" y="281" text-anchor="middle" class="node-label">codex corpus</text>
+  <text x="810" y="299" text-anchor="middle" class="role-label" fill="#9A9890">/Volumes/4tb-a/codex/ — 43 tags</text>
 
   <!-- ===== PIPELINE 1: BIZCODEX ===== -->
   <text x="550" y="80" text-anchor="middle" class="task-label">BIZCODEX PIPELINE</text>
@@ -109,44 +109,44 @@
   <text x="550" y="424" text-anchor="middle" class="role-label" fill="#9A9890">fts5 + vec0 — business docs</text>
 
   <!-- ===== PIPELINE 2: CODEX ===== -->
-  <text x="900" y="80" text-anchor="middle" class="task-label">CODEX PIPELINE</text>
+  <text x="1100" y="80" text-anchor="middle" class="task-label">CODEX PIPELINE</text>
 
 
   <!-- Arrow pdf-in → codex ingest (short, no crossing) -->
-  <line x1="745" y1="203" x2="770" y2="203" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="920" y1="203" x2="970" y2="203" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- Arrow codex corpus → extract+tag (short, no crossing) -->
-  <line x1="745" y1="283" x2="770" y2="283" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="920" y1="283" x2="970" y2="280" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
   <!-- codex ingest -->
-  <rect x="775" y="175" width="250" height="56" rx="10" class="node-ink"/>
-  <text x="900" y="201" text-anchor="middle" class="node-label" fill="#FFFFFF">codex ingest</text>
-  <text x="900" y="219" text-anchor="middle" class="role-label" fill="#CCCCCC">tag-learn pipeline</text>
+  <rect x="975" y="175" width="250" height="56" rx="10" class="node-ink"/>
+  <text x="1100" y="201" text-anchor="middle" class="node-label" fill="#FFFFFF">codex ingest</text>
+  <text x="1100" y="219" text-anchor="middle" class="role-label" fill="#CCCCCC">tag-learn pipeline</text>
 
 
   <!-- Extract + tag -->
-  <line x1="900" y1="231" x2="900" y2="255" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1100" y1="231" x2="1100" y2="255" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <rect x="775" y="260" width="250" height="40" rx="10" class="node-white"/>
-  <text x="900" y="286" text-anchor="middle" class="node-label">extract + tag assignment</text>
+  <rect x="975" y="260" width="250" height="40" rx="10" class="node-white"/>
+  <text x="1100" y="286" text-anchor="middle" class="node-label">extract + tag assignment</text>
 
   <!-- Chunk + embed -->
-  <line x1="900" y1="300" x2="900" y2="320" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1100" y1="300" x2="1100" y2="320" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <rect x="775" y="325" width="250" height="40" rx="10" class="node-white"/>
-  <text x="900" y="351" text-anchor="middle" class="node-label">chunk + embed (minilm)</text>
+  <rect x="975" y="325" width="250" height="40" rx="10" class="node-white"/>
+  <text x="1100" y="351" text-anchor="middle" class="node-label">chunk + embed (minilm)</text>
 
   <!-- codex.db -->
-  <line x1="900" y1="365" x2="900" y2="390" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1100" y1="365" x2="1100" y2="390" stroke="#1A1A18" stroke-width="1.5" marker-end="url(#arrow)"/>
 
-  <rect x="775" y="395" width="250" height="56" rx="10" class="node-olive"/>
-  <text x="900" y="421" text-anchor="middle" class="node-label">codex.db</text>
-  <text x="900" y="439" text-anchor="middle" class="role-label" fill="#9A9890">fts5 + vec0 — 1187 docs, 43 tags</text>
+  <rect x="975" y="395" width="250" height="56" rx="10" class="node-olive"/>
+  <text x="1100" y="421" text-anchor="middle" class="node-label">codex.db</text>
+  <text x="1100" y="439" text-anchor="middle" class="role-label" fill="#9A9890">fts5 + vec0 — 1187 docs, 43 tags</text>
 
   <!-- ===== SEPARATION RULE ===== -->
   <line x1="550" y1="470" x2="550" y2="500" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
 
-  <rect x="150" y="510" width="800" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
+  <rect x="150" y="510" width="1100" height="70" rx="10" fill="none" stroke="#1A1A18" stroke-width="1" stroke-dasharray="4 3"/>
   <text x="170" y="530" class="task-label">SEPARATION RULE</text>
   <text x="170" y="552" class="annotation">biz-mc → bizcodex.db (business documents: finance, legal, admin)</text>
   <text x="170" y="572" class="annotation">pdf-in → codex.db (general reading: articles, research, misc pdfs)</text>
@@ -162,12 +162,12 @@
   <text x="325" y="689" text-anchor="middle" class="role-label" fill="#9A9890">bizcodex_apply.py — business search</text>
 
   <!-- codex query -->
-  <rect x="600" y="645" width="350" height="56" rx="10" class="node-olive"/>
-  <text x="775" y="671" text-anchor="middle" class="node-label">codex query</text>
-  <text x="775" y="689" text-anchor="middle" class="role-label" fill="#9A9890">codex_apply.py — general search</text>
+  <rect x="700" y="645" width="400" height="56" rx="10" class="node-olive"/>
+  <text x="900" y="671" text-anchor="middle" class="node-label">codex query</text>
+  <text x="900" y="689" text-anchor="middle" class="role-label" fill="#9A9890">codex_apply.py — general search</text>
 
   <!-- ===== FOOTER ===== -->
-  <text x="550" y="780" text-anchor="middle" class="section-header">BIZCODEX + CODEX INGESTION — JUNE 2026</text>
+  <text x="700" y="780" text-anchor="middle" class="section-header">BIZCODEX + CODEX INGESTION — JUNE 2026</text>
 
 </svg>
 </body>
