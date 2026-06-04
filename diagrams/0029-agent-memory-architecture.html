@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Memory Architecture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f8f7f4;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+  }
+  .slide {
+    background: #fff;
+    border: 1px solid #e0ddd8;
+    border-radius: 12px;
+    width: 1100px;
+    padding: 48px 56px 52px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 40px;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── LAYER STACK ── */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .layer {
+    border-radius: 10px;
+    padding: 20px 24px;
+    position: relative;
+  }
+  .layer-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .layer-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .layer-desc {
+    font-size: 12.5px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .layer-tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-top: 8px;
+  }
+
+  /* ── CLOUD LAYER ── */
+  .cloud {
+    background: #eef4ff;
+    border: 1.5px solid #c3d8f7;
+  }
+  .cloud .layer-label { color: #4a7fcb; }
+  .cloud .layer-tag { background: #d6e8fb; color: #2d5fa0; }
+
+  /* ── AGENTS ROW ── */
+  .agents-row {
+    display: flex;
+    gap: 12px;
+  }
+  .agent-card {
+    flex: 1;
+    background: #fff;
+    border: 1.5px solid #d8d4cc;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .agent-card .agent-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .agent-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .agent-card .sqlite-path {
+    font-size: 10px;
+    font-family: "SF Mono", "Fira Mono", monospace;
+    color: #888;
+    margin-bottom: 8px;
+    word-break: break-all;
+  }
+  .agent-card .mem-items {
+    font-size: 11.5px;
+    color: #555;
+    line-height: 1.6;
+  }
+  .mem-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  /* agent colors */
+  .polo  { background: #fdf3e7; border-color: #f0c88a; }
+  .polo  .agent-dot { background: #e89d3a; }
+  .polo  .mem-tag { background: #fde8c5; color: #a0660a; }
+
+  .io    { background: #edf7ee; border-color: #a8d9ac; }
+  .io    .agent-dot { background: #4caf50; }
+  .io    .mem-tag { background: #d0efd2; color: #286e2c; }
+
+  .cato  { background: #f3eeff; border-color: #c8b4f0; }
+  .cato  .agent-dot { background: #8c5bd4; }
+  .cato  .mem-tag { background: #e4d9f7; color: #5c3190; }
+
+  .codo  { background: #fff0f0; border-color: #f2b3b3; }
+  .codo  .agent-dot { background: #e05555; }
+  .codo  .mem-tag { background: #fde0e0; color: #a02222; }
+
+  .zeno  { background: #f0faff; border-color: #99d4f0; }
+  .zeno  .agent-dot { background: #2999cc; }
+  .zeno  .mem-tag { background: #d4eefa; color: #1a6a9a; }
+
+  /* ── LOCAL LAYER ── */
+  .local-layer {
+    background: #f9f7f2;
+    border: 1.5px dashed #c8c0b0;
+    border-radius: 10px;
+    padding: 18px 24px;
+  }
+  .local-layer .layer-label { color: #7a7060; }
+
+  /* ── SHARED LEARNINGS ── */
+  .shared {
+    background: #fffbea;
+    border: 1.5px solid #e8d980;
+  }
+  .shared .layer-label { color: #9a8520; }
+  .shared .layer-tag { background: #fdf5c0; color: #7a6610; }
+
+  /* ── CONNECTOR LINES ── */
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: -4px 0;
+    color: #aaa;
+    font-size: 11px;
+  }
+  .connector-line {
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+    max-width: 180px;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 24px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: #555;
+    max-width: 260px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .legend-item strong { color: #222; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <h1>Agent Memory Architecture</h1>
+  <div class="subtitle">OpenClaw · 2026-06-04 · dual-layer: local identity + cloud episodic</div>
+
+  <div class="layers">
+
+    <!-- CLOUD LAYER -->
+    <div class="layer cloud">
+      <div class="layer-label">Layer 1 — Cloud Episodic Memory (shared)</div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:24px;">
+        <div>
+          <div class="layer-title">memos-cloud · <span style="font-weight:400;font-size:13px;color:#555">@memtensor/memos-cloud-openclaw-plugin v0.1.15</span></div>
+          <div class="layer-desc">
+            Captures raw <strong>conversation turns</strong> from all agents. Injected before each run via <code style="font-size:11px;background:#dce9f9;padding:1px 5px;border-radius:3px;">/search/memory</code> · persisted after via <code style="font-size:11px;background:#dce9f9;padding:1px 5px;border-radius:3px;">/add/message</code>.<br>
+            Enables cross-session continuity, coherent multi-turn recall, and shared conversational history across agents.
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span class="layer-tag">multiAgentMode: true</span>
+            <span class="layer-tag">polo: 9 memories · full_session</span>
+            <span class="layer-tag">others: 6 memories · last_turn</span>
+            <span class="layer-tag" style="background:#e8d6fb;color:#5c2fa0;">api: memos.memtensor.cn</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;color:#888;margin-bottom:4px;">Data type</div>
+          <div style="font-size:13px;font-weight:600;color:#2d5fa0;">Ephemeral / conversational</div>
+          <div style="font-size:11px;color:#888;margin-top:8px;margin-bottom:4px;">Captured</div>
+          <div style="font-size:13px;font-weight:600;color:#2d5fa0;">What was said &amp; when</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <span>↕ independent · no sync between layers</span>
+      <div class="connector-line"></div>
+    </div>
+
+    <!-- LOCAL LAYER -->
+    <div class="local-layer">
+      <div class="layer-label">Layer 2 — Local Identity Memory (per-agent)</div>
+      <div style="margin-bottom:14px;">
+        <span style="font-size:12.5px;color:#666;">Each agent has a private <code style="font-size:11px;background:#ece8df;padding:1px 5px;border-radius:3px;">~/.openclaw/memory/&lt;agent&gt;.sqlite</code> · FTS5 + sqlite-vec · indexes MEMORY.md + daily journal files</span>
+      </div>
+
+      <div class="agents-row">
+
+        <div class="agent-card polo">
+          <div class="agent-name"><span class="agent-dot"></span>Polo <span style="font-weight:400;font-size:11px;color:#999;">(main)</span></div>
+          <div class="sqlite-path">memory/main.sqlite</div>
+          <div class="mem-items">
+            <span class="mem-tag">211 chunks</span>
+            <span class="mem-tag">77 files</span><br>
+            <span style="font-size:11px;">MEMORY.md + daily journals<br>Jan 2026 → present</span>
+          </div>
+        </div>
+
+        <div class="agent-card io">
+          <div class="agent-name"><span class="agent-dot"></span>io</div>
+          <div class="sqlite-path">memory/io.sqlite</div>
+          <div class="mem-items">
+            <span class="mem-tag">io.sqlite</span><br>
+            <span style="font-size:11px;">Workspace memory<br>+ research outputs</span>
+          </div>
+        </div>
+
+        <div class="agent-card cato">
+          <div class="agent-name"><span class="agent-dot"></span>Cato</div>
+          <div class="sqlite-path">memory/cato.sqlite</div>
+          <div class="mem-items">
+            <span class="mem-tag">cato.sqlite</span><br>
+            <span style="font-size:11px;">Cron operator identity<br>+ tool knowledge</span>
+          </div>
+        </div>
+
+        <div class="agent-card codo">
+          <div class="agent-name"><span class="agent-dot"></span>Codo</div>
+          <div class="sqlite-path">memory/codo.sqlite</div>
+          <div class="mem-items">
+            <span class="mem-tag">codo.sqlite</span><br>
+            <span style="font-size:11px;">Build patterns<br>+ code conventions</span>
+          </div>
+        </div>
+
+        <div class="agent-card zeno">
+          <div class="agent-name"><span class="agent-dot"></span>Zeno</div>
+          <div class="sqlite-path">memory/zeno.sqlite</div>
+          <div class="mem-items">
+            <span class="mem-tag">zeno.sqlite</span><br>
+            <span style="font-size:11px;">Agent identity<br>+ specialised knowledge</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="connector">
+      <div class="connector-line"></div>
+      <span>+ separate shared store</span>
+      <div class="connector-line"></div>
+    </div>
+
+    <!-- SHARED LEARNINGS -->
+    <div class="layer shared">
+      <div class="layer-label">Layer 3 — Shared Operational Learnings</div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:24px;">
+        <div>
+          <div class="layer-title">learnings.db · <span style="font-weight:400;font-size:13px;color:#555;">~/.openclaw/workspace/data/learnings.db</span></div>
+          <div class="layer-desc">
+            Explicitly curated error/behaviour records written by agents. FTS5 + 384-dim vec0 embeddings.<br>
+            Not injected automatically — queried on demand. Covers cron failures, tool quirks, process decisions.
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span class="layer-tag">polo: 17</span>
+            <span class="layer-tag">io: 18</span>
+            <span class="layer-tag">cato: 4</span>
+            <span class="layer-tag">cc: 3</span>
+            <span class="layer-tag" style="background:#fdf5c0;color:#7a6610;">explicit write only · no auto-capture</span>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;color:#888;margin-bottom:4px;">Data type</div>
+          <div style="font-size:13px;font-weight:600;color:#7a6610;">Declarative / operational</div>
+          <div style="font-size:11px;color:#888;margin-top:8px;margin-bottom:4px;">Captured</div>
+          <div style="font-size:13px;font-weight:600;color:#7a6610;">What went wrong &amp; why</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /layers -->
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#4a7fcb;"></div>
+      <div><strong>Cloud layer</strong> — conversation turns; what agents said; cross-session continuity. External dependency. Auto-captured.</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#7a7060;"></div>
+      <div><strong>Local layer</strong> — agent identity, skills, MEMORY.md, daily journals. Fully local. Sovereign. Auto-indexed from files.</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#9a8520;"></div>
+      <div><strong>Learnings layer</strong> — operational intelligence written explicitly by agents. Shared across all agents. On-demand query only.</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#aaa;"></div>
+      <div><strong>No sync</strong> between layers by design. Each layer captures a distinct memory type; overlap is minimal in practice.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
