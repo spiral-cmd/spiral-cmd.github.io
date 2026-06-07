@@ -15,6 +15,8 @@
   .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
   .legend-dot.g5 { background: #2563eb; }
   .legend-dot.personal { background: #eab308; }
+  .legend-dot.entered { background: #16a34a; }
+  .legend-dot.maybe { background: #ca8a04; }
   .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
   .day-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #666; padding: 6px 0; }
   .day-cell { background: white; border-radius: 8px; padding: 8px; min-height: 100px; border: 1px solid #e2e8f0; }
@@ -28,6 +30,12 @@
   .event .age { display: inline-block; font-size: 0.6rem; background: rgba(37,99,235,0.12); padding: 0 3px; border-radius: 2px; margin-left: 2px; }
   .event.personal { background: #fef9c3; color: #854d0e; border-left-color: #eab308; }
   .event.personal .loc { color: #a16207; }
+  .event.entered { background: #dcfce7; color: #166534; border-left-color: #16a34a; }
+  .event.entered .loc { color: #15803d; }
+  .event.entered .age { background: rgba(22,163,74,0.12); }
+  .event.maybe { background: #fef9c3; color: #854d0e; border-left-color: #ca8a04; }
+  .event.maybe .loc { color: #a16207; }
+  .event.maybe .age { background: rgba(202,138,4,0.12); }
   .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
   .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
   .summary ul { list-style: none; font-size: 0.85rem; }
@@ -48,6 +56,8 @@
 
   <div class="legend">
     <div class="legend-item"><span class="legend-dot g5"></span> Grade 5</div>
+    <div class="legend-item"><span class="legend-dot entered"></span> Entered</div>
+    <div class="legend-item"><span class="legend-dot maybe"></span> Maybe</div>
     <div class="legend-item"><span class="legend-dot personal"></span> Personal</div>
   </div>
 
@@ -59,11 +69,11 @@
 <script>
 const tournaments = [
   { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "Open/14U/18U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/67E37A3A-7AA5-4BBA-A76F-51286BF3BCF5" },
-  { name: "Oxted School", loc: "18mi", age: "11U/16U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/7483E3D5-FABF-4CE6-8066-FBD894F39251" },
+  { name: "Oxted School", loc: "18mi", age: "11U/16U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/7483E3D5-FABF-4CE6-8066-FBD894F39251", highlight: "entered" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "11U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/6A67602A-B4E9-41D8-9398-AF30AB9A7142" },
   { name: "The Avenue LTC", loc: "Middlesex, 7.4mi", age: "14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/35A85436-5289-4F56-8AFC-3F49D37AAB70" },
   { name: "Brunel University", loc: "Middlesex, 16mi", age: "12U/16U/14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/B11ADC43-AF00-489D-85A4-76CC90F0D8C0" },
-  { name: "Cobham Tennis Club", loc: "Surrey, 17mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/29194C94-6B3B-41EC-8B3C-FAE4F1189D5B" },
+  { name: "Cobham Tennis Club", loc: "Surrey, 17mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/29194C94-6B3B-41EC-8B3C-FAE4F1189D5B", highlight: "maybe" },
   { name: "Raphael Park Tennis Club", loc: "Essex, 14mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/DEFCD21B-7558-43DF-9854-5C6A6027DF19" }
 ];
 
@@ -120,7 +130,7 @@ function buildCalendar() {
     const dayEvents = tournaments.filter(t => t.date === dateStr);
     dayEvents.forEach(t => {
       const a = document.createElement("a");
-      a.className = "event";
+      a.className = "event" + (t.highlight ? " " + t.highlight : "");
       a.href = t.url;
       a.target = "_blank";
       a.rel = "noopener";
