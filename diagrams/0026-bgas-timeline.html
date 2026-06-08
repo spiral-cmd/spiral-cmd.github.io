@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BGAS Timeline — MC vs British Gas</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 30px 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; color: #f8fafc; }
+  .subtitle { color: #94a3b8; font-size: 0.85rem; margin-bottom: 30px; }
+  .legend { display: flex; gap: 20px; margin-bottom: 24px; font-size: 0.8rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-dot.bg { background: #3b82f6; }
+  .legend-dot.mc { background: #22c55e; }
+  .legend-dot.fb { background: #f59e0b; }
+  .legend-dot.web { background: #a855f7; }
+  .timeline { position: relative; padding-left: 40px; }
+  .timeline::before { content: ''; position: absolute; left: 18px; top: 0; bottom: 0; width: 2px; background: #334155; }
+  .event { position: relative; margin-bottom: 20px; padding: 14px 18px; border-radius: 10px; border: 1px solid #1e293b; background: #1e293b; transition: border-color 0.2s; }
+  .event:hover { border-color: #475569; }
+  .event::before { content: ''; position: absolute; left: -30px; top: 18px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #334155; background: #1e293b; }
+  .event.bg::before { background: #3b82f6; border-color: #3b82f6; }
+  .event.mc::before { background: #22c55e; border-color: #22c55e; }
+  .event.fb::before { background: #f59e0b; border-color: #f59e0b; }
+  .event.web::before { background: #a855f7; border-color: #a855f7; }
+  .event-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+  .event-date { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+  .event-tag { font-size: 0.65rem; padding: 2px 7px; border-radius: 4px; font-weight: 600; }
+  .tag-bg { background: #1e3a5f; color: #93c5fd; }
+  .tag-mc { background: #14532d; color: #86efac; }
+  .tag-fb { background: #451a03; color: #fcd34d; }
+  .tag-web { background: #3b0764; color: #d8b4fe; }
+  .event-title { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+  .event-detail { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+  .event-detail strong { color: #cbd5e1; }
+  .event-detail .highlight { color: #fbbf24; }
+  .summary { margin-top: 30px; background: #1e293b; border-radius: 10px; padding: 18px; border: 1px solid #334155; }
+  .summary h3 { font-size: 0.9rem; margin-bottom: 10px; color: #f1f5f9; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .stat { background: #0f172a; border-radius: 8px; padding: 12px; text-align: center; }
+  .stat .num { font-size: 1.4rem; font-weight: 700; color: #3b82f6; }
+  .stat .label { font-size: 0.7rem; color: #64748b; margin-top: 2px; }
+  .stat .num.green { color: #22c55e; }
+  .stat .num.amber { color: #f59e0b; }
+  .stat .num.purple { color: #a855f7; }
+  @media (max-width: 600px) {
+    .timeline { padding-left: 30px; }
+    .event { padding: 10px 12px; }
+    .event::before { left: -24px; width: 10px; height: 10px; }
+    .timeline::before { left: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>⚡ MC vs British Gas — Contact Timeline</h1>
+  <p class="subtitle">Account A22561311 · 31 Glasslyn Road N8 8RJ · Gas & Electricity</p>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot bg"></span> British Gas</div>
+    <div class="legend-item"><span class="legend-dot mc"></span> MC (Garfield Curley)</div>
+    <div class="legend-item"><span class="legend-dot fb"></span> Flint Bishop (solicitors)</div>
+    <div class="legend-item"><span class="legend-dot web"></span> Webchat</div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">31 Aug 2022</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Account setup — webchat with Cosmo</div>
+      <div class="event-detail">MC contacts BG via webchat to set up gas account after moving into 31g. BG had set up gas <strong>and</strong> electricity despite MC only requesting gas. MC clarifies: <em>"I did not say gas AND electricity"</em>.</div>
+    </div>
+
+    <div class="event mc">
+      <div class="event-header">
+        <span class="event-date">1 Sep 2022</span>
+        <span class="event-tag tag-mc">MC</span>
+      </div>
+      <div class="event-title">Online account created</div>
+      <div class="event-detail">MC registers online account at britishgas.co.uk using <strong>mrmartincurley@gmail.com</strong>. Account holder: Mr Garfield Curley. Mobile: 07871095454.</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">28 Jun 2024</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Meter reading reminder</div>
+      <div class="event-detail">Morrisons DS (on behalf of BG) emails MC requesting meter reading for N8 8RJ.</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">25 Nov 2024</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">SMS reminder</div>
+      <div class="event-detail">BG texts MC: <em>"Hi Garfield, a quick reminder to send us your meter readings..."</em></div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">11 Sep 2025</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Energy statement issued</div>
+      <div class="event-detail">BG sends Dec–May energy statement to mrmartincurley@gmail.com. Customer ref: 851019449432.</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">22 Sep 2025</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Bill due soon</div>
+      <div class="event-detail">BG notifies MC: bill is due soon. Account A22561311. <span class="highlight">~£363.46 outstanding</span>.</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">29 Sep 2025</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Bill overdue — first notice</div>
+      <div class="event-detail">BG sends overdue notice. Includes debt advice resources (StepChange, Citizens Advice).</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">6 Oct 2025</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Bill overdue — second notice</div>
+      <div class="event-detail">Second overdue notice sent to mrmartincurley@gmail.com.</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">13 Oct 2025</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Outstanding balance — final notice</div>
+      <div class="event-detail">BG urges MC to get in touch. Bank transfer details provided: Sort 60-00-01, Acct 48995541. Warns of credit rating impact.</div>
+    </div>
+
+    <div class="event web">
+      <div class="event-header">
+        <span class="event-date">13 Nov 2025</span>
+        <span class="event-tag tag-web">Webchat</span>
+      </div>
+      <div class="event-title">Webchat with Sidhharth — billing dispute</div>
+      <div class="event-detail">MC initiates webchat as "garfield". Speaks to <strong>Sidhharth</strong> (Case Handler). MC disputes £363.46 balance, requests full billing breakdown for gas and electricity. Sidhharth initiates <strong>30-day billing review</strong>. MC to be notified by email when complete.</div>
+    </div>
+
+    <div class="event mc">
+      <div class="event-header">
+        <span class="event-date">13 Jan 2026</span>
+        <span class="event-tag tag-mc">MC</span>
+      </div>
+      <div class="event-title">Email to Alex Payne at BG</div>
+      <div class="event-detail">MC emails <strong>Alex Payne</strong> (Alex.Payne@britishgas.co.uk) — formal request for investigation into historical electricity estimates. References legacy billing statement received. Outstanding balance now <span class="highlight">£1,244.68</span>.</div>
+    </div>
+
+    <div class="event bg">
+      <div class="event-header">
+        <span class="event-date">13 Jan 2026</span>
+        <span class="event-tag tag-bg">British Gas</span>
+      </div>
+      <div class="event-title">Legacy billing statement sent</div>
+      <div class="event-detail">Alex Payne sends MC the old billing system statement (Dec 2022 – May 2024). Shows estimated readings and standing charges on legacy system.</div>
+    </div>
+
+    <div class="event fb">
+      <div class="event-header">
+        <span class="event-date">16 Feb 2026</span>
+        <span class="event-tag tag-fb">Flint Bishop</span>
+      </div>
+      <div class="event-title">Flint Bishop — solicitor letter</div>
+      <div class="event-detail"><strong>Ali Kherallah</strong> (ali.kherallah@flintbishop.co.uk) writes to MC on behalf of BG. Ref: R0955114. Seeks to agree affordable repayment plan. Warns of potential further action.</div>
+    </div>
+
+    <div class="event fb">
+      <div class="event-header">
+        <span class="event-date">17 Mar 2026</span>
+        <span class="event-tag tag-fb">Flint Bishop</span>
+      </div>
+      <div class="event-title">Zainab Mohammed — rebill request</div>
+      <div class="event-detail"><strong>Zainab Mohammed</strong> (bgr@flintbishop.co.uk) emails MC: BG confirms <strong>no open complaint</strong> on account. Offers rebilling if MC provides timestamped meter photo showing all 4 corners.</div>
+    </div>
+
+    <div class="event mc">
+      <div class="event-header">
+        <span class="event-date">17 Mar 2026</span>
+        <span class="event-tag tag-mc">MC</span>
+      </div>
+      <div class="event-title">MC replies — meter photo sent</div>
+      <div class="event-detail">MC replies to Zainab with timestamped photo of meter G4-K5048620-12-01. Reading: <strong>20258.40 m³</strong> (only 0.3 m³ increase since Dec 2025). Formally requests rebilling based on actual readings. References £475.76 credit BG issued Nov 2025.</div>
+    </div>
+
+  </div>
+
+  <div class="summary">
+    <h3>📊 Timeline Summary</h3>
+    <div class="summary-grid">
+      <div class="stat">
+        <div class="num">3</div>
+        <div class="label">Years spanned (2022–2026)</div>
+      </div>
+      <div class="stat">
+        <div class="num green">14</div>
+        <div class="label">Total contact events</div>
+      </div>
+      <div class="stat">
+        <div class="num amber">3</div>
+        <div class="label">MC outbound actions</div>
+      </div>
+      <div class="stat">
+        <div class="num purple">1</div>
+        <div class="label">Webchat session</div>
+      </div>
+      <div class="stat">
+        <div class="num">2</div>
+        <div class="label">Flint Bishop contacts</div>
+      </div>
+      <div class="stat">
+        <div class="num">8</div>
+        <div class="label">BG automated emails</div>
+      </div>
+    </div>
+    <p style="margin-top: 12px; font-size: 0.75rem; color: #64748b;">Last contact: 17 Mar 2026 — MC sent meter photo, requested rebill. No further correspondence found.</p>
+  </div>
+
+</div>
+</body>
+</html>
