@@ -72,6 +72,7 @@ const events = [
   { name: "Martin flies in", loc: "LTN→DUB 12:25-13:45 FR339", date: "2026-07-27", type: "flight" },
   { name: "Galway", date: "2026-07-27", type: "galway" },
   { name: "Galway", date: "2026-07-28", type: "galway" },
+  { name: "Clybaun Hotel", loc: "Lunch w Bridie", date: "2026-07-28", type: "personal" },
   { name: "Galway", date: "2026-07-29", type: "galway" },
   { name: "Galway", date: "2026-07-30", type: "galway" },
   { name: "Galway", date: "2026-07-31", type: "galway" },
@@ -144,7 +145,8 @@ function buildCalendar() {
   const nights = Math.round((tripEnd - tripStart) / (1000 * 60 * 60 * 24));
   let html = `<h3>📋 Summary — <span class="count">${nights} nights</span> at Clifden 356 Sky Road</h3><ul>`;
   html += `<li><strong>Sat 25 Jul</strong> — Travel to Galway · Check-in from 5pm</li>`;
-  html += `<li><strong>Mon 27 Jul</strong> — Martin flies in: Luton→Dublin 12:25-13:45 (FR339)</li>`;
+  html += `<li><strong>Mon 27 Jul</strong> — Martin flies in: Luton→Dublin 12:25-13:45 (FR339)</li>
+    <li><strong>Tue 28 Jul</strong> — Clybaun Hotel: Lunch with Bridie</li>`;
   html += `<li><strong>Sat 1 Aug</strong> — Check-out before 10am · Travel home</li>`;
   html += `<li><strong>Mon 10 Aug</strong> — Martin flies home: Dublin→Luton 14:10-15:25 (FR340)</li>`;
   html += `<li><strong>Location:</strong> Clifden 356 Sky Road, Eyrephort, Co. Galway</li>`;
