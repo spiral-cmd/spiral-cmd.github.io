@@ -14,6 +14,9 @@
   .legend-item { display: flex; align-items: center; gap: 6px; }
   .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
   .legend-dot.g5 { background: #2563eb; }
+  .legend-dot.personal { background: #eab308; }
+  .legend-dot.entered { background: #16a34a; }
+  .legend-dot.maybe { background: #ca8a04; }
   .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
   .day-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #666; padding: 6px 0; }
   .day-cell { background: white; border-radius: 8px; padding: 8px; min-height: 100px; border: 1px solid #e2e8f0; }
@@ -25,6 +28,14 @@
   .event:hover { transform: scale(1.03); box-shadow: 0 2px 6px rgba(37,99,235,0.2); }
   .event .loc { display: block; font-size: 0.65rem; color: #555; }
   .event .age { display: inline-block; font-size: 0.6rem; background: rgba(37,99,235,0.12); padding: 0 3px; border-radius: 2px; margin-left: 2px; }
+  .event.personal { background: #fef9c3; color: #854d0e; border-left-color: #eab308; }
+  .event.personal .loc { color: #a16207; }
+  .event.entered { background: #dcfce7; color: #166534; border-left-color: #16a34a; }
+  .event.entered .loc { color: #15803d; }
+  .event.entered .age { background: rgba(22,163,74,0.12); }
+  .event.maybe { background: #fef9c3; color: #854d0e; border-left-color: #ca8a04; }
+  .event.maybe .loc { color: #a16207; }
+  .event.maybe .age { background: rgba(202,138,4,0.12); }
   .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
   .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
   .summary ul { list-style: none; font-size: 0.85rem; }
@@ -45,6 +56,9 @@
 
   <div class="legend">
     <div class="legend-item"><span class="legend-dot g5"></span> Grade 5</div>
+    <div class="legend-item"><span class="legend-dot entered"></span> Entered</div>
+    <div class="legend-item"><span class="legend-dot maybe"></span> Maybe</div>
+    <div class="legend-item"><span class="legend-dot personal"></span> Personal</div>
   </div>
 
   <div class="calendar-grid" id="calendar"></div>
@@ -55,12 +69,16 @@
 <script>
 const tournaments = [
   { name: "National Tennis Centre", loc: "Surrey, 7mi", age: "Open/14U/18U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/67E37A3A-7AA5-4BBA-A76F-51286BF3BCF5" },
-  { name: "Oxted School", loc: "18mi", age: "11U/16U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/7483E3D5-FABF-4CE6-8066-FBD894F39251" },
+  { name: "Oxted School", loc: "18mi", age: "11U/16U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/7483E3D5-FABF-4CE6-8066-FBD894F39251", highlight: "entered" },
   { name: "Russell Park", loc: "Kent, 11mi", age: "11U/14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/6A67602A-B4E9-41D8-9398-AF30AB9A7142" },
   { name: "The Avenue LTC", loc: "Middlesex, 7.4mi", age: "14U", date: "2026-06-21", url: "https://competitions.lta.org.uk/tournament/35A85436-5289-4F56-8AFC-3F49D37AAB70" },
   { name: "Brunel University", loc: "Middlesex, 16mi", age: "12U/16U/14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/B11ADC43-AF00-489D-85A4-76CC90F0D8C0" },
-  { name: "Cobham Tennis Club", loc: "Surrey, 17mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/29194C94-6B3B-41EC-8B3C-FAE4F1189D5B" },
+  { name: "Cobham Tennis Club", loc: "Surrey, 17mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/29194C94-6B3B-41EC-8B3C-FAE4F1189D5B", highlight: "maybe" },
   { name: "Raphael Park Tennis Club", loc: "Essex, 14mi", age: "14U", date: "2026-07-11", url: "https://competitions.lta.org.uk/tournament/DEFCD21B-7558-43DF-9854-5C6A6027DF19" }
+];
+
+const personalEvents = [
+  { name: "Amir arrives", date: "2026-06-23" }
 ];
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -107,15 +125,26 @@ function buildCalendar() {
     }
 
     const dateStr = fmtDate(d);
+
+    // Tournament events
     const dayEvents = tournaments.filter(t => t.date === dateStr);
     dayEvents.forEach(t => {
       const a = document.createElement("a");
-      a.className = "event";
+      a.className = "event" + (t.highlight ? " " + t.highlight : "");
       a.href = t.url;
       a.target = "_blank";
       a.rel = "noopener";
       a.innerHTML = `${t.name} <span class="loc">${t.loc} <span class="age">${t.age}</span></span>`;
       cell.appendChild(a);
+    });
+
+    // Personal events
+    const dayPersonal = personalEvents.filter(e => e.date === dateStr);
+    dayPersonal.forEach(e => {
+      const div = document.createElement("div");
+      div.className = "event personal";
+      div.textContent = e.name;
+      cell.appendChild(div);
     });
 
     grid.appendChild(cell);
@@ -134,6 +163,17 @@ function buildCalendar() {
     const dayEvents = tournaments.filter(t => t.date === dateStr);
     html += `<li><strong>${dayName} ${dt.getDate()} ${monthName}</strong> — ${dayEvents.length} tournament${dayEvents.length > 1 ? "s" : ""}: ${dayEvents.map(t => `<a href="${t.url}" target="_blank" rel="noopener">${t.name}</a> (${t.loc}, ${t.age})`).join(", ")}</li>`;
   });
+  // Add personal events to summary
+  if (personalEvents.length > 0) {
+    html += `<li style="margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;"><strong>Personal:</strong> ${personalEvents.map(e => {
+      const parts = e.date.split("-");
+      const dt = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+      const dayIdx = dt.getDay() === 0 ? 6 : dt.getDay() - 1;
+      const dayName = dayNames[dayIdx];
+      const monthName = monthNames[dt.getMonth() === 5 ? 0 : 1];
+      return `${dayName} ${dt.getDate()} ${monthName} — ${e.name}`;
+    }).join(", ")}</li>`;
+  }
   html += "</ul>";
   summary.innerHTML = html;
 }
