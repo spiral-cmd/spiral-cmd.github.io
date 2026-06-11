@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0032 — Pratica DB</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; padding: 40px 24px; max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; text-align: center; margin-bottom: 28px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step { display: flex; gap: 16px; align-items: flex-start; }
+  .num { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .card { flex: 1; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; background: #f9fafb; }
+  .card h3 { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 5px; }
+  .card p { font-size: 13px; color: #555; line-height: 1.5; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: #eee; padding: 1px 4px; border-radius: 3px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tag { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+  .blue { background: #dbeafe; color: #1d4ed8; }
+  .amber { background: #fef3c7; color: #b45309; }
+  .green { background: #dcfce7; color: #15803d; }
+  .red { background: #fee2e2; color: #b91c1c; }
+  .purple { background: #ede9fe; color: #7c3aed; }
+  .teal { background: #ccfbf1; color: #0f766e; }
+  .split { display: flex; gap: 10px; margin-top: 10px; }
+  .split-box { flex: 1; border-radius: 7px; padding: 10px 12px; font-size: 12px; }
+  .split-box strong { display: block; font-size: 11px; font-weight: 700; margin-bottom: 3px; color: #374151; }
+  .split-box span { color: #555; line-height: 1.4; }
+  .three { display: flex; gap: 8px; margin-top: 10px; }
+  .three-box { flex: 1; border-radius: 7px; padding: 10px 12px; font-size: 12px; }
+  .three-box strong { display: block; font-size: 11px; font-weight: 700; margin-bottom: 3px; color: #374151; }
+  .three-box span { color: #555; line-height: 1.4; font-size: 11px; }
+  .n1 { background: #dbeafe; color: #1d4ed8; }
+  .n2 { background: #fef3c7; color: #b45309; }
+  .n3 { background: #ede9fe; color: #7c3aed; }
+  .n4 { background: #dcfce7; color: #15803d; }
+  .n5 { background: #fee2e2; color: #b91c1c; }
+  footer { margin-top: 32px; font-size: 11px; color: #aaa; text-align: center; }
+</style>
+</head>
+<body>
+<h1>Pratica DB — How It Works</h1>
+<div class="steps">
+
+  <div class="step">
+    <div class="num n1">1</div>
+    <div class="card">
+      <h3>Two Scan Roots</h3>
+      <p>The ingest watches two source directories. Both are scanned on every run.</p>
+      <div class="split">
+        <div class="split-box" style="background:#dbeafe;">
+          <strong>pratica-mc</strong>
+          <span>Google Drive synced folder. Personal admin: bills, legal, banking, insurance, car, travel.</span>
+        </div>
+        <div class="split-box" style="background:#ede9fe;">
+          <strong>biz-cz</strong>
+          <span>/Volumes/4tb-a/gdrive/biz-cz. Family content: zee, kfs-cz, kanban-cz, hargreaveslansdown.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num n2">2</div>
+    <div class="card">
+      <h3>Daily Ingest — 11:00 London</h3>
+      <p>Polo's cron walks both roots recursively via <code>os.walk()</code>. Each file is hashed (SHA-256). If the hash already exists in the DB the file is silently skipped — no duplicates regardless of filename or path.</p>
+      <div class="tags">
+        <span class="tag amber">daily 11:00 cron</span>
+        <span class="tag amber">SHA-256 dedup</span>
+        <span class="tag amber">pdf · txt · jpg · png</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num n3">3</div>
+    <div class="card">
+      <h3>Text Extraction</h3>
+      <p>PDFs are processed with <code>pdftotext</code>; images with Tesseract OCR. Text is chunked at 4,096 bytes for embedding. Files with no extractable text are indexed by filename and metadata only.</p>
+      <div class="tags">
+        <span class="tag purple">pdftotext</span>
+        <span class="tag purple">Tesseract OCR</span>
+        <span class="tag purple">4096-byte chunks</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num n4">4</div>
+    <div class="card">
+      <h3>Three-Layer Index</h3>
+      <p>Each document is written into three parallel indexes in <code>pratica.db</code>.</p>
+      <div class="three">
+        <div class="three-box" style="background:#dcfce7;">
+          <strong>pratica_docs</strong>
+          <span>Metadata: folder_path, file_name, file_type, hash, raw text. 2,458 records.</span>
+        </div>
+        <div class="three-box" style="background:#dbeafe;">
+          <strong>codex_fts</strong>
+          <span>SQLite FTS5 full-text index. Keyword search across all document text.</span>
+        </div>
+        <div class="three-box" style="background:#ede9fe;">
+          <strong>pratica_vec</strong>
+          <span>sqlite-vec vector table. Semantic search via text embeddings.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num n5">5</div>
+    <div class="card">
+      <h3>Search + Daily Report</h3>
+      <p>Documents are searchable by keyword or semantic query via the CLI. A daily report runs at 11:15 and posts a summary to Telegram topic 2843.</p>
+      <div class="tags">
+        <span class="tag red">pratica search &lt;query&gt;</span>
+        <span class="tag red">pratica search --folder &lt;folder&gt;</span>
+        <span class="tag red">daily report → Telegram 2843</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>spiral-cmd.github.io · 2026-06-11</footer>
+</body>
+</html>
