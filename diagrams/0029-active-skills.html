@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Active Skills — OpenClaw</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; margin-bottom: 4px; color: #f8fafc; }
+  .subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 24px; }
+  .legend { display: flex; gap: 20px; margin-bottom: 16px; font-size: 0.85rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .legend-dot.api { background: #3b82f6; }
+  .legend-dot.browser { background: #f59e0b; }
+  .legend-dot.data { background: #10b981; }
+  .legend-dot.social { background: #8b5cf6; }
+  .legend-dot.util { background: #64748b; }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .skill-card { background: #1e293b; border-radius: 10px; padding: 14px; border: 1px solid #334155; transition: transform 0.15s, box-shadow 0.15s; }
+  .skill-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .skill-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .skill-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: white; flex-shrink: 0; }
+  .skill-name { font-weight: 600; font-size: 0.95rem; color: #f1f5f9; }
+  .skill-desc { font-size: 0.78rem; color: #94a3b8; line-height: 1.4; }
+  .skill-tag { display: inline-block; font-size: 0.6rem; padding: 1px 6px; border-radius: 4px; margin-left: auto; font-weight: 500; }
+  .tag-api { background: rgba(59,130,246,0.2); color: #93c5fd; }
+  .tag-browser { background: rgba(245,158,11,0.2); color: #fcd34d; }
+  .tag-data { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+  .tag-social { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+  .tag-util { background: rgba(100,116,139,0.2); color: #cbd5e1; }
+  .summary { margin-top: 20px; background: #1e293b; border-radius: 10px; padding: 14px; border: 1px solid #334155; }
+  .summary h3 { font-size: 0.95rem; margin-bottom: 8px; color: #f1f5f9; }
+  .summary ul { list-style: none; font-size: 0.85rem; }
+  .summary li { padding: 2px 0; color: #94a3b8; }
+  .summary .count { font-weight: 600; color: #3b82f6; }
+  @media (max-width: 700px) {
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧠 Active Skills</h1>
+  <p class="subtitle">28 active · 4 inactive · 12 Jun 2026</p>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot api"></span> API</div>
+    <div class="legend-item"><span class="legend-dot browser"></span> Browser</div>
+    <div class="legend-item"><span class="legend-dot data"></span> Data</div>
+    <div class="legend-item"><span class="legend-dot social"></span> Social</div>
+    <div class="legend-item"><span class="legend-dot util"></span> Utility</div>
+  </div>
+
+  <div class="skills-grid" id="skillsGrid"></div>
+
+  <div class="summary" id="summary"></div>
+</div>
+
+<script>
+const skills = [
+  { name: "raindrop", icon: "🔖", cat: "api", desc: "Manage bookmarks, collections, and tags in Raindrop.io via the REST API." },
+  { name: "simplenote", icon: "📝", cat: "api", desc: "Read, write, search, and manage Simplenote notes via the simplenote Python package." },
+  { name: "notion", icon: "📋", cat: "api", desc: "Notion API for creating and managing pages, databases, and blocks." },
+  { name: "notion-enhanced", icon: "📋", cat: "api", desc: "Integrate with Notion workspaces — read pages, query databases, create entries, manage content." },
+  { name: "todoist", icon: "✅", cat: "api", desc: "Manage Todoist tasks, projects, and labels via the REST API v2." },
+  { name: "shareradar", icon: "📈", cat: "api", desc: "Get stock prices and daily changes for tech stocks using Twelve Data API." },
+  { name: "trainapi", icon: "🚂", cat: "api", desc: "Check UK train departures using TransportAPI." },
+  { name: "tflbus", icon: "🚌", cat: "api", desc: "Get real-time London bus arrivals with cached stop lookup." },
+  { name: "brave-search", icon: "🔍", cat: "api", desc: "Web search using Brave Search API. Free tier: 1,500 queries/month." },
+  { name: "openrouter-invoice", icon: "💰", cat: "api", desc: "Automate download and tracking of OpenRouter invoices." },
+  { name: "xurl", icon: "🐦", cat: "social", desc: "CLI tool for authenticated X (Twitter) API v2 requests." },
+  { name: "xpost", icon: "📤", cat: "social", desc: "Post tweets and threads to X (Twitter) using xurl." },
+  { name: "xscan", icon: "📡", cat: "social", desc: "X (Twitter) popularity scanner via RSS feeds. Monitors handles, identifies popular posts." },
+  { name: "xlistdata", icon: "📊", cat: "social", desc: "X (Twitter) list data extraction and analysis." },
+  { name: "go4schools", icon: "🏫", cat: "browser", desc: "Check GO 4 Schools for homework, grades, and behaviour updates for Isaac." },
+  { name: "gitweb", icon: "🌐", cat: "browser", desc: "Publish files (HTML, diagrams, images) to GitHub Pages." },
+  { name: "barc-append", icon: "📎", cat: "data", desc: "Append content to barcode/label generation workflows." },
+  { name: "breakage-log", icon: "🔧", cat: "data", desc: "Log and track production failures before fixing them." },
+  { name: "codex-ingest", icon: "📚", cat: "data", desc: "Ingest PDFs into the codex knowledge base with tagging and embedding." },
+  { name: "cron-validate", icon: "⏰", cat: "data", desc: "Validate and audit cron job configurations." },
+  { name: "learnings", icon: "🧠", cat: "data", desc: "Shared agent knowledge base — store and retrieve learnings, patterns, and operational notes." },
+  { name: "lta-opponents", icon: "🎾", cat: "data", desc: "Capture and track LTA tennis opponents and match history." },
+  { name: "notebooklm", icon: "📓", cat: "data", desc: "Integrate with Google NotebookLM for AI-powered note analysis." },
+  { name: "pratica", icon: "🗂️", cat: "data", desc: "Pratica knowledge base — personal document management and retrieval." },
+  { name: "self-improving-agent", icon: "🔄", cat: "data", desc: "Captures learnings, errors, and corrections for continuous improvement." },
+  { name: "spotify-podcast-charts", icon: "🎙️", cat: "data", desc: "Scrape and analyse Spotify podcast charts." },
+  { name: "tag-learn", icon: "🏷️", cat: "data", desc: "Tag-based learning and organisation system." },
+  { name: "sant", icon: "🧹", cat: "util", desc: "System administration and maintenance tasks." },
+  { name: "voice-pipeline", icon: "🎤", cat: "util", desc: "Voice note → Groq STT → agent response pipeline." },
+  { name: "youtube-digest", icon: "▶️", cat: "util", desc: "Fetch YouTube transcripts and generate AI summaries." },
+  { name: "cato-bus", icon: "🚌", cat: "util", desc: "Cato's bus arrival monitoring skill." },
+  { name: "dispatch", icon: "📨", cat: "util", desc: "Message dispatch and routing between agents." }
+];
+
+const catColors = {
+  api: { bg: "#3b82f6", tag: "API" },
+  browser: { bg: "#f59e0b", tag: "Browser" },
+  data: { bg: "#10b981", tag: "Data" },
+  social: { bg: "#8b5cf6", tag: "Social" },
+  util: { bg: "#64748b", tag: "Utility" }
+};
+
+function buildGrid() {
+  const grid = document.getElementById("skillsGrid");
+  const summary = document.getElementById("summary");
+
+  const active = skills.filter(s => !["cato-bus","dispatch","pratica","voice-pipeline","youtube-digest"].includes(s.name));
+  const inactive = skills.filter(s => ["cato-bus","dispatch","pratica","voice-pipeline","youtube-digest"].includes(s.name));
+
+  active.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "skill-card";
+    const cat = catColors[s.cat] || catColors.util;
+    card.innerHTML = `
+      <div class="skill-header">
+        <div class="skill-icon" style="background:${cat.bg}">${s.icon}</div>
+        <span class="skill-name">${s.name}</span>
+        <span class="skill-tag tag-${s.cat}">${cat.tag}</span>
+      </div>
+      <div class="skill-desc">${s.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Summary
+  const catCounts = {};
+  active.forEach(s => { catCounts[s.cat] = (catCounts[s.cat] || 0) + 1; });
+  let html = `<h3>📋 Summary — <span class="count">${active.length}</span> active · <span class="count" style="color:#64748b">${inactive.length}</span> inactive</h3><ul>`;
+  html += `<li><strong>API:</strong> ${catCounts.api || 0} · <strong>Browser:</strong> ${catCounts.browser || 0} · <strong>Data:</strong> ${catCounts.data || 0} · <strong>Social:</strong> ${catCounts.social || 0} · <strong>Utility:</strong> ${catCounts.util || 0}</li>`;
+  html += `<li><strong>Inactive:</strong> ${inactive.map(s => s.name).join(", ")}</li>`;
+  html += `</ul>`;
+  summary.innerHTML = html;
+}
+
+buildGrid();
+</script>
+</body>
+</html>
