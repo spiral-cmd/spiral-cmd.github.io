@@ -16,6 +16,7 @@
   .legend-dot.travel { background: #2563eb; }
   .legend-dot.galway { background: #16a34a; }
   .legend-dot.personal { background: #eab308; }
+  .legend-dot.flight { background: #8b5cf6; }
   .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
   .day-header { text-align: center; font-weight: 600; font-size: 0.8rem; color: #666; padding: 6px 0; }
   .day-cell { background: white; border-radius: 8px; padding: 8px; min-height: 100px; border: 1px solid #e2e8f0; }
@@ -30,6 +31,8 @@
   .event.galway .loc { color: #15803d; }
   .event.personal { background: #fef9c3; color: #854d0e; border-left-color: #eab308; }
   .event.personal .loc { color: #a16207; }
+  .event.flight { background: #ede9fe; color: #5b21b6; border-left-color: #8b5cf6; }
+  .event.flight .loc { color: #6d28d9; }
   .summary { margin-top: 16px; background: white; border-radius: 8px; padding: 14px; border: 1px solid #e2e8f0; }
   .summary h3 { font-size: 0.95rem; margin-bottom: 8px; }
   .summary ul { list-style: none; font-size: 0.85rem; }
@@ -52,6 +55,7 @@
     <div class="legend-item"><span class="legend-dot travel"></span> Travel</div>
     <div class="legend-item"><span class="legend-dot galway"></span> In Galway</div>
     <div class="legend-item"><span class="legend-dot personal"></span> Personal</div>
+    <div class="legend-item"><span class="legend-dot flight"></span> Martin's Flights</div>
   </div>
 
   <div class="calendar-grid" id="calendar"></div>
@@ -65,13 +69,16 @@ const events = [
   { name: "Travel to Galway", date: "2026-07-25", type: "travel" },
   { name: "Clifden 356 Sky Road", loc: "Check-in from 5pm", date: "2026-07-25", type: "galway" },
   { name: "Galway", date: "2026-07-26", type: "galway" },
+  { name: "Martin flies in", loc: "LTN→DUB 12:25-13:45 FR339", date: "2026-07-27", type: "flight" },
   { name: "Galway", date: "2026-07-27", type: "galway" },
   { name: "Galway", date: "2026-07-28", type: "galway" },
+  { name: "Clybaun Hotel", loc: "Lunch w Bridie", date: "2026-07-28", type: "personal" },
   { name: "Galway", date: "2026-07-29", type: "galway" },
   { name: "Galway", date: "2026-07-30", type: "galway" },
   { name: "Galway", date: "2026-07-31", type: "galway" },
   { name: "Check-out", loc: "Before 10am", date: "2026-08-01", type: "travel" },
-  { name: "Travel home", date: "2026-08-01", type: "travel" }
+  { name: "Travel home", date: "2026-08-01", type: "travel" },
+  { name: "Martin flies home", loc: "DUB→LTN 14:10-15:25 FR340", date: "2026-08-10", type: "flight" }
 ];
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -94,9 +101,9 @@ function buildCalendar() {
     grid.appendChild(h);
   });
 
-  // Show w/c 20 Jul 2026 through to 2 Aug 2026
+  // Show w/c 20 Jul 2026 through to 10 Aug 2026
   const firstDay = new Date(2026, 6, 20);
-  const endGrid = new Date(2026, 7, 2);
+  const endGrid = new Date(2026, 7, 10);
 
   let d = new Date(firstDay);
   while (d <= endGrid) {
@@ -136,9 +143,12 @@ function buildCalendar() {
   const tripStart = new Date(2026, 6, 25);
   const tripEnd = new Date(2026, 7, 1);
   const nights = Math.round((tripEnd - tripStart) / (1000 * 60 * 60 * 24));
-  let html = `<h3>📋 Summary — <span class="count">7 nights</span> at Clifden 356 Sky Road</h3><ul>`;
+  let html = `<h3>📋 Summary — <span class="count">${nights} nights</span> at Clifden 356 Sky Road</h3><ul>`;
   html += `<li><strong>Sat 25 Jul</strong> — Travel to Galway · Check-in from 5pm</li>`;
+  html += `<li><strong>Mon 27 Jul</strong> — Martin flies in: Luton→Dublin 12:25-13:45 (FR339)</li>
+    <li><strong>Tue 28 Jul</strong> — Clybaun Hotel: Lunch with Bridie</li>`;
   html += `<li><strong>Sat 1 Aug</strong> — Check-out before 10am · Travel home</li>`;
+  html += `<li><strong>Mon 10 Aug</strong> — Martin flies home: Dublin→Luton 14:10-15:25 (FR340)</li>`;
   html += `<li><strong>Location:</strong> Clifden 356 Sky Road, Eyrephort, Co. Galway</li>`;
   html += `<li><strong>Staying with:</strong> Bridie & Charles-Antoine</li>`;
   html += `<li><strong>Booking ref:</strong> Connemara Coastal Cottages (Emer Mc Namara)</li>`;
