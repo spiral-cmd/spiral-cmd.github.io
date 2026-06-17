@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0034 probability 10 day</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .slide {
+    max-width: 1000px;
+    width: 100%;
+    background: linear-gradient(145deg, #111118 0%, #16161f 100%);
+    border-radius: 24px;
+    padding: 3rem;
+    border: 1px solid #2a2a3a;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .header {
+    margin-bottom: 2.5rem;
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+  .header .subtitle {
+    font-size: 0.95rem;
+    color: #888;
+    margin-top: 0.5rem;
+    font-weight: 300;
+  }
+  .header .date {
+    font-size: 0.8rem;
+    color: #555;
+    margin-top: 0.25rem;
+  }
+  .context-box {
+    background: #1a1a28;
+    border-left: 3px solid #4a6cf7;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #aaa;
+    line-height: 1.5;
+  }
+  .context-box strong { color: #ccc; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  thead th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #666;
+    border-bottom: 1px solid #2a2a3a;
+  }
+  tbody td {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #1e1e2e;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(74,108,247,0.05); }
+  .ticker { font-weight: 600; color: #e0e0e0; }
+  .prob-high { color: #4ade80; font-weight: 600; }
+  .prob-mod { color: #facc15; font-weight: 600; }
+  .prob-low { color: #fb923c; font-weight: 600; }
+  .prob-vlow { color: #f87171; font-weight: 600; }
+  .reason { color: #888; font-size: 0.8rem; }
+  .footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #2a2a3a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #555;
+  }
+  .tag {
+    display: inline-block;
+    background: #1e1e2e;
+    color: #888;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-right: 0.3rem;
+  }
+  .key-events {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .event-card {
+    background: #1a1a28;
+    border: 1px solid #2a2a3a;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    flex: 1;
+    min-width: 180px;
+  }
+  .event-card .date-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.05em; }
+  .event-card .event-title { font-size: 0.85rem; color: #ccc; margin-top: 0.25rem; font-weight: 500; }
+  .event-card .event-desc { font-size: 0.75rem; color: #777; margin-top: 0.2rem; }
+  .note {
+    background: #1a1a28;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.85rem;
+    color: #999;
+    line-height: 1.6;
+    margin-top: 1rem;
+  }
+  .note strong { color: #ccc; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="header">
+    <h1>Probability of Making Money — Next 10 Days</h1>
+    <div class="subtitle">Market context: Semi selloff, Iran deal, Nasdaq-100 rebalance, MU earnings</div>
+    <div class="date">17 June 2026 → 27 June 2026</div>
+  </div>
+
+  <div class="context-box">
+    <strong>Key events in window:</strong> Jun 22 — Nasdaq-100 rebalance (NBIS, CRWV, ALAB added) · Jun 24 — Micron Q3 earnings (options pricing 17.6% swing) · Ongoing — Iran deal oil headwinds, semi selloff recovery
+  </div>
+
+  <div class="key-events">
+    <div class="event-card">
+      <div class="date-label">Jun 22</div>
+      <div class="event-title">Nasdaq-100 Rebalance</div>
+      <div class="event-desc">NBIS, CRWV, ALAB added — index fund inflows</div>
+    </div>
+    <div class="event-card">
+      <div class="date-label">Jun 24</div>
+      <div class="event-title">Micron Q3 Earnings</div>
+      <div class="event-desc">Options pricing 17.6% swing — binary event</div>
+    </div>
+    <div class="event-card">
+      <div class="date-label">Ongoing</div>
+      <div class="event-title">Semi Selloff</div>
+      <div class="event-desc">Valuation correction vs fundamentals debate</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Strategy</th>
+        <th>Probability</th>
+        <th>Reasoning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="ticker">Buy NBIS</td>
+        <td class="prob-high">Moderate–High</td>
+        <td class="reason">Nasdaq-100 inclusion Jun 22 = near-certain index fund bid</td>
+      </tr>
+      <tr>
+        <td class="ticker">Buy MU (pre-earnings)</td>
+        <td class="prob-mod">Moderate</td>
+        <td class="reason">Bullish sentiment, but 17.6% implied swing = coin flip</td>
+      </tr>
+      <tr>
+        <td class="ticker">Buy IREN</td>
+        <td class="prob-low">Low–Moderate</td>
+        <td class="reason">Good story, $60→$100 in 10 days needs a catalyst</td>
+      </tr>
+      <tr>
+        <td class="ticker">Buy semi basket (NVDA, AMD, AVGO)</td>
+        <td class="prob-low">Low–Moderate</td>
+        <td class="reason">Sector still in correction — needs catalyst to reverse</td>
+      </tr>
+      <tr>
+        <td class="ticker">Buy SHEL (oil)</td>
+        <td class="prob-vlow">Low</td>
+        <td class="reason">Iran deal = structural headwind for oil prices</td>
+      </tr>
+      <tr>
+        <td class="ticker">Short semi basket</td>
+        <td class="prob-mod">Moderate</td>
+        <td class="reason">Momentum against them, but catching a falling knife</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Bottom line:</strong> High volatility, high uncertainty environment. Making money over 10 days is not a high-probability bet without a specific catalyst. <strong>NBIS</strong> is the closest thing to a guaranteed bid — index funds must buy ahead of the Jun 22 rebalance. Everything else is a coin flip or worse. Not financial advice.
+  </div>
+
+  <div class="footer">
+    <span>Polo · ocaisa trading topic</span>
+    <span><span class="tag">#probability</span><span class="tag">#10day</span><span class="tag">#semi</span><span class="tag">#nasdaq100</span></span>
+  </div>
+</div>
+</body>
+</html>
