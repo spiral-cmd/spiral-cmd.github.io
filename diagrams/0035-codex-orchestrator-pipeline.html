@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codex Orchestrator — Pipeline Diagram</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex; justify-content: center; padding: 40px 20px;
+    color: #1a1a2e;
+  }
+  .diagram {
+    max-width: 900px; width: 100%;
+  }
+  h1 {
+    font-size: 24px; font-weight: 600; margin-bottom: 4px;
+    color: #1a1a2e;
+  }
+  .subtitle {
+    font-size: 14px; color: #666; margin-bottom: 30px;
+  }
+  
+  /* ── Pipeline ── */
+  .pipeline { position: relative; }
+  
+  /* Vertical line */
+  .pipeline::before {
+    content: ''; position: absolute;
+    left: 28px; top: 0; bottom: 0;
+    width: 3px; background: #e0e0e0; border-radius: 2px;
+  }
+  
+  /* ── Stage ── */
+  .stage { display: flex; margin-bottom: 28px; position: relative; }
+  
+  .stage-dot {
+    width: 58px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .stage-dot .circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .stage-dot .label { font-size: 11px; color: #888; margin-top: 4px; font-weight: 500; }
+  
+  .stage-card {
+    flex: 1; background: #f8f9fb; border-radius: 10px;
+    padding: 16px 20px; border: 1px solid #e8eaed;
+    margin-left: 12px;
+  }
+  .stage-card h2 {
+    font-size: 15px; font-weight: 600; margin-bottom: 6px;
+    color: #1a1a2e;
+  }
+  .stage-card p {
+    font-size: 13px; color: #555; line-height: 1.5;
+  }
+  .stage-card .detail {
+    font-size: 12px; color: #888; margin-top: 6px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: #fff; padding: 6px 10px; border-radius: 6px;
+    border: 1px solid #e8eaed;
+  }
+  
+  /* Stage colors */
+  .s-trigger .circle { background: #6c63ff; }
+  .s-chunk .circle { background: #2d9cdb; }
+  .s-embed .circle { background: #27ae60; }
+  .s-enrich .circle { background: #f2994a; }
+  .s-complete .circle { background: #1a1a2e; }
+  
+  /* ── Modes ── */
+  .modes {
+    display: flex; gap: 12px; margin: 30px 0 20px;
+  }
+  .mode {
+    flex: 1; background: #f8f9fb; border-radius: 10px;
+    padding: 14px 18px; border: 1px solid #e8eaed;
+  }
+  .mode h3 {
+    font-size: 13px; font-weight: 600; margin-bottom: 4px;
+    color: #1a1a2e;
+  }
+  .mode code {
+    font-size: 12px; color: #6c63ff;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .mode p {
+    font-size: 12px; color: #666; margin-top: 4px;
+  }
+  
+  /* ── Lock ── */
+  .lock-note {
+    margin-top: 24px; padding: 12px 16px;
+    background: #fef9e7; border-radius: 8px;
+    border: 1px solid #f9e79f;
+    font-size: 12px; color: #7d6608;
+  }
+  .lock-note strong { font-weight: 600; }
+  
+  /* ── Footer ── */
+  .footer {
+    margin-top: 30px; font-size: 11px; color: #aaa;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="diagram">
+  <h1>Codex Ingest Pipeline Orchestrator</h1>
+  <p class="subtitle">End-to-end pipeline: auto-tagged file → chunking → embedding → enrichment → complete</p>
+
+  <div class="modes">
+    <div class="mode">
+      <h3>🚀 Auto Mode</h3>
+      <code>--auto [--batch-size 50]</code>
+      <p>Detects newly auto-tagged files (cache_state='indexed', 0 chunks) and runs the full pipeline.</p>
+    </div>
+    <div class="mode">
+      <h3>🔄 Resume Mode</h3>
+      <code>--resume [--batch-size 50]</code>
+      <p>Finds documents stuck in 'chunked', 'embedded', or 'failed' states and resumes from the correct stage.</p>
+    </div>
+    <div class="mode">
+      <h3>📊 Status</h3>
+      <code>--status</code>
+      <p>Shows pipeline state distribution, total docs/chunks, lock status, and pipeline targets.</p>
+    </div>
+  </div>
+
+  <div class="pipeline">
+
+    <!-- Stage 0: Trigger -->
+    <div class="stage">
+      <div class="stage-dot s-trigger">
+        <div class="circle">1</div>
+        <span class="label">Trigger</span>
+      </div>
+      <div class="stage-card">
+        <h2>Detect New Auto-Tagged Files</h2>
+        <p>Scans <code>codex_docs</code> for documents with <code>cache_state='indexed'</code> that have zero chunks. These are newly auto-tagged PDFs ready for pipeline processing.</p>
+        <div class="detail">SELECT ... WHERE cache_state='indexed' AND NOT EXISTS (SELECT 1 FROM chunks ...)</div>
+      </div>
+    </div>
+
+    <!-- Arrow connector text -->
+    <div style="margin-left: 58px; padding-left: 12px; margin-top: -20px; margin-bottom: 8px;">
+      <span style="font-size: 11px; color: #999;">acquire file lock →</span>
+    </div>
+
+    <!-- Stage 1: Chunking -->
+    <div class="stage">
+      <div class="stage-dot s-chunk">
+        <div class="circle">2</div>
+        <span class="label">Chunk</span>
+      </div>
+      <div class="stage-card">
+        <h2>Chunking</h2>
+        <p>Reads full text from <code>codex_fts</code> (or <code>text_cache_path</code> fallback). Splits into overlapping 1000-character chunks with 200-character overlap. Inserts into <code>chunks</code> table. Sets <code>cache_state → 'chunked'</code>.</p>
+        <div class="detail">chunk_size=1000 · overlap=200 · INSERT INTO chunks (document_id, chunk_index, start, end, text)</div>
+      </div>
+    </div>
+
+    <!-- Stage 2: Embedding -->
+    <div class="stage">
+      <div class="stage-dot s-embed">
+        <div class="circle">3</div>
+        <span class="label">Embed</span>
+      </div>
+      <div class="stage-card">
+        <h2>Vector Embedding</h2>
+        <p>For each chunk, generates a 384-dim vector embedding using <code>all-MiniLM-L6-v2</code> via the existing <code>embedding.embed_text()</code> module. Inserts into <code>codex_vec</code> virtual table. Sets <code>cache_state → 'embedded'</code>.</p>
+        <div class="detail">embedding.embed_text(chunk_text) → INSERT INTO codex_vec (chunk_id, embedding)</div>
+      </div>
+    </div>
+
+    <!-- Stage 3: Enrichment -->
+    <div class="stage">
+      <div class="stage-dot s-enrich">
+        <div class="circle">4</div>
+        <span class="label">Enrich</span>
+      </div>
+      <div class="stage-card">
+        <h2>Enrichment</h2>
+        <p>Two parallel enrichment passes:</p>
+        <p style="margin-top: 4px;">• <strong>Entity extraction</strong> (spaCy <code>en_core_web_lg</code>) — extracts PERSON, ORG, GPE, LOC entities → <code>entities</code> table</p>
+        <p>• <strong>Concept fingerprinting</strong> (KeyBERT MMR) — extracts top-10 keyphrases → <code>concept_fingerprints</code> table</p>
+        <p>Sets <code>cache_state → 'complete'</code>.</p>
+        <div class="detail">spaCy nlp(text[:10000]) · KeyBERT(text[:10000], top_n=10, diversity=0.5)</div>
+      </div>
+    </div>
+
+    <!-- Stage 4: Complete -->
+    <div class="stage">
+      <div class="stage-dot s-complete">
+        <div class="circle">5</div>
+        <span class="label">Done</span>
+      </div>
+      <div class="stage-card">
+        <h2>Pipeline Complete</h2>
+        <p>Reports summary to Sermo (topic 111): documents attempted, chunked, embedded, enriched, and failed. Releases file lock. Ready for next batch.</p>
+        <div class="detail">[codex-orchestrator] Auto run: 180/180 complete (0 failed)</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="lock-note">
+    <strong>🔒 File Lock</strong> — <code>codex-orchestrator.lock</code> prevents concurrent runs. 5-minute timeout with stale lock detection (checks if holding PID is still alive). Released automatically on completion.
+  </div>
+
+  <div class="lock-note" style="background: #eaf2f8; border-color: #aed6f1; color: #1a5276;">
+    <strong>🔄 Resume Logic</strong> — On <code>--resume</code>, documents in 'failed' state are checked for existing chunks. If chunks exist → resume from embedding. If no chunks → reset to 'indexed' and let auto mode handle it. Idempotent — safe to rerun.
+  </div>
+
+  <div class="footer">
+    codex-orchestrator.py v1 · ~/.openclaw/workspace/scripts/ · 21 June 2026
+  </div>
+</div>
+</body>
+</html>
