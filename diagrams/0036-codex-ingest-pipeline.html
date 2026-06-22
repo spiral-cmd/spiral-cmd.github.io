@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codex Ingest Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+  p.sub {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 24px;
+  }
+  svg {
+    max-width: 860px;
+    width: 100%;
+    height: auto;
+  }
+</style>
+</head>
+<body>
+<h1>Codex Ingest Pipeline</h1>
+<p class="sub">Browser save → Hazel → pdf-in → tag routing → codex.db · 2026-06-22</p>
+
+<svg viewBox="0 0 860 620" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <title>Codex Ingest Pipeline</title>
+  <desc>Flowchart showing how PDFs flow from browser save through Hazel, tag_watcher, routing, and into the codex database via chunking and embedding.</desc>
+
+  <!-- Background -->
+  <rect width="860" height="620" fill="#f8f9fa"/>
+
+  <!-- Title -->
+  <text x="430" y="32" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1a2e">Codex Ingest Pipeline</text>
+
+  <!-- Lane labels -->
+  <text x="18" y="80" font-size="10" fill="#888" font-weight="600" transform="rotate(-90,18,80)">INPUT</text>
+  <text x="18" y="210" font-size="10" fill="#888" font-weight="600" transform="rotate(-90,18,210)">DETECT</text>
+  <text x="18" y="350" font-size="10" fill="#888" font-weight="600" transform="rotate(-90,18,350)">ROUTE</text>
+  <text x="18" y="490" font-size="10" fill="#888" font-weight="600" transform="rotate(-90,18,490)">ENRICH</text>
+
+  <!-- Lane dividers -->
+  <line x1="40" y1="100" x2="840" y2="100" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4 3"/>
+  <line x1="40" y1="240" x2="840" y2="240" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4 3"/>
+  <line x1="40" y1="390" x2="840" y2="390" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4 3"/>
+
+  <!-- Browser save -->
+  <rect x="60" y="52" width="130" height="44" rx="6" fill="#e8f4fd" stroke="#93c5e8" stroke-width="1.5"/>
+  <text x="125" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="#1a5276">Browser save</text>
+  <text x="125" y="87" text-anchor="middle" font-size="9.5" fill="#2980b9">+ Finder tag (optional)</text>
+
+  <line x1="190" y1="74" x2="224" y2="74" stroke="#999" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Downloads -->
+  <rect x="224" y="52" width="110" height="44" rx="6" fill="#fef9e7" stroke="#f0c040" stroke-width="1.5"/>
+  <text x="279" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="#7d6608">Downloads/</text>
+  <text x="279" y="87" text-anchor="middle" font-size="9.5" fill="#b7950b">local disk</text>
+
+  <line x1="334" y1="74" x2="368" y2="74" stroke="#999" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="351" y="68" text-anchor="middle" font-size="9" fill="#e67e22">Hazel</text>
+  <text x="351" y="82" text-anchor="middle" font-size="8.5" fill="#aaa">+YYYYMMDD</text>
+
+  <!-- pdf-in -->
+  <rect x="368" y="52" width="130" height="44" rx="6" fill="#fef9e7" stroke="#f0c040" stroke-width="1.5"/>
+  <text x="433" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="#7d6608">pdf-in/</text>
+  <text x="433" y="87" text-anchor="middle" font-size="9.5" fill="#b7950b">GDrive · external vol</text>
+
+  <line x1="498" y1="74" x2="532" y2="74" stroke="#bbb" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrowGrey)"/>
+  <text x="515" y="67" text-anchor="middle" font-size="8.5" fill="#aaa">or direct</text>
+
+  <!-- pdf-in direct (no tag) -->
+  <rect x="532" y="52" width="110" height="44" rx="6" fill="#fef3f3" stroke="#e8a0a0" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="587" y="71" text-anchor="middle" font-size="11" font-weight="600" fill="#922b21">no Finder tag</text>
+  <text x="587" y="87" text-anchor="middle" font-size="9.5" fill="#c0392b">ML suggestion</text>
+
+  <!-- WatchPaths arrow from pdf-in -->
+  <line x1="433" y1="96" x2="433" y2="116" stroke="#999" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="445" y="110" font-size="8.5" fill="#888">launchd WatchPaths</text>
+
+  <!-- tag_watcher.sh -->
+  <rect x="333" y="116" width="200" height="44" rx="6" fill="#eaf6f6" stroke="#76d7c4" stroke-width="1.5"/>
+  <text x="433" y="135" text-anchor="middle" font-size="11" font-weight="600" fill="#0e6655">tag_watcher.sh</text>
+  <text x="433" y="151" text-anchor="middle" font-size="9.5" fill="#148f77">scan pdf-in → SHA-256</text>
+
+  <line x1="433" y1="160" x2="433" y2="182" stroke="#999" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- process_tagged.py -->
+  <rect x="333" y="182" width="200" height="44" rx="6" fill="#eafaf1" stroke="#82e0aa" stroke-width="1.5"/>
+  <text x="433" y="201" text-anchor="middle" font-size="11" font-weight="600" fill="#1e8449">process_tagged.py</text>
+  <text x="433" y="217" text-anchor="middle" font-size="9.5" fill="#239b56">read Finder tags · check DB dupe</text>
+
+  <text x="543" y="206" font-size="9" fill="#1a7a36">Finder tag found</text>
+  <line x1="533" y1="204" x2="558" y2="204" stroke="#82e0aa" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+  <text x="438" y="238" font-size="9" fill="#888">no valid tag</text>
+  <line x1="433" y1="226" x2="433" y2="244" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+
+  <!-- Silent ingest box -->
+  <rect x="558" y="178" width="148" height="48" rx="6" fill="#e9f7ef" stroke="#52be80" stroke-width="1.5"/>
+  <text x="632" y="198" text-anchor="middle" font-size="11" font-weight="600" fill="#1a7a36">Silent ingest</text>
+  <text x="632" y="213" text-anchor="middle" font-size="9.5" fill="#27ae60">move · log · embed</text>
+  <text x="632" y="226" text-anchor="middle" font-size="8.5" fill="#27ae60">Telegram notify</text>
+
+  <!-- tag_learn.py -->
+  <rect x="333" y="244" width="200" height="44" rx="6" fill="#fdf2f8" stroke="#c39bd3" stroke-width="1.5"/>
+  <text x="433" y="263" text-anchor="middle" font-size="11" font-weight="600" fill="#76448a">tag_learn.py</text>
+  <text x="433" y="279" text-anchor="middle" font-size="9.5" fill="#8e44ad">k-NN suggestion · confidence</text>
+
+  <text x="543" y="265" font-size="9" fill="#e74c3c">conf ≥ 0.85</text>
+  <line x1="533" y1="268" x2="558" y2="268" stroke="#c39bd3" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+
+  <!-- Auto-tag box -->
+  <rect x="558" y="244" width="148" height="44" rx="6" fill="#fdf2f8" stroke="#c39bd3" stroke-width="1.5"/>
+  <text x="632" y="263" text-anchor="middle" font-size="11" font-weight="600" fill="#76448a">Auto-tag</text>
+  <text x="632" y="279" text-anchor="middle" font-size="9.5" fill="#8e44ad">silent · Telegram</text>
+
+  <text x="310" y="272" text-anchor="end" font-size="9" fill="#888">low conf</text>
+  <line x1="333" y1="268" x2="285" y2="268" stroke="#bbb" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+
+  <!-- tag_server / UI -->
+  <rect x="138" y="244" width="148" height="44" rx="6" fill="#fef9e7" stroke="#f0a500" stroke-width="1.5"/>
+  <text x="212" y="263" text-anchor="middle" font-size="11" font-weight="600" fill="#7d4e00">tag_server.py :5555</text>
+  <text x="212" y="279" text-anchor="middle" font-size="9.5" fill="#b87400">browser UI · Martin tags</text>
+
+  <!-- arrows into codex -->
+  <line x1="632" y1="226" x2="632" y2="295" stroke="#27ae60" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <line x1="632" y1="288" x2="632" y2="295" stroke="#8e44ad" stroke-width="1.5"/>
+  <line x1="212" y1="288" x2="212" y2="310" stroke="#f0a500" stroke-width="1.5"/>
+  <line x1="212" y1="310" x2="542" y2="310" stroke="#f0a500" stroke-width="1" stroke-dasharray="4 2"/>
+  <line x1="542" y1="310" x2="542" y2="300" stroke="#f0a500" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+  <text x="375" y="323" text-anchor="middle" font-size="8.5" fill="#b87400">tag_worker.py (async: embed · sheet · Telegram)</text>
+
+  <!-- codex/<tag>/ -->
+  <rect x="502" y="295" width="260" height="50" rx="6" fill="#eaf2ff" stroke="#5b9bd5" stroke-width="2"/>
+  <text x="632" y="317" text-anchor="middle" font-size="12" font-weight="700" fill="#1a3a6b">/Volumes/4tb-a/codex/&lt;tag&gt;/</text>
+  <text x="632" y="335" text-anchor="middle" font-size="9.5" fill="#2e6da4">file moved here · codex_docs inserted (cache_state=pending)</text>
+
+  <!-- arrow to orchestrator -->
+  <line x1="632" y1="345" x2="632" y2="400" stroke="#5b9bd5" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="645" y="376" font-size="8.5" fill="#888">codex-orchestrator.py</text>
+  <text x="645" y="388" font-size="8.5" fill="#888">cron · --auto</text>
+
+  <!-- Stage 1 Chunking -->
+  <rect x="492" y="400" width="130" height="44" rx="6" fill="#f0f0ff" stroke="#9b9bdb" stroke-width="1.5"/>
+  <text x="557" y="419" text-anchor="middle" font-size="11" font-weight="600" fill="#3b3ba0">Stage 1</text>
+  <text x="557" y="436" text-anchor="middle" font-size="9.5" fill="#5252b0">Chunking</text>
+
+  <line x1="622" y1="422" x2="638" y2="422" stroke="#9b9bdb" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+  <!-- Stage 2 Embedding -->
+  <rect x="638" y="400" width="130" height="44" rx="6" fill="#f0f0ff" stroke="#9b9bdb" stroke-width="1.5"/>
+  <text x="703" y="419" text-anchor="middle" font-size="11" font-weight="600" fill="#3b3ba0">Stage 2</text>
+  <text x="703" y="436" text-anchor="middle" font-size="9.5" fill="#5252b0">Vec Embedding</text>
+
+  <line x1="703" y1="444" x2="703" y2="475" stroke="#9b9bdb" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+
+  <!-- codex.db -->
+  <rect x="492" y="475" width="280" height="54" rx="6" fill="#e8f0fe" stroke="#4472c4" stroke-width="2"/>
+  <text x="632" y="496" text-anchor="middle" font-size="11" font-weight="700" fill="#1a3a6b">codex.db</text>
+  <text x="632" y="511" text-anchor="middle" font-size="9.5" fill="#2e5f9e">codex_docs · codex_fts · codex_vec · chunks</text>
+  <text x="632" y="525" text-anchor="middle" font-size="8.5" fill="#5b8fcc">cache_state: pending → indexed → chunked → complete</text>
+
+  <!-- Search -->
+  <rect x="60" y="475" width="200" height="54" rx="6" fill="#f8f8f8" stroke="#cccccc" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="160" y="494" text-anchor="middle" font-size="11" font-weight="600" fill="#555">Search</text>
+  <text x="160" y="510" text-anchor="middle" font-size="9.5" fill="#777">codex.search.search()</text>
+  <text x="160" y="524" text-anchor="middle" font-size="8.5" fill="#999">FTS5 + vec k-NN + RRF fusion</text>
+  <line x1="260" y1="502" x2="492" y2="502" stroke="#ccc" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arrowGrey)"/>
+
+  <!-- Routing legend -->
+  <rect x="60" y="390" width="248" height="78" rx="6" fill="#fafafa" stroke="#ddd" stroke-width="1"/>
+  <text x="184" y="408" text-anchor="middle" font-size="10" font-weight="600" fill="#555">Destination routing</text>
+  <text x="74" y="423" font-size="9" fill="#27ae60">■</text><text x="84" y="423" font-size="9" fill="#444">topic tag → /codex/&lt;tag&gt;/</text>
+  <text x="74" y="437" font-size="9" fill="#e74c3c">■</text><text x="84" y="437" font-size="9" fill="#444">pratica/probate/zee/supplier → pratica-staging/</text>
+  <text x="74" y="451" font-size="9" fill="#f0a500">■</text><text x="84" y="451" font-size="9" fill="#444">ocaisa → inbox-ocaisa/</text>
+  <text x="74" y="465" font-size="9" fill="#888">■</text><text x="84" y="465" font-size="9" fill="#444">00-tosort → pdf-tosort/</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#999"/>
+    </marker>
+    <marker id="arrowGrey" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#bbb"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#52be80"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#c39bd3"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f0a500"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#9b9bdb"/>
+    </marker>
+  </defs>
+</svg>
+
+</body>
+</html>
