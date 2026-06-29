@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2A Protocol — MoSCoW Review</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; background: #1a1a2e; color: #eee; margin: 0; padding: 20px; }
+  h1 { text-align: center; font-size: 18px; margin-bottom: 4px; }
+  .subtitle { text-align: center; font-size: 12px; color: #aaa; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 860px; margin: 0 auto; }
+  .section { border-radius: 10px; overflow: hidden; }
+  .section-header { padding: 10px 16px; font-weight: 700; font-size: 13px; color: white; }
+  .section-body { padding: 12px 16px; }
+  .item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 12.5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  /* Must */
+  .must .section-header { background: #c0392b; }
+  .must .section-body { background: #2d1a18; }
+  .must .dot { background: #e74c3c; }
+  /* Should */
+  .should .section-header { background: #2471a3; }
+  .should .section-body { background: #18202d; }
+  .should .dot { background: #3498db; }
+  /* Could */
+  .could .section-header { background: #1e8449; }
+  .could .section-body { background: #182d1e; }
+  .could .dot { background: #2ecc71; }
+  /* Won't */
+  .wont .section-header { background: #566573; }
+  .wont .section-body { background: #1e2023; }
+  .wont .dot { background: #95a5a6; }
+  .footer { text-align: center; font-size: 11px; color: #666; margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>A2A Protocol — MoSCoW Review</h1>
+<p class="subtitle">io analysis of a2abible.md · 2026-06-29 · OpenClaw OCAISA</p>
+
+<div class="grid">
+
+  <div class="section must">
+    <div class="section-header">🔴 MUST HAVE — 10 items · Essential</div>
+    <div class="section-body">
+      <div class="item"><span class="dot"></span>CC → io → Polo → codo hierarchy (no skipping)</div>
+      <div class="item"><span class="dot"></span>Pre-delegation health check (15s ping, escalate on fail)</div>
+      <div class="item"><span class="dot"></span>Structured progress events (Polo → io-inbox.md JSON)</div>
+      <div class="item"><span class="dot"></span>Primary/fallback channel matrix (§3.1)</div>
+      <div class="item"><span class="dot"></span>Message addressing gate — reply obligation rule</div>
+      <div class="item"><span class="dot"></span>Escalation ladder (ETA+15 / +30 / +2h)</div>
+      <div class="item"><span class="dot"></span>CIV gate — CC phase verification</div>
+      <div class="item"><span class="dot"></span>15 tool call budget per task</div>
+      <div class="item"><span class="dot"></span>Daily bible review rule</div>
+      <div class="item"><span class="dot"></span>io cost discipline (no implementation)</div>
+    </div>
+  </div>
+
+  <div class="section should">
+    <div class="section-header">🔵 SHOULD HAVE — 9 items · Prioritise soon</div>
+    <div class="section-body">
+      <div class="item"><span class="dot"></span>Bilateral CLI mirrors for directed exchanges</div>
+      <div class="item"><span class="dot"></span>PACE notation for Polo↔io</div>
+      <div class="item"><span class="dot"></span>io-active-tasks.md state tracking</div>
+      <div class="item"><span class="dot"></span>codo spawn pattern</div>
+      <div class="item"><span class="dot"></span>2-retry max budget</div>
+      <div class="item"><span class="dot"></span>Sermo visibility posts (§11)</div>
+      <div class="item"><span class="dot"></span>Council review protocol (§12)</div>
+      <div class="item"><span class="dot"></span>channels.json machine-readable config</div>
+      <div class="item"><span class="dot"></span>Context saturation recovery (fresh session)</div>
+    </div>
+  </div>
+
+  <div class="section could">
+    <div class="section-header">🟢 COULD HAVE — 5 items · Optional</div>
+    <div class="section-body">
+      <div class="item"><span class="dot"></span>Bot-to-bot protocol (Appendix B, future)</div>
+      <div class="item"><span class="dot"></span>io-inbox.md malformed JSON fallback</div>
+      <div class="item"><span class="dot"></span>ETA contract critical-path flag</div>
+      <div class="item"><span class="dot"></span>Polo pre-announce Cato tasks</div>
+      <div class="item"><span class="dot"></span>Stale turn recovery cron</div>
+    </div>
+  </div>
+
+  <div class="section wont">
+    <div class="section-header">⚫ WON'T HAVE — 4 items · Deprecated/drop</div>
+    <div class="section-body">
+      <div class="item"><span class="dot"></span>to-cc.md as primary (fallback only)</div>
+      <div class="item"><span class="dot"></span>cc-inbox.md (fully deprecated)</div>
+      <div class="item"><span class="dot"></span>Appendix B until migration starts</div>
+      <div class="item"><span class="dot"></span>Multi-agent informal addressing</div>
+    </div>
+  </div>
+
+</div>
+<p class="footer">Source: io session analysis · a2abible.md@2026-06-15 · Generated by CC 2026-06-29</p>
+</body>
+</html>
