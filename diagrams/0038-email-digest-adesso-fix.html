@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Digest — adesso Label Fix</title>
+<style>
+  @page { size: A4 landscape; margin: 8mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 20px;
+  }
+  h1 { font-size: 18px; color: #222; margin-bottom: 4px; text-align: center; }
+  .subtitle { font-size: 12px; color: #666; margin-bottom: 18px; text-align: center; }
+  svg { display: block; width: 100%; max-width: 1120px; height: auto; }
+  @media print {
+    body { width: 297mm; height: 210mm; padding: 8mm; }
+    svg  { width: 281mm; max-width: 281mm; }
+  }
+</style>
+</head>
+<body>
+<h1>Email Digest — adesso Label Fix</h1>
+<p class="subtitle">CC debugging session · spiralarc@googlemail.com · 2026-07-04 · OpenClaw OCAISA</p>
+
+<svg viewBox="0 0 1100 470" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+    <path d="M0,0.5 L0,6.5 L7,3.5 z" fill="#555"/>
+  </marker>
+</defs>
+
+<!-- ═══════════════════════════════════════════════
+     ROW 1  (left → right)   y_centre = 80
+     ═══════════════════════════════════════════════ -->
+
+<!-- 1. Request (pill, cx=75) -->
+<rect x="15" y="58" width="120" height="44" rx="22" fill="#D4EDDA"/>
+<text x="75" y="76" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">Request: tag</text>
+<text x="75" y="88" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">noteworthy unread mail</text>
+
+<!-- 2. Found cron (cx=228) -->
+<rect x="153" y="58" width="150" height="44" rx="4" fill="#E4EAF8"/>
+<text x="228" y="76" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">Found existing cron</text>
+<text x="228" y="88" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">email-digest · 07:00 daily</text>
+
+<!-- 3. Two label tracks (cx=408) -->
+<rect x="323" y="58" width="170" height="44" rx="4" fill="#E4EAF8"/>
+<text x="408" y="76" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">Two label tracks</text>
+<text x="408" y="88" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">Important (PRIORITY) + Digested (REVIEW)</text>
+
+<!-- 4. Important = ML label (cx=598) -->
+<rect x="513" y="58" width="170" height="44" rx="4" fill="#FFF3B0"/>
+<text x="598" y="76" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">Important = Gmail's own ML label</text>
+<text x="598" y="88" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">~200 noise threads already tagged</text>
+
+<!-- 5. Renamed (cx=788) -->
+<rect x="703" y="58" width="170" height="44" rx="4" fill="#E4EAF8"/>
+<text x="788" y="76" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">Renamed Digested → REVIEW</text>
+<text x="788" y="88" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">label ID preserved (Label_6)</text>
+
+<!-- 6. Consolidate decision (cx=963) -->
+<rect x="883" y="58" width="160" height="44" rx="4" fill="#E4EAF8"/>
+<text x="963" y="76" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">Consolidate decision</text>
+<text x="963" y="88" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">both tracks → single 'adesso'</text>
+
+<!-- ── Row 1 arrows ── -->
+<line x1="135" y1="80" x2="151" y2="80" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="303" y1="80" x2="321" y2="80" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="493" y1="80" x2="511" y2="80" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="683" y1="80" x2="701" y2="80" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="873" y1="80" x2="881" y2="80" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+
+<!-- ── Turn connector: right of row 1 → right of row 2 (clockwise arc) ── -->
+<path d="M1043,80 C1085,80 1085,300 1012,300"
+      stroke="#555" stroke-width="1.3" fill="none" marker-end="url(#arr)"/>
+
+<!-- ═══════════════════════════════════════════════
+     ROW 2  (right → left)   y_centre = 300
+     ═══════════════════════════════════════════════ -->
+
+<!-- R1. Diamond: labels landing? (cx=955) -->
+<polygon points="955,268 1010,300 955,332 900,300" fill="#FFF3B0"/>
+<text x="955" y="294" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#222">adesso on</text>
+<text x="955" y="307" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#222">Gmail threads?</text>
+
+<!-- R2. Root cause (cx=803) -->
+<rect x="720" y="279" width="165" height="42" rx="4" fill="#F8D7DA"/>
+<text x="803" y="296" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#721c24">Root cause: step2 outputs list;</text>
+<text x="803" y="308" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#721c24">d.get('threads') → swallowed by bare except</text>
+
+<!-- R3. io reports fixed (cx=625) -->
+<rect x="545" y="279" width="160" height="42" rx="4" fill="#F8D7DA"/>
+<text x="625" y="296" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#721c24">io reports "fixed" ×2</text>
+<text x="625" y="308" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#721c24">never verified against Gmail</text>
+
+<!-- R4. CC checks directly (cx=450) -->
+<rect x="370" y="279" width="160" height="42" rx="4" fill="#E4EAF8"/>
+<text x="450" y="296" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#222">CC checks Gmail directly</text>
+<text x="450" y="308" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">still unlabeled — patches file w/ exact sed</text>
+
+<!-- R5. Extraction fixed (cx=275) -->
+<rect x="195" y="279" width="160" height="42" rx="4" fill="#E4EAF8"/>
+<text x="275" y="296" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#222">Extraction fixed</text>
+<text x="275" y="308" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#555">13 real thread IDs returned</text>
+
+<!-- R6. Confirmed (pill, cx=110) -->
+<rect x="40" y="279" width="140" height="42" rx="21" fill="#D4EDDA"/>
+<text x="110" y="296" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#222">13/13 ok</text>
+<text x="110" y="308" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#555">label:adesso confirmed</text>
+
+<!-- ── Row 2 arrows (right → left) ── -->
+<line x1="898" y1="300" x2="887" y2="300" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="718" y1="300" x2="707" y2="300" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="543" y1="300" x2="532" y2="300" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="368" y1="300" x2="357" y2="300" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<line x1="193" y1="300" x2="182" y2="300" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<text x="895" y="250" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#888">no (×2)</text>
+
+<!-- ── Side branch: silent keyring failure between R5 and R6 ── -->
+<line x1="275" y1="321" x2="275" y2="355" stroke="#555" stroke-width="1.3" marker-end="url(#arr)"/>
+<rect x="160" y="355" width="230" height="42" rx="4" fill="#F8D7DA"/>
+<text x="275" y="372" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#721c24">1st run: silent fail — no GOG_KEYRING_PASSWORD</text>
+<text x="275" y="384" text-anchor="middle" font-size="9.5" font-family="sans-serif" fill="#721c24">script echoed "applied" regardless of gog exit code</text>
+<path d="M160,376 C90,376 90,300 105,300"
+      stroke="#555" stroke-width="1.3" fill="none" marker-end="url(#arr)" stroke-dasharray="3,3"/>
+<text x="90" y="345" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#888">source zshrc, retry</text>
+
+<!-- ── Flow direction label at turn ── -->
+<text x="1000" y="180" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#888">verify</text>
+
+</svg>
+</body>
+</html>
