@@ -1,0 +1,351 @@
+<title>Telegram Topic Map — ocaisa</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #F4F6FB;
+    --surface:    #FFFFFF;
+    --border:     #D4DCF0;
+    --text-1:     #18243E;
+    --text-2:     #4D5C7A;
+    --text-3:     #9AA5BE;
+    --polo:       #2554E8;
+    --polo-dim:   #EBF0FF;
+    --zeno:       #7C3AED;
+    --zeno-dim:   #F3EEFF;
+    --none:       #8A96B0;
+    --none-dim:   #F1F3F8;
+    --closed:     #92530A;
+    --closed-dim: #FEF5E7;
+    --sep:        #E4E9F5;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:         #0E1525;
+      --surface:    #172035;
+      --border:     #253050;
+      --text-1:     #E2E8F8;
+      --text-2:     #8A98BE;
+      --text-3:     #3D4D6A;
+      --polo:       #5B8AF5;
+      --polo-dim:   #162040;
+      --zeno:       #A78BFA;
+      --zeno-dim:   #2D1B5A;
+      --none:       #4D5C7A;
+      --none-dim:   #1A2238;
+      --closed:     #F0A930;
+      --closed-dim: #2B1E06;
+      --sep:        #1E2D48;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg:         #F4F6FB;
+    --surface:    #FFFFFF;
+    --border:     #D4DCF0;
+    --text-1:     #18243E;
+    --text-2:     #4D5C7A;
+    --text-3:     #9AA5BE;
+    --polo:       #2554E8;
+    --polo-dim:   #EBF0FF;
+    --zeno:       #7C3AED;
+    --zeno-dim:   #F3EEFF;
+    --none:       #8A96B0;
+    --none-dim:   #F1F3F8;
+    --closed:     #92530A;
+    --closed-dim: #FEF5E7;
+    --sep:        #E4E9F5;
+  }
+
+  :root[data-theme="dark"] {
+    --bg:         #0E1525;
+    --surface:    #172035;
+    --border:     #253050;
+    --text-1:     #E2E8F8;
+    --text-2:     #8A98BE;
+    --text-3:     #3D4D6A;
+    --polo:       #5B8AF5;
+    --polo-dim:   #162040;
+    --zeno:       #A78BFA;
+    --zeno-dim:   #2D1B5A;
+    --none:       #4D5C7A;
+    --none-dim:   #1A2238;
+    --closed:     #F0A930;
+    --closed-dim: #2B1E06;
+    --sep:        #1E2D48;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 28px 16px 48px;
+  }
+
+  .page { max-width: 940px; margin: 0 auto; }
+
+  .header { margin-bottom: 22px; }
+  .eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--polo); margin-bottom: 6px;
+  }
+  h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .sub { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+
+  .legend {
+    display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11.5px; color: var(--text-2);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-polo   { background: var(--polo); }
+  .dot-zeno   { background: var(--zeno); }
+  .dot-closed { background: var(--closed); }
+
+  .groups {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .group {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .group-header {
+    padding: 13px 18px 11px;
+    border-bottom: 1.5px solid var(--sep);
+    display: flex; align-items: baseline;
+    justify-content: space-between; gap: 8px;
+  }
+  .group-name { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+  .group-id {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px; color: var(--text-3);
+  }
+
+  .topic-row {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    border-bottom: 1px solid var(--sep);
+  }
+  .topic-row:last-child { border-bottom: none; }
+  .topic-row.is-closed { opacity: 0.6; }
+
+  .topic-id {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 10.5px; color: var(--text-3);
+    font-variant-numeric: tabular-nums; text-align: right;
+  }
+
+  .topic-label { font-size: 12.5px; font-weight: 600; color: var(--text-1); }
+  .topic-scope { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+
+  .agent-pill {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 2px 8px;
+    border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+  }
+  .pill-polo   { background: var(--polo-dim);   color: var(--polo); }
+  .pill-zeno   { background: var(--zeno-dim);   color: var(--zeno); }
+  .pill-closed { background: var(--closed-dim); color: var(--closed); }
+
+  .footer {
+    margin-top: 16px; font-size: 11px; color: var(--text-3);
+    border-top: 1px solid var(--border); padding-top: 12px; line-height: 1.6;
+  }
+
+  @media (max-width: 600px) {
+    .groups { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="page">
+
+  <div class="header">
+    <div class="eyebrow">OpenClaw · Telegram</div>
+    <h1>Topic Map</h1>
+    <div class="sub">Source: <code style="font-family:monospace;font-size:10.5px">workspace/data/topics.csv</code> + <code style="font-family:monospace;font-size:10.5px">openclaw.json</code></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="dot dot-polo"></span> Polo (agent:main)</div>
+    <div class="legend-item"><span class="dot dot-zeno"></span> Zeno (agent:zeno)</div>
+    <div class="legend-item"><span class="dot dot-closed"></span> Closed</div>
+  </div>
+
+  <div class="groups">
+
+    <!-- ocaisa -->
+    <div class="group">
+      <div class="group-header">
+        <div class="group-name">ocaisa</div>
+        <div class="group-id">-1003678179601</div>
+      </div>
+
+      <div class="topic-row">
+        <div class="topic-id">1</div>
+        <div><div class="topic-label">general</div><div class="topic-scope">General-purpose assistant</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">2</div>
+        <div><div class="topic-label">innerlife</div><div class="topic-scope">Journaling, mood, reflection</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">4</div>
+        <div><div class="topic-label">tennis</div><div class="topic-scope">Technique, match stats, practice</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">6</div>
+        <div><div class="topic-label">biz</div><div class="topic-scope">Strategy, meta-analysis, revenue</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">8</div>
+        <div><div class="topic-label">gtd</div><div class="topic-scope">Rapid task capture, brain dumps</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">10</div>
+        <div><div class="topic-label">aidev</div><div class="topic-scope">AI development</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">12</div>
+        <div><div class="topic-label">family</div><div class="topic-scope">Household, spouse, coordination</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">14</div>
+        <div><div class="topic-label">zee</div><div class="topic-scope">Child dev, education, milestones</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">60</div>
+        <div><div class="topic-label">trading</div><div class="topic-scope">Investment thinking + codex corpus</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">111</div>
+        <div><div class="topic-label">sermo</div><div class="topic-scope">Inter-agent coordination log</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+<div class="topic-row">
+        <div class="topic-id">6704</div>
+        <div><div class="topic-label">health</div><div class="topic-scope">Fitness, nutrition, sleep, wellbeing</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">16778</div>
+        <div><div class="topic-label">zeno</div><div class="topic-scope">Adversarial intellectual sparring</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">19850</div>
+        <div><div class="topic-label">filen</div><div class="topic-scope">Filen cloud storage work</div></div>
+        <div class="agent-pill pill-polo">Polo</div>
+      </div>
+    </div>
+
+    <!-- codex-ocaisa -->
+    <div class="group">
+      <div class="group-header">
+        <div class="group-name">codex-ocaisa</div>
+        <div class="group-id">-1004401299405</div>
+      </div>
+
+      <div class="topic-row">
+        <div class="topic-id">1</div>
+        <div><div class="topic-label">general</div><div class="topic-scope">General sparring</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">2</div>
+        <div><div class="topic-label">innerlife</div><div class="topic-scope">Inner life, examined living</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">4</div>
+        <div><div class="topic-label">culture</div><div class="topic-scope">Culture, art, aesthetics</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">6</div>
+        <div><div class="topic-label">world</div><div class="topic-scope">Human nature, civilisation</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">8</div>
+        <div><div class="topic-label">health</div><div class="topic-scope">Health, longevity, biology</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">12</div>
+        <div><div class="topic-label">sixdegrees</div><div class="topic-scope">Connections, networks, influence</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">14</div>
+        <div><div class="topic-label">zeitgeist</div><div class="topic-scope">The spirit of the age</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row is-closed">
+        <div class="topic-id">16</div>
+        <div><div class="topic-label">midlife</div><div class="topic-scope">Midlife — closed</div></div>
+        <div class="agent-pill pill-closed">Closed</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">18</div>
+        <div><div class="topic-label">mortality</div><div class="topic-scope">Death, time, finitude</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">20</div>
+        <div><div class="topic-label">power</div><div class="topic-scope">Power, politics, institutions</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">22</div>
+        <div><div class="topic-label">philosophy</div><div class="topic-scope">Philosophy, ethics, metaphysics</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">24</div>
+        <div><div class="topic-label">ecclesiastes</div><div class="topic-scope">Vanity, meaning, scripture</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">26</div>
+        <div><div class="topic-label">lit</div><div class="topic-scope">Literature, narrative, language</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+      <div class="topic-row">
+        <div class="topic-id">28</div>
+        <div><div class="topic-label">psa</div><div class="topic-scope">Psalms, lament, praise</div></div>
+        <div class="agent-pill pill-zeno">Zeno</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    codex-ocaisa topic scopes inferred from labels — not set in config. All codex-ocaisa topics route to agent:zeno with identical systemPrompt. Topic 16 (midlife) marked closed.
+  </div>
+
+</div>
