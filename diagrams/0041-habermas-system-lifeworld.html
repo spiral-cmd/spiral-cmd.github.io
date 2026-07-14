@@ -1,0 +1,414 @@
+<title>Habermas — System & Lifeworld</title>
+<style>
+  :root {
+    --bg:          #F2F1EE;
+    --surface:     #FFFFFF;
+    --border:      #D8D5CF;
+    --text:        #1A1918;
+    --text-sec:    #6A6764;
+    --system-bg:   #1B2D40;
+    --system-mid:  #243D54;
+    --system-text: #E8EDF2;
+    --system-sub:  #A8BCCF;
+    --leben-bg:    #1E3D2F;
+    --leben-mid:   #274F3C;
+    --leben-text:  #E6EFE9;
+    --leben-sub:   #9ABDA8;
+    --colo:        #8C2020;
+    --colo-light:  #C94040;
+    --tag-bg:      #ECEAE6;
+    --tag-border:  #D8D5CF;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:          #141412;
+      --surface:     #1E1D1A;
+      --border:      #383530;
+      --text:        #E8E6E2;
+      --text-sec:    #8A8784;
+      --system-bg:   #0E1C2A;
+      --system-mid:  #152334;
+      --system-text: #D8E5EF;
+      --system-sub:  #7A9BB8;
+      --leben-bg:    #0E2118;
+      --leben-mid:   #142B1E;
+      --leben-text:  #D4E8DA;
+      --leben-sub:   #6A9E7E;
+      --colo:        #A03030;
+      --colo-light:  #D45050;
+      --tag-bg:      #2A2826;
+      --tag-border:  #3A3836;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg: #F2F1EE; --surface: #FFFFFF; --border: #D8D5CF;
+    --text: #1A1918; --text-sec: #6A6764;
+    --system-bg: #1B2D40; --system-mid: #243D54;
+    --system-text: #E8EDF2; --system-sub: #A8BCCF;
+    --leben-bg: #1E3D2F; --leben-mid: #274F3C;
+    --leben-text: #E6EFE9; --leben-sub: #9ABDA8;
+    --colo: #8C2020; --colo-light: #C94040;
+    --tag-bg: #ECEAE6; --tag-border: #D8D5CF;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #141412; --surface: #1E1D1A; --border: #383530;
+    --text: #E8E6E2; --text-sec: #8A8784;
+    --system-bg: #0E1C2A; --system-mid: #152334;
+    --system-text: #D8E5EF; --system-sub: #7A9BB8;
+    --leben-bg: #0E2118; --leben-mid: #142B1E;
+    --leben-text: #D4E8DA; --leben-sub: #6A9E7E;
+    --colo: #A03030; --colo-light: #D45050;
+    --tag-bg: #2A2826; --tag-border: #3A3836;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    padding: 44px 36px 52px;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header { margin-bottom: 32px; }
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-sec);
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 26px;
+    font-weight: normal;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+  h1 em { font-style: italic; }
+
+  /* Main two-panel */
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .panel {
+    padding: 28px 28px 32px;
+  }
+  .panel.system { background: var(--system-bg); }
+  .panel.leben  { background: var(--leben-bg); border-left: 1px solid rgba(255,255,255,0.08); }
+
+  .panel-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .system .panel-label { color: var(--system-sub); }
+  .leben  .panel-label { color: var(--leben-sub); }
+
+  .panel-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: normal;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .system .panel-title { color: var(--system-text); }
+  .leben  .panel-title { color: var(--leben-text); }
+
+  .panel-subtitle {
+    font-size: 12px;
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .system .panel-subtitle { color: var(--system-sub); }
+  .leben  .panel-subtitle { color: var(--leben-sub); }
+
+  /* Media */
+  .media-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .media-chip {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .system .media-chip { background: rgba(255,255,255,0.12); color: var(--system-text); }
+  .leben  .media-chip { background: rgba(255,255,255,0.12); color: var(--leben-text); }
+
+  /* Components */
+  .comp-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .system .comp-label { color: var(--system-sub); }
+  .leben  .comp-label { color: var(--leben-sub); }
+
+  .components { display: flex; flex-direction: column; gap: 8px; }
+  .comp {
+    padding: 10px 14px;
+    border-radius: 6px;
+  }
+  .system .comp { background: var(--system-mid); }
+  .leben  .comp { background: var(--leben-mid); }
+
+  .comp-name {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 2px;
+  }
+  .system .comp-name { color: var(--system-text); }
+  .leben  .comp-name { color: var(--leben-text); }
+
+  .comp-desc { font-size: 11px; line-height: 1.4; }
+  .system .comp-desc { color: var(--system-sub); }
+  .leben  .comp-desc { color: var(--leben-sub); }
+
+  /* Action mode */
+  .action-row {
+    margin-top: 20px;
+    padding-top: 18px;
+  }
+  .system .action-row { border-top: 1px solid rgba(255,255,255,0.1); }
+  .leben  .action-row { border-top: 1px solid rgba(255,255,255,0.1); }
+
+  .action-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .system .action-label { color: var(--system-sub); }
+  .leben  .action-label { color: var(--leben-sub); }
+
+  .action-text {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .system .action-text { color: var(--system-text); }
+  .leben  .action-text { color: var(--leben-text); }
+
+  /* Colonisation bar */
+  .colonisation {
+    background: var(--colo);
+    border-radius: 8px;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .colo-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .colo-arrow {
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    flex-shrink: 0;
+  }
+  .colo-text {
+    font-size: 12px;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.4;
+  }
+
+  /* Taxonomy mapping */
+  .mapping {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .mapping-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-sec);
+    margin-bottom: 14px;
+  }
+  .mapping-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .map-cell {
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+  }
+  .map-habermas {
+    font-size: 10px;
+    color: var(--text-sec);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+  .map-tag {
+    font-family: Georgia, serif;
+    font-size: 15px;
+    font-weight: normal;
+    color: var(--text);
+  }
+  .map-desc {
+    font-size: 10px;
+    color: var(--text-sec);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .map-cell.is-system {
+    border-left: 3px solid #2A5070;
+  }
+  .map-cell.is-leben {
+    border-left: 3px solid #2A5E40;
+  }
+
+  .footer {
+    margin-top: 20px;
+    font-size: 10.5px;
+    color: var(--text-sec);
+    letter-spacing: 0.03em;
+  }
+</style>
+
+<div class="header">
+  <div class="eyebrow">Jürgen Habermas · Theory of Communicative Action, 1981</div>
+  <h1>System &amp; <em>Lebenswelt</em></h1>
+</div>
+
+<div class="panels">
+
+  <!-- SYSTEM -->
+  <div class="panel system">
+    <div class="panel-label">Subsystem</div>
+    <div class="panel-title">System</div>
+    <div class="panel-subtitle">Self-regulating. Operates independently of shared meaning — steered by impersonal media, not communicative reason.</div>
+
+    <div class="comp-label">Steering media</div>
+    <div class="media-row">
+      <span class="media-chip">Money</span>
+      <span class="media-chip">Power</span>
+    </div>
+
+    <div class="comp-label">Components</div>
+    <div class="components">
+      <div class="comp">
+        <div class="comp-name">Economy</div>
+        <div class="comp-desc">Market exchange steered by money. Strategic action, instrumental rationality.</div>
+      </div>
+      <div class="comp">
+        <div class="comp-name">State</div>
+        <div class="comp-desc">Administrative apparatus steered by power. Bureaucratic coordination.</div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <div class="action-label">Mode of action</div>
+      <div class="action-text">Strategic / purposive-rational — actors orient to success, not mutual understanding</div>
+    </div>
+  </div>
+
+  <!-- LIFEWORLD -->
+  <div class="panel leben">
+    <div class="panel-label">Background horizon</div>
+    <div class="panel-title"><em>Lebenswelt</em></div>
+    <div class="panel-subtitle">The pre-theoretical background of shared meanings that makes communication possible. Reproduced through communicative action.</div>
+
+    <div class="comp-label">Medium</div>
+    <div class="media-row">
+      <span class="media-chip">Communicative reason</span>
+    </div>
+
+    <div class="comp-label">Components</div>
+    <div class="components">
+      <div class="comp">
+        <div class="comp-name">Culture</div>
+        <div class="comp-desc">Symbolic reproduction — knowledge, interpretation, meaning transmitted across generations.</div>
+      </div>
+      <div class="comp">
+        <div class="comp-name">Society</div>
+        <div class="comp-desc">Legitimate social orders — norms, solidarity, institutional integration.</div>
+      </div>
+      <div class="comp">
+        <div class="comp-name">Personality</div>
+        <div class="comp-desc">Identity formation — competencies for language, action, self-understanding.</div>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <div class="action-label">Mode of action</div>
+      <div class="action-text">Communicative — actors orient to mutual understanding, not strategic success</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Colonisation -->
+<div class="colonisation">
+  <span class="colo-label">Colonisation</span>
+  <span class="colo-arrow">→</span>
+  <span class="colo-text">When System logic invades the Lifeworld — bureaucratisation of care, monetisation of intimate life, juridification of family — communicative action is displaced by strategic rationality. Habermas's core pathology of modernity.</span>
+</div>
+
+<!-- Taxonomy mapping -->
+<div class="mapping">
+  <div class="mapping-label">Mapping to personal taxonomy</div>
+  <div class="mapping-grid">
+    <div class="map-cell is-system">
+      <div class="map-habermas">System</div>
+      <div class="map-tag">Campo</div>
+      <div class="map-desc">Power, economy, politics, social forces, trends, networks</div>
+    </div>
+    <div class="map-cell is-leben">
+      <div class="map-habermas">Lebenswelt — Culture</div>
+      <div class="map-tag">Ingegno</div>
+      <div class="map-desc">Human capability, civilisation, arts, philosophy, science</div>
+    </div>
+    <div class="map-cell is-leben">
+      <div class="map-habermas">Lebenswelt — Personality</div>
+      <div class="map-tag">Vivere</div>
+      <div class="map-desc">Inner life, spirituality, existence, mortality, ageing</div>
+    </div>
+    <div class="map-cell is-leben">
+      <div class="map-habermas">Lebenswelt — Society</div>
+      <div class="map-tag">Dimora</div>
+      <div class="map-desc">Family, daily life, health, nature, place, home</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Habermas, J. (1981). <em>Theorie des kommunikativen Handelns.</em> Frankfurt: Suhrkamp. · Colonisation thesis: Vol. II, Ch. VIII.</div>
