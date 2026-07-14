@@ -1,0 +1,322 @@
+<title>Codex Tags</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #F5F4F1;
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  padding: 40px 32px 48px;
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1A1918;
+  margin-bottom: 28px;
+}
+.top-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.bot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.cluster {
+  background: #fff;
+  border: 1px solid #E0DEDA;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cluster-header {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.leben  .cluster-header { background: #D8EAE3; color: #1E4A3A; }
+.welt   .cluster-header { background: #D8E3F0; color: #1E2E50; }
+.indiv  .cluster-header { background: #D8EAE3; color: #1E4A3A; }
+.living .cluster-header { background: #D8EAE3; color: #1E4A3A; }
+.limbo  .cluster-header { background: #EEEEED; color: #666; }
+.prov   .cluster-header { background: #F5EDD8; color: #4A3010; }
+.pratica .cluster-header { background: #EDE0DC; color: #4A1E18; }
+
+/* Tag tree */
+.tag-tree { padding: 10px 10px 12px; }
+
+.tag-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.tag-row:last-child { margin-bottom: 0; }
+
+.tag {
+  font-size: 11px;
+  color: #2A2927;
+  background: #F2F1EE;
+  border: 1px solid #E0DEDA;
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.tag.triage {
+  color: #999;
+  background: #F7F6F5;
+  border-color: #E4E2DF;
+  border-style: dashed;
+}
+.tag.parent {
+  background: #ECEAE6;
+  border-color: #D4D0CA;
+  font-weight: 600;
+}
+
+/* Children indent */
+.children {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 8px;
+  border-left: 2px solid #E4E2DE;
+  margin-left: 2px;
+}
+.child-row {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.child-row .tag {
+  font-size: 10.5px;
+  padding: 2px 8px;
+  background: #F8F7F5;
+  border-color: #E8E6E2;
+  color: #5A5754;
+}
+
+/* Flat row of sibling tags */
+.tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.footer {
+  margin-top: 22px;
+  font-size: 11px;
+  color: #AAA;
+  text-align: right;
+  letter-spacing: 0.04em;
+}
+</style>
+
+<div class="page-title">CODEX TAGS</div>
+
+<div class="top-grid">
+
+  <!-- LEBENSWELT -->
+  <div class="cluster leben">
+    <div class="cluster-header">Ingegno</div>
+    <div class="tag-tree">
+
+      <div class="tag-row">
+        <div>
+          <div class="tag parent">culture</div>
+          <div style="height:4px"></div>
+          <div class="children">
+            <div class="child-row">
+              <span class="tag">film</span>
+              <span class="tag">theatre</span>
+              <span class="tag">television</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tag-group" style="margin-top:6px">
+        <span class="tag">creativity</span>
+        <span class="tag">design</span>
+        <span class="tag">development</span>
+        <span class="tag">lit</span>
+        <span class="tag">music</span>
+        <span class="tag">philosophy</span>
+        <span class="tag">pov</span>
+        <span class="tag">psa</span>
+        <span class="tag">science</span>
+        <span class="tag">visualarts</span>
+        <span class="tag">writing</span>
+      </div>
+
+      <div class="tag-row" style="margin-top:2px">
+        <div>
+          <div class="tag parent">history</div>
+          <div style="height:4px"></div>
+          <div class="children">
+            <div class="child-row">
+              <span class="tag">soc</span>
+              <span class="tag">sociological interpretation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tag-row" style="margin-top:6px">
+        <div>
+          <div class="tag parent">ai</div>
+          <div style="height:4px"></div>
+          <div class="children">
+            <div class="child-row">
+              <span class="tag">agenticai</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WELT -->
+  <div class="cluster welt">
+    <div class="cluster-header">Campo</div>
+    <div class="tag-tree">
+      <div class="tag-group">
+        <span class="tag">economy</span>
+        <span class="tag">finance</span>
+        <span class="tag">humanzoo</span>
+        <span class="tag">politics</span>
+        <span class="tag">power</span>
+        <span class="tag">sixdegrees</span>
+        <span class="tag">temporal world</span>
+        <span class="tag">zeitgeist</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDIVIDUAL -->
+  <div class="cluster indiv">
+    <div class="cluster-header">Vivere</div>
+    <div class="tag-tree">
+
+      <div class="tag-group">
+        <span class="tag">ecclesiastes</span>
+        <span class="tag">innerlife</span>
+        <span class="tag">midlife</span>
+      </div>
+
+      <div class="tag-row" style="margin-top:6px">
+        <div>
+          <div class="tag parent">bio</div>
+          <div style="height:4px"></div>
+          <div class="children">
+            <div class="child-row">
+              <span class="tag">mortality</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIVING -->
+  <div class="cluster living">
+    <div class="cluster-header">Dimora</div>
+    <div class="tag-tree">
+
+      <div class="tag-group">
+        <span class="tag">family</span>
+        <span class="tag">health</span>
+        <span class="tag">naturalworld</span>
+        <span class="tag">recipe</span>
+        <span class="tag">tennis</span>
+      </div>
+
+      <div class="tag-row" style="margin-top:6px">
+        <div>
+          <div class="tag parent">place</div>
+          <div style="height:4px"></div>
+          <div class="children">
+            <div class="child-row">
+              <span class="tag">travel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tag-row" style="margin-top:6px">
+        <div>
+          <div class="tag parent">cz</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="bot-grid">
+
+  <!-- LIMBO -->
+  <div class="cluster limbo">
+    <div class="cluster-header">Limbo — triage</div>
+    <div class="tag-tree">
+      <div class="tag-group">
+        <span class="tag triage">00-tosort</span>
+        <span class="tag triage">zzz</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROVENANCE -->
+  <div class="cluster prov">
+    <div class="cluster-header">Provenance</div>
+    <div class="tag-tree">
+
+      <div class="tag-group">
+        <span class="tag">author known</span>
+        <span class="tag">author unknown</span>
+        <span class="tag">ai-gen</span>
+        <span class="tag">download</span>
+      </div>
+
+      <div class="tag-row" style="margin-top:6px">
+        <div>
+          <div class="tag parent">martin</div>
+          <div style="height:4px"></div>
+          <div class="children">
+            <div class="child-row">
+              <span class="tag">martin + ai</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRATICA -->
+  <div class="cluster pratica">
+    <div class="cluster-header">Pratica</div>
+    <div class="tag-tree">
+      <div class="tag-group">
+        <span class="tag">biz</span>
+        <span class="tag">legal</span>
+        <span class="tag">probate</span>
+        <span class="tag">supplier</span>
+        <span class="tag">trading</span>
+        <span class="tag">zee</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">13 Jun 2026</div>
