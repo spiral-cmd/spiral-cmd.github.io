@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Missed Ack Scoreboard — OpenClaw CoA</title>
+<style>
+:root {
+  --bg:#f2f4f7; --surface:#fff; --surface-2:#edf0f4;
+  --border:#d0d7e2; --border-dim:#e4e8ef;
+  --text:#1a2332; --text-dim:#5a6a80; --text-bright:#0d1520; --text-mono:#2a3a50;
+  --amber:#c47e00; --amber-bg:rgba(196,126,0,.10);
+  --critical:#d63f38; --critical-bg:rgba(214,63,56,.10);
+  --caution:#c47e00; --caution-bg:rgba(196,126,0,.10);
+  --ok:#2d9e57; --ok-bg:rgba(45,158,87,.10);
+  --open-clr:#5a45cc; --open-bg:rgba(90,69,204,.10);
+  --bar-track:#dde3ec; --stripe-w:3px;
+}
+@media (prefers-color-scheme:dark) {
+  :root {
+    --bg:#0b0f14; --surface:#131921; --surface-2:#1a2332;
+    --border:#1e2d3d; --border-dim:#162030;
+    --text:#c8d6e5; --text-dim:#607b96; --text-bright:#e8f0fb; --text-mono:#a8c0d8;
+    --amber:#e09c2a; --amber-bg:rgba(224,156,42,.12);
+    --critical:#e5534b; --critical-bg:rgba(229,83,75,.12);
+    --caution:#d08b20; --caution-bg:rgba(208,139,32,.12);
+    --ok:#3db86b; --ok-bg:rgba(61,184,107,.12);
+    --open-clr:#8b78f0; --open-bg:rgba(139,120,240,.12);
+    --bar-track:#1e2d3d;
+  }
+}
+:root[data-theme="light"] {
+  --bg:#f2f4f7; --surface:#fff; --surface-2:#edf0f4;
+  --border:#d0d7e2; --border-dim:#e4e8ef;
+  --text:#1a2332; --text-dim:#5a6a80; --text-bright:#0d1520; --text-mono:#2a3a50;
+  --critical:#d63f38; --critical-bg:rgba(214,63,56,.10);
+  --caution:#c47e00; --caution-bg:rgba(196,126,0,.10);
+  --ok:#2d9e57; --ok-bg:rgba(45,158,87,.10);
+  --open-clr:#5a45cc; --open-bg:rgba(90,69,204,.10);
+  --bar-track:#dde3ec;
+}
+:root[data-theme="dark"] {
+  --bg:#0b0f14; --surface:#131921; --surface-2:#1a2332;
+  --border:#1e2d3d; --border-dim:#162030;
+  --text:#c8d6e5; --text-dim:#607b96; --text-bright:#e8f0fb; --text-mono:#a8c0d8;
+  --critical:#e5534b; --critical-bg:rgba(229,83,75,.12);
+  --caution:#d08b20; --caution-bg:rgba(208,139,32,.12);
+  --ok:#3db86b; --ok-bg:rgba(61,184,107,.12);
+  --open-clr:#8b78f0; --open-bg:rgba(139,120,240,.12);
+  --bar-track:#1e2d3d;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);padding:32px 28px 56px;min-height:100vh;line-height:1.5;font-size:14px}
+.mono{font-family:ui-monospace,'SF Mono','Cascadia Code','Fira Code',monospace}
+.header{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.header h1{font-size:1.1rem;font-weight:700;letter-spacing:-0.01em;color:var(--text-bright)}
+.eyebrow{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-family:ui-monospace,monospace}
+.header-meta{margin-left:auto;font-size:.72rem;color:var(--text-dim);font-family:ui-monospace,monospace;text-align:right;line-height:1.7}
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 20px 12px;min-width:90px}
+.stat .s-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:ui-monospace,monospace}
+.stat .s-val{font-family:ui-monospace,monospace;font-size:2rem;font-weight:700;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums;color:var(--text-bright)}
+.stat.accent-red .s-val{color:var(--critical)}
+.stat.accent-amber .s-val{color:var(--amber)}
+.section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-family:ui-monospace,monospace;margin-bottom:10px}
+.leaderboard{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:32px}
+.lb-row{display:flex;align-items:center;border-bottom:1px solid var(--border-dim);transition:background .1s}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:var(--surface-2)}
+.lb-stripe{width:var(--stripe-w);align-self:stretch;flex-shrink:0}
+.lb-stripe.critical{background:var(--critical)}
+.lb-stripe.caution{background:var(--caution)}
+.lb-stripe.ok{background:var(--ok)}
+.lb-rank{width:52px;text-align:center;font-family:ui-monospace,monospace;font-size:1.4rem;font-weight:700;color:var(--border);font-variant-numeric:tabular-nums;flex-shrink:0;padding:18px 0 18px 12px;user-select:none}
+.lb-agent{width:72px;flex-shrink:0;padding:0 16px 0 4px}
+.agent-chip{display:inline-block;font-family:ui-monospace,monospace;font-size:.78rem;font-weight:600;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:3px 8px;color:var(--text-mono);letter-spacing:.01em;white-space:nowrap}
+.lb-count{width:64px;flex-shrink:0;font-family:ui-monospace,monospace;font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;padding:18px 20px 18px 0}
+.lb-count.sev-critical{color:var(--critical)}
+.lb-count.sev-caution{color:var(--caution)}
+.lb-count.sev-ok{color:var(--ok)}
+.lb-detail{flex:1;padding:16px 20px 16px 0;min-width:0}
+.lb-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.badge{font-family:ui-monospace,monospace;font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:3px;letter-spacing:.03em}
+.badge.high{background:var(--critical-bg);color:var(--critical)}
+.badge.med{background:var(--caution-bg);color:var(--caution)}
+.badge.low{background:var(--ok-bg);color:var(--ok)}
+.badge.open{background:var(--open-bg);color:var(--open-clr)}
+.bar-track{height:4px;background:var(--bar-track);border-radius:2px;overflow:hidden}
+.bar-fill{height:4px;border-radius:2px;background:var(--amber)}
+.bar-fill.sev-critical{background:var(--critical)}
+.bar-fill.sev-caution{background:var(--caution)}
+.bar-fill.sev-ok{background:var(--ok)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+thead th{text-align:left;padding:9px 14px;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-family:ui-monospace,monospace;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600}
+tbody td{padding:9px 14px;font-size:.82rem;border-bottom:1px solid var(--border-dim);vertical-align:top;color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface-2)}
+.sev-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle;position:relative;top:-1px}
+.sev-dot.high{background:var(--critical)}
+.sev-dot.medium{background:var(--caution)}
+.sev-dot.low{background:var(--ok)}
+.ts{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--text-dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ctx-cell{max-width:200px;font-size:.8rem;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-cell{font-family:ui-monospace,monospace;font-size:.72rem;color:var(--text-dim);white-space:nowrap}
+.corr-id{font-family:ui-monospace,monospace;font-size:.7rem;color:var(--text-dim);cursor:default}
+.status-open{font-family:ui-monospace,monospace;font-size:.7rem;color:var(--critical)}
+.status-resolved{font-family:ui-monospace,monospace;font-size:.7rem;color:var(--ok)}
+.empty-state{text-align:center;padding:56px 0;color:var(--text-dim);font-size:.85rem}
+@media (max-width:600px) {
+  .lb-count{font-size:1.8rem} .lb-rank{font-size:1rem;width:40px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="eyebrow">OpenClaw / CoA</div>
+    <h1>Missed Ack Scoreboard</h1>
+  </div>
+  <div class="header-meta">generated 2026-07-18 17:02 UTC<br>source: coordination.sqlite / missed_acks</div>
+</div>
+
+<div class="stat-row">
+  <div class="stat accent-red"><div class="s-label">Total</div><div class="s-val mono">10</div></div>
+  <div class="stat accent-amber"><div class="s-label">Open</div><div class="s-val mono">10</div></div>
+  <div class="stat"><div class="s-label">Resolved</div><div class="s-val mono">0</div></div>
+  <div class="stat"><div class="s-label">Agents</div><div class="s-val mono">4</div></div>
+</div>
+
+<div class="section-label">Offender Ranking</div>
+<div class="leaderboard"><div class="lb-row">
+  <div class="lb-stripe critical"></div>
+  <div class="lb-rank mono">1</div>
+  <div class="lb-agent"><span class="agent-chip">codo</span></div>
+  <div class="lb-count mono sev-critical">4</div>
+  <div class="lb-detail">
+    <div class="lb-badges"><span class="badge high">1 high</span><span class="badge med">1 med</span><span class="badge low">2 low</span><span class="badge open">4 open</span></div>
+    <div class="bar-track"><div class="bar-fill sev-critical" style="width:100%"></div></div>
+  </div>
+</div><div class="lb-row">
+  <div class="lb-stripe critical"></div>
+  <div class="lb-rank mono">2</div>
+  <div class="lb-agent"><span class="agent-chip">polo</span></div>
+  <div class="lb-count mono sev-critical">3</div>
+  <div class="lb-detail">
+    <div class="lb-badges"><span class="badge high">2 high</span><span class="badge med">1 med</span><span class="badge open">3 open</span></div>
+    <div class="bar-track"><div class="bar-fill sev-critical" style="width:75%"></div></div>
+  </div>
+</div><div class="lb-row">
+  <div class="lb-stripe critical"></div>
+  <div class="lb-rank mono">3</div>
+  <div class="lb-agent"><span class="agent-chip">io</span></div>
+  <div class="lb-count mono sev-critical">2</div>
+  <div class="lb-detail">
+    <div class="lb-badges"><span class="badge high">1 high</span><span class="badge med">1 med</span><span class="badge open">2 open</span></div>
+    <div class="bar-track"><div class="bar-fill sev-critical" style="width:50%"></div></div>
+  </div>
+</div><div class="lb-row">
+  <div class="lb-stripe ok"></div>
+  <div class="lb-rank mono">4</div>
+  <div class="lb-agent"><span class="agent-chip">cato</span></div>
+  <div class="lb-count mono sev-ok">1</div>
+  <div class="lb-detail">
+    <div class="lb-badges"><span class="badge low">1 low</span><span class="badge open">1 open</span></div>
+    <div class="bar-track"><div class="bar-fill sev-ok" style="width:25%"></div></div>
+  </div>
+</div></div>
+
+<div class="section-label">Incident Log</div>
+<div class="table-wrap">
+<table><thead><tr><th>#</th><th>Time</th><th>Offender</th><th>Filed by</th><th>Task ref</th><th>Context</th><th>Sev</th><th>Deadline</th><th>Corr ID</th><th>Status</th></tr></thead><tbody><tr>
+  <td class="ts">1</td>
+  <td class="ts">2026-07-18 08:14</td>
+  <td><span class="agent-chip">codo</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">chunk-4 / filen-skill</td>
+  <td class="ctx-cell" title="No sermo ack after 25min; chunk complete but silent">No sermo ack after 25min; chunk complete but silent</td>
+  <td><span class="sev-dot high"></span>high</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">2</td>
+  <td class="ts">2026-07-17 21:33</td>
+  <td><span class="agent-chip">codo</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">chunk-2 / filen-skill</td>
+  <td class="ctx-cell" title="Expected chunk-done ack to sermo; had to ~idr manually">Expected chunk-done ack to sermo; had to ~idr manually</td>
+  <td><span class="sev-dot medium"></span>medium</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">3</td>
+  <td class="ts">2026-07-17 19:10</td>
+  <td><span class="agent-chip">io</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">research:openrouter-usage</td>
+  <td class="ctx-cell" title="io acknowledged receipt but never sent back results">io acknowledged receipt but never sent back results</td>
+  <td><span class="sev-dot high"></span>high</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">4</td>
+  <td class="ts">2026-07-16 14:05</td>
+  <td><span class="agent-chip">polo</span></td>
+  <td><span class="agent-chip">cc</span></td>
+  <td class="ref-cell">chunk-A / cato-billing</td>
+  <td class="ctx-cell" title="Polo silent >30min after CC sent chunk-A brief">Polo silent >30min after CC sent chunk-A brief</td>
+  <td><span class="sev-dot medium"></span>medium</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">5</td>
+  <td class="ts">2026-07-15 11:42</td>
+  <td><span class="agent-chip">codo</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">chunk-1 / codex-reconcile</td>
+  <td class="ctx-cell" title="Chunk complete, no sermo ack; Polo had to poll">Chunk complete, no sermo ack; Polo had to poll</td>
+  <td><span class="sev-dot low"></span>low</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">6</td>
+  <td class="ts">2026-07-14 09:20</td>
+  <td><span class="agent-chip">polo</span></td>
+  <td><span class="agent-chip">cc</span></td>
+  <td class="ref-cell">chunk-B / agent-reliability</td>
+  <td class="ctx-cell" title="No sermo ack after 40min; had to re-send">No sermo ack after 40min; had to re-send</td>
+  <td><span class="sev-dot high"></span>high</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">7</td>
+  <td class="ts">2026-07-13 16:55</td>
+  <td><span class="agent-chip">io</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">research:email-digest</td>
+  <td class="ctx-cell" title="io sent results to wrong mailbox key; treated as non-ack">io sent results to wrong mailbox key; treated as non-ack</td>
+  <td><span class="sev-dot medium"></span>medium</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">8</td>
+  <td class="ts">2026-07-12 10:08</td>
+  <td><span class="agent-chip">codo</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">chunk-5 / codex-vec</td>
+  <td class="ctx-cell" title="No ack for 15min; codo was running but silent">No ack for 15min; codo was running but silent</td>
+  <td><span class="sev-dot low"></span>low</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">9</td>
+  <td class="ts">2026-07-11 22:31</td>
+  <td><span class="agent-chip">polo</span></td>
+  <td><span class="agent-chip">cc</span></td>
+  <td class="ref-cell">chunk-C / io-debugging</td>
+  <td class="ctx-cell" title="Phase-complete not sent to CC; CIV gate stalled">Phase-complete not sent to CC; CIV gate stalled</td>
+  <td><span class="sev-dot high"></span>high</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr><tr>
+  <td class="ts">10</td>
+  <td class="ts">2026-07-10 13:19</td>
+  <td><span class="agent-chip">cato</span></td>
+  <td><span class="agent-chip">polo</span></td>
+  <td class="ref-cell">email-digest-cron</td>
+  <td class="ctx-cell" title="Cato completed run but did not write to to-cc.md">Cato completed run but did not write to to-cc.md</td>
+  <td><span class="sev-dot low"></span>low</td>
+  <td class="ts">—</td>
+  <td class="ts">—</td>
+  <td><span class="status-open">open</span></td>
+</tr></tbody></table>
+</div>
+
+</body>
+</html>
