@@ -1,0 +1,417 @@
+<title>Jul 23 – Aug 9 · 2026</title>
+<style>
+  :root {
+    --bg: #F8F6F1;
+    --surface: #F2EFE8;
+    --text: #1A1A18;
+    --text-muted: #8A9A92;
+    --accent: #2E6E52;
+    --accent-light: rgba(46, 110, 82, 0.12);
+    --border: #DDD9D0;
+    --border-dim: #EAE6DE;
+    --month-label: #A8BDB3;
+    --dim-text: #C4BFB3;
+    --dim-bg: #F5F3EE;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111110;
+      --surface: #1A1A18;
+      --text: #EDE9E0;
+      --text-muted: #6B7D75;
+      --accent: #3D8A68;
+      --accent-light: rgba(61, 138, 104, 0.15);
+      --border: #2A2A26;
+      --border-dim: #222220;
+      --month-label: #3D5049;
+      --dim-text: #3A3A36;
+      --dim-bg: #141412;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg: #F8F6F1;
+    --surface: #F2EFE8;
+    --text: #1A1A18;
+    --text-muted: #8A9A92;
+    --accent: #2E6E52;
+    --accent-light: rgba(46, 110, 82, 0.12);
+    --border: #DDD9D0;
+    --border-dim: #EAE6DE;
+    --month-label: #A8BDB3;
+    --dim-text: #C4BFB3;
+    --dim-bg: #F5F3EE;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #111110;
+    --surface: #1A1A18;
+    --text: #EDE9E0;
+    --text-muted: #6B7D75;
+    --accent: #3D8A68;
+    --accent-light: rgba(61, 138, 104, 0.15);
+    --border: #2A2A26;
+    --border-dim: #222220;
+    --month-label: #3D5049;
+    --dim-text: #3A3A36;
+    --dim-bg: #141412;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 40px 32px 60px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+
+  .header-title {
+    font-family: 'SF Mono', 'Fira Mono', 'Cascadia Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .header-range {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .cal-wrapper {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 0;
+    align-items: start;
+  }
+
+  /* Weekday header row */
+  .week-header-spacer { /* empty cell above month labels column */ }
+
+  .week-headers {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    margin-bottom: 4px;
+  }
+
+  .wh {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 10px 8px;
+    font-weight: 500;
+  }
+
+  /* Calendar body */
+  .month-labels {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .month-label-cell {
+    height: 120px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 12px;
+    justify-content: flex-end;
+    padding-right: 12px;
+  }
+
+  .month-label-text {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--month-label);
+    font-weight: 600;
+    user-select: none;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+  }
+
+  .day-cell {
+    min-height: 120px;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding: 10px 10px 10px 10px;
+    position: relative;
+    background: var(--bg);
+    transition: background 0.15s;
+  }
+
+  .day-cell:nth-child(7n + 1) {
+    border-left: 1px solid var(--border);
+  }
+
+  /* Active range: hairline accent top rule */
+  .day-cell.active {
+    border-top: 2px solid var(--accent);
+  }
+
+  /* Dim cells (outside the requested range) */
+  .day-cell.dim {
+    background: var(--dim-bg);
+  }
+
+  .day-cell.dim .day-number {
+    color: var(--dim-text);
+  }
+
+  .day-number {
+    font-family: 'SF Mono', 'Fira Mono', 'Cascadia Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  .day-month-tag {
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 1px;
+    line-height: 1;
+  }
+
+  /* Weekend columns (Sat=6, Sun=7 in 1-based) — subtle tint */
+  .day-cell.weekend {
+    background: var(--surface);
+  }
+  .day-cell.weekend.dim {
+    background: var(--dim-bg);
+  }
+
+  /* Bottom border on last row */
+  .last-row .day-cell {
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Events */
+  .event {
+    margin-top: 7px;
+    padding: 4px 7px 4px 8px;
+    border-radius: 3px;
+    border-left: 2.5px solid;
+    font-size: 0.68rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+  }
+  .event-sub {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 400;
+    opacity: 0.72;
+    margin-top: 1px;
+    letter-spacing: 0.03em;
+  }
+  .event.visit {
+    background: #FEF3E6;
+    border-color: #C07840;
+    color: #7A4820;
+  }
+  .event.travel {
+    background: #EDF1F9;
+    border-color: #4A6FA5;
+    color: #2B4875;
+  }
+  .event.return {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .event.social {
+    background: #F2EDF8;
+    border-color: #7C5BA0;
+    color: #4E2E78;
+  }
+  .event.transit {
+    background: #EDECEA;
+    border-color: #7A7870;
+    color: #3E3D39;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .event.visit  { background: rgba(192,120,64,0.15); color: #D4914E; border-color: #C07840; }
+    .event.travel { background: rgba(74,111,165,0.15); color: #7FA3D4; border-color: #4A6FA5; }
+    .event.social { background: rgba(124,91,160,0.15); color: #B090D4; border-color: #7C5BA0; }
+  }
+  :root[data-theme="dark"] .event.visit  { background: rgba(192,120,64,0.15); color: #D4914E; border-color: #C07840; }
+  :root[data-theme="dark"] .event.travel { background: rgba(74,111,165,0.15); color: #7FA3D4; border-color: #4A6FA5; }
+  :root[data-theme="dark"] .event.social { background: rgba(124,91,160,0.15); color: #B090D4; border-color: #7C5BA0; }
+  :root[data-theme="dark"] .event.transit { background: rgba(122,120,112,0.15); color: #A8A69E; border-color: #7A7870; }
+  :root[data-theme="light"] .event.visit  { background: #FEF3E6; color: #7A4820; border-color: #C07840; }
+  :root[data-theme="light"] .event.travel { background: #EDF1F9; color: #2B4875; border-color: #4A6FA5; }
+  :root[data-theme="light"] .event.social { background: #F2EDF8; color: #4E2E78; border-color: #7C5BA0; }
+
+  @media (max-width: 700px) {
+    body { padding: 24px 16px 40px; }
+    .day-cell { min-height: 72px; padding: 6px; }
+    .day-number { font-size: 0.68rem; }
+    .month-label-cell { height: 72px; }
+    header { flex-direction: column; gap: 6px; }
+  }
+</style>
+
+<header>
+  <span class="header-title">Jul · Aug 2026</span>
+  <span class="header-range">23 Jul – 10 Aug</span>
+</header>
+
+<div class="cal-wrapper">
+  <div></div><!-- spacer above month labels -->
+  <div class="week-headers" id="weekHeaders"></div>
+  <div class="month-labels" id="monthLabels"></div>
+  <div class="calendar-grid" id="calGrid"></div>
+</div>
+
+<script>
+  const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  // Events keyed by YYYY-M-D (local date, no padding needed for lookup)
+  const EVENTS = {
+    "2026-7-23": [{ label: "KFS end", type: "transit" }],
+    "2026-7-25": [{ label: "Brownes", sub: "Sligo · Mayo", type: "visit" }],
+    "2026-7-26": [{ label: "Brownes", sub: "Sligo · Mayo", type: "visit" }],
+    "2026-7-27": [{ label: "Brownes", sub: "Sligo · Mayo", type: "visit" }, { label: "B & CA arr", type: "transit" }, { label: "MG arr", type: "transit" }],
+    "2026-7-28": [{ label: "Brownes", sub: "Sligo · Mayo", type: "visit" }],
+    "2026-7-29": [{ label: "Brownes", sub: "Galway", type: "visit" }, { label: "Mass & Lunch", type: "social" }],
+    "2026-7-30": [{ label: "Brownes", sub: "Galway", type: "visit" }],
+    "2026-7-31": [{ label: "Dublin", type: "travel" }],
+    "2026-8-1":  [{ label: "Dublin", type: "travel" }, { label: "B & CA dep", type: "transit" }],
+    "2026-8-2":  [{ label: "Kilkenny", type: "travel" }],
+    "2026-8-3":  [{ label: "Kilkenny", type: "travel" }],
+    "2026-8-4":  [{ label: "Wexford", type: "travel" }],
+    "2026-8-5":  [{ label: "Wexford", type: "travel" }],
+    "2026-8-6":  [{ label: "Wexford", type: "travel" }],
+    "2026-8-7":  [{ label: "↩ London", type: "return" }],
+    "2026-8-10": [{ label: "MG dep", type: "transit" }],
+  };
+
+  // Range: Wed 23 Jul – Sun 9 Aug 2026
+  const rangeStart = new Date(2026, 6, 23); // Jul 23
+  const rangeEnd   = new Date(2026, 7, 10); // Aug 10
+
+  // Render weekday headers
+  const headers = document.getElementById("weekHeaders");
+  DAY_NAMES.forEach(d => {
+    const el = document.createElement("div");
+    el.className = "wh";
+    el.textContent = d;
+    headers.appendChild(el);
+  });
+
+  // Build cells
+  const grid = document.getElementById("calGrid");
+  const labelsCol = document.getElementById("monthLabels");
+
+  // 3 weeks: Jul 21–27, Jul 28–Aug 3, Aug 4–10
+  const weeks = [
+    { label: "Jul", rowStart: new Date(2026, 6, 21) },
+    { label: null,  rowStart: new Date(2026, 6, 28) },
+    { label: "Aug", rowStart: new Date(2026, 7, 4)  },
+  ];
+
+  weeks.forEach((week, wi) => {
+    // Month label cell
+    const lc = document.createElement("div");
+    lc.className = "month-label-cell";
+    if (week.label) {
+      const lt = document.createElement("span");
+      lt.className = "month-label-text";
+      lt.textContent = week.label;
+      lc.appendChild(lt);
+    }
+    labelsCol.appendChild(lc);
+
+    // 7 day cells for this week
+    const rowCells = grid.querySelectorAll(".day-cell").length; // track for last-row class
+    for (let di = 0; di < 7; di++) {
+      const d = new Date(week.rowStart);
+      d.setDate(d.getDate() + di);
+
+      const cell = document.createElement("div");
+      cell.className = "day-cell";
+
+      // Active range
+      const isActive = d >= rangeStart && d <= rangeEnd;
+      if (isActive) {
+        cell.classList.add("active");
+      } else {
+        cell.classList.add("dim");
+      }
+
+      // Weekend (Sat=6, Sun=0 in JS getDay)
+      const jsDay = d.getDay();
+      if (jsDay === 0 || jsDay === 6) {
+        cell.classList.add("weekend");
+      }
+
+      // Last row
+      if (wi === weeks.length - 1) {
+        cell.classList.add("last-row");
+      }
+
+      // Day number
+      const num = document.createElement("div");
+      num.className = "day-number";
+      num.textContent = String(d.getDate()).padStart(2, "0");
+      cell.appendChild(num);
+
+      // Month tag on 1st of month
+      if (d.getDate() === 1) {
+        const mt = document.createElement("span");
+        mt.className = "day-month-tag";
+        mt.textContent = MONTH_NAMES[d.getMonth()];
+        cell.appendChild(mt);
+      }
+
+      // Events
+      const key = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      (EVENTS[key] || []).forEach(ev => {
+        const el = document.createElement("div");
+        el.className = `event ${ev.type}`;
+        el.textContent = ev.label;
+        if (ev.sub) {
+          const s = document.createElement("span");
+          s.className = "event-sub";
+          s.textContent = ev.sub;
+          el.appendChild(s);
+        }
+        cell.appendChild(el);
+      });
+
+      grid.appendChild(cell);
+    }
+  });
+
+  // Apply last-row border fix: add border-bottom to all .last-row cells
+  document.querySelectorAll(".last-row").forEach(el => {
+    el.style.borderBottom = "1px solid var(--border)";
+  });
+</script>
