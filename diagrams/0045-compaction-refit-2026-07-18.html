@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Compaction Refit — 2026-07-18</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f0; color: #1a1a1a; padding: 32px 24px 48px; }
+  h1 { font-size: 1.5rem; font-weight: 700; color: #111; margin-bottom: 4px; }
+  .subtitle { font-size: 0.85rem; color: #666; margin-bottom: 32px; }
+
+  .section { margin-bottom: 32px; }
+  .section-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 10px; }
+
+  /* Agent cards */
+  .agents { display: flex; gap: 12px; flex-wrap: wrap; }
+  .agent-card {
+    background: #fff;
+    border: 1.5px solid #e0e0d8;
+    border-radius: 10px;
+    padding: 14px 16px;
+    min-width: 160px;
+    flex: 1;
+  }
+  .agent-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+  .agent-model { font-size: 0.72rem; color: #555; font-family: monospace; margin-bottom: 8px; word-break: break-all; }
+  .ctx-bar-wrap { background: #eee; border-radius: 4px; height: 6px; margin-bottom: 4px; overflow: hidden; }
+  .ctx-bar { height: 100%; border-radius: 4px; }
+  .ctx-label { font-size: 0.68rem; color: #777; }
+
+  /* Changes table */
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; border: 1.5px solid #e0e0d8; }
+  th { background: #f0ede6; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: #555; padding: 10px 14px; text-align: left; }
+  td { padding: 9px 14px; font-size: 0.82rem; border-top: 1px solid #ececec; vertical-align: top; }
+  td code { font-size: 0.78rem; background: #f5f3ee; padding: 1px 5px; border-radius: 3px; }
+  .tag-ok { display: inline-block; background: #d4edda; color: #155724; border-radius: 4px; padding: 1px 7px; font-size: 0.7rem; font-weight: 600; }
+  .tag-fix { display: inline-block; background: #fff3cd; color: #856404; border-radius: 4px; padding: 1px 7px; font-size: 0.7rem; font-weight: 600; }
+  .tag-add { display: inline-block; background: #cce5ff; color: #004085; border-radius: 4px; padding: 1px 7px; font-size: 0.7rem; font-weight: 600; }
+  .old { color: #999; text-decoration: line-through; }
+
+  /* Threshold viz */
+  .thresh-grid { display: flex; flex-direction: column; gap: 10px; }
+  .thresh-row { background: #fff; border: 1.5px solid #e0e0d8; border-radius: 8px; padding: 12px 14px; }
+  .thresh-agent { font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; }
+  .thresh-bar-wrap { position: relative; background: #eee; border-radius: 5px; height: 18px; }
+  .thresh-safe { position: absolute; left: 0; top: 0; height: 100%; border-radius: 5px 0 0 5px; }
+  .thresh-warn { position: absolute; top: 0; height: 100%; }
+  .thresh-danger { position: absolute; top: 0; height: 100%; border-radius: 0 5px 5px 0; }
+  .thresh-marker { position: absolute; top: -2px; width: 2px; height: 22px; border-radius: 1px; }
+  .thresh-marker-label { position: absolute; top: 22px; font-size: 0.6rem; color: #444; white-space: nowrap; transform: translateX(-50%); }
+  .thresh-meta { display: flex; gap: 16px; margin-top: 6px; }
+  .thresh-meta span { font-size: 0.7rem; color: #666; }
+  .thresh-meta strong { color: #222; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #555; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* Findings */
+  .findings { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .finding { background: #fff; border: 1.5px solid #e0e0d8; border-radius: 8px; padding: 12px 14px; }
+  .finding-icon { font-size: 1.1rem; margin-bottom: 4px; }
+  .finding-title { font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; }
+  .finding-body { font-size: 0.72rem; color: #555; line-height: 1.45; }
+
+  .rule { border-top: 1px solid #e0e0d8; margin-top: 32px; padding-top: 12px; font-size: 0.68rem; color: #aaa; }
+</style>
+</head>
+<body>
+
+<h1>OpenClaw — Compaction Refit</h1>
+<p class="subtitle">Session work · 2026-07-18 · CC + Martin</p>
+
+<!-- Agent model map -->
+<div class="section">
+  <div class="section-title">Agent Model Map &amp; Context Windows</div>
+  <div class="agents">
+
+    <div class="agent-card">
+      <div class="agent-name">Polo <span style="color:#888;font-weight:400;font-size:0.8rem">(main)</span></div>
+      <div class="agent-model">deepseek/deepseek-v4-flash</div>
+      <div class="ctx-bar-wrap"><div class="ctx-bar" style="width:100%;background:#a8d8a8;"></div></div>
+      <div class="ctx-label">1,048,576 tokens · 1M</div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-name">io</div>
+      <div class="agent-model">z-ai/glm-4.7-flash</div>
+      <div class="ctx-bar-wrap"><div class="ctx-bar" style="width:19%;background:#a8c8e8;"></div></div>
+      <div class="ctx-label">200,000 tokens · was unregistered ✦</div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-name">Cato</div>
+      <div class="agent-model">openai/gpt-4o-mini</div>
+      <div class="ctx-bar-wrap"><div class="ctx-bar" style="width:12%;background:#f5c6cb;"></div></div>
+      <div class="ctx-label">128,000 tokens · tightest agent</div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-name">codo</div>
+      <div class="agent-model">siliconflow/deepseek-ai/DeepSeek-V3.2</div>
+      <div class="ctx-bar-wrap"><div class="ctx-bar" style="width:15%;background:#ffeeba;"></div></div>
+      <div class="ctx-label">163,000 tokens · single-shot</div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-name">zeno</div>
+      <div class="agent-model">deepseek/deepseek-v4-pro</div>
+      <div class="ctx-bar-wrap"><div class="ctx-bar" style="width:100%;background:#d4b8e0;"></div></div>
+      <div class="ctx-label">1,048,576 tokens · was unregistered ✦</div>
+    </div>
+
+  </div>
+  <p style="font-size:0.7rem;color:#888;margin-top:8px;">✦ Context window not in model registry until today — compaction math was blind to these models.</p>
+</div>
+
+<!-- Threshold visualisation -->
+<div class="section">
+  <div class="section-title">Compaction Trigger Points (after refit)</div>
+  <div class="thresh-grid">
+
+    <!-- Cato 128k — tightest -->
+    <div class="thresh-row">
+      <div class="thresh-agent">Cato — gpt-4o-mini — 128k</div>
+      <div class="thresh-bar-wrap">
+        <div class="thresh-safe"  style="width:69%;background:#c8e6c9;"></div>
+        <div class="thresh-warn"  style="left:69%;width:11%;background:#fff9c4;"></div>
+        <div class="thresh-danger" style="left:80%;width:20%;background:#ffcdd2;"></div>
+        <!-- softThreshold marker at 69% (88k / 128k) -->
+        <div class="thresh-marker" style="left:69%;background:#388e3c;">
+          <span class="thresh-marker-label" style="color:#388e3c;">flush 69%</span>
+        </div>
+      </div>
+      <div class="thresh-meta">
+        <span><strong>softThreshold:</strong> 40k remaining → fires at 88k used (69%)</span>
+        <span><strong>forceFlush:</strong> 2000kb backstop (never fires for 128k model)</span>
+      </div>
+    </div>
+
+    <!-- codo 163k -->
+    <div class="thresh-row">
+      <div class="thresh-agent">codo — DeepSeek V3.2 — 163k</div>
+      <div class="thresh-bar-wrap">
+        <div class="thresh-safe"  style="width:75%;background:#c8e6c9;"></div>
+        <div class="thresh-warn"  style="left:75%;width:10%;background:#fff9c4;"></div>
+        <div class="thresh-danger" style="left:85%;width:15%;background:#ffcdd2;"></div>
+        <div class="thresh-marker" style="left:75%;background:#388e3c;">
+          <span class="thresh-marker-label" style="color:#388e3c;">flush 75%</span>
+        </div>
+      </div>
+      <div class="thresh-meta">
+        <span><strong>softThreshold:</strong> 40k remaining → fires at 123k used (75%)</span>
+        <span><strong>single-shot:</strong> rarely reaches threshold</span>
+      </div>
+    </div>
+
+    <!-- io 200k -->
+    <div class="thresh-row">
+      <div class="thresh-agent">io — GLM-4.7 Flash — 200k</div>
+      <div class="thresh-bar-wrap">
+        <div class="thresh-safe"  style="width:80%;background:#c8e6c9;"></div>
+        <div class="thresh-warn"  style="left:80%;width:8%;background:#fff9c4;"></div>
+        <div class="thresh-danger" style="left:88%;width:12%;background:#ffcdd2;"></div>
+        <div class="thresh-marker" style="left:80%;background:#388e3c;">
+          <span class="thresh-marker-label" style="color:#388e3c;">flush 80%</span>
+        </div>
+      </div>
+      <div class="thresh-meta">
+        <span><strong>softThreshold:</strong> 40k remaining → fires at 160k used (80%)</span>
+        <span><strong>postCompactionMaxChars:</strong> 24,000</span>
+      </div>
+    </div>
+
+    <!-- Polo / zeno 1M -->
+    <div class="thresh-row">
+      <div class="thresh-agent">Polo / zeno — V4 Flash / V4 Pro — 1M</div>
+      <div class="thresh-bar-wrap">
+        <div class="thresh-safe"  style="width:96%;background:#c8e6c9;"></div>
+        <div class="thresh-warn"  style="left:96%;width:2%;background:#fff9c4;"></div>
+        <div class="thresh-danger" style="left:98%;width:2%;background:#ffcdd2;"></div>
+        <div class="thresh-marker" style="left:96%;background:#388e3c;">
+          <span class="thresh-marker-label" style="color:#388e3c;">flush 96%</span>
+        </div>
+      </div>
+      <div class="thresh-meta">
+        <span><strong>softThreshold:</strong> 40k remaining → fires at 960k used (96%) — effectively never</span>
+        <span><strong>forceFlush:</strong> 2000kb ≈ 50% backstop</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="legend" style="margin-top:12px;">
+    <div class="legend-item"><div class="legend-dot" style="background:#c8e6c9;"></div> Safe zone</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fff9c4;"></div> Warning / degradation zone</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffcdd2;"></div> Danger / saturation zone</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#388e3c;border-radius:2px;width:4px;"></div> flush trigger</div>
+  </div>
+</div>
+
+<!-- Changes applied -->
+<div class="section">
+  <div class="section-title">Changes Applied This Session</div>
+  <table>
+    <thead>
+      <tr><th>Setting</th><th>Before</th><th>After</th><th>Reason</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>softThresholdTokens</code></td>
+        <td><span class="old">20,000</span> → <span class="old">15,000</span></td>
+        <td><strong>40,000</strong> <span class="tag-fix">RESTORED</span></td>
+        <td>15k fires at 85–88% for small-context agents — inside danger zone</td>
+      </tr>
+      <tr>
+        <td><code>forceFlushTranscriptBytes</code></td>
+        <td><span class="old">600kb</span></td>
+        <td><strong>2,000kb</strong> <span class="tag-fix">FIXED</span></td>
+        <td>600kb ≈ 150k chars — exceeded Cato's entire window; was a dead trigger</td>
+      </tr>
+      <tr>
+        <td><code>postCompactionMaxChars</code> (main, cato, io)</td>
+        <td><span class="old">8,000</span></td>
+        <td><strong>24,000</strong> <span class="tag-fix">RAISED</span></td>
+        <td>postCompactionSections grew from 2 → 8; 8k was truncating critical sections</td>
+      </tr>
+      <tr>
+        <td><code>compaction.model</code></td>
+        <td><span class="old">deepseek/deepseek-v3.2</span></td>
+        <td><strong>gemini-2.5-flash</strong> <span class="tag-ok">OK</span></td>
+        <td>DeepSeek was failing silently → ctx hit 100%. Gemini reliable. (changed 2026-04-30)</td>
+      </tr>
+      <tr>
+        <td>Model registry: <code>z-ai/glm-4.7-flash</code></td>
+        <td><span class="old">missing</span></td>
+        <td><strong>200,000 ctx</strong> <span class="tag-add">ADDED</span></td>
+        <td>io's model since 2026-06-18 — compaction math was blind to true window size</td>
+      </tr>
+      <tr>
+        <td>Model registry: <code>deepseek/deepseek-v4-pro</code></td>
+        <td><span class="old">missing</span></td>
+        <td><strong>1,048,576 ctx</strong> <span class="tag-add">ADDED</span></td>
+        <td>zeno's model — unregistered since adoption</td>
+      </tr>
+      <tr>
+        <td>Polo primary model in <code>openclaw.json</code></td>
+        <td><span class="old">siliconflow/deepseek-ai/DeepSeek-V3.2</span></td>
+        <td><strong>openrouter/deepseek/deepseek-v4-flash</strong> <span class="tag-fix">SYNCED</span></td>
+        <td>openclaw.json was stale vs bible and agent.json</td>
+      </tr>
+      <tr>
+        <td>Bible <code>models.md</code> — context window column</td>
+        <td><span class="old">missing</span></td>
+        <td><strong>all 5 agents documented</strong> <span class="tag-add">ADDED</span></td>
+        <td>io and zeno ctx windows undocumented since model migrations</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Key findings -->
+<div class="section">
+  <div class="section-title">Key Findings</div>
+  <div class="findings">
+    <div class="finding">
+      <div class="finding-icon">⚠️</div>
+      <div class="finding-title">Per-agent compaction is schema-locked</div>
+      <div class="finding-body">OpenClaw intentionally strips <code>compaction</code> from <code>agents.list[]</code> entries. Defaults-only. GitHub issue #57174 tracks the feature request. Workaround: tune defaults for tightest agent; large-context agents absorb the conservatism.</div>
+    </div>
+    <div class="finding">
+      <div class="finding-icon">🔍</div>
+      <div class="finding-title">forceFlushTranscriptBytes was dead for Cato</div>
+      <div class="finding-body">600kb ≈ 150k tokens of text — above Cato's 128k window. The backstop would never fire. <code>softThresholdTokens</code> was the only active guard, and it was set too late (15k → 88% utilisation).</div>
+    </div>
+    <div class="finding">
+      <div class="finding-icon">📋</div>
+      <div class="finding-title">Research source: Perplexity doc 02</div>
+      <div class="finding-body">Per-agent override confirmed intentionally unsupported by official docs + GitHub issues #13736, #52732, #57174. <code>contextLimits.postCompactionMaxChars</code> is the one supported per-agent lever.</div>
+    </div>
+    <div class="finding">
+      <div class="finding-icon">📐</div>
+      <div class="finding-title">Gemma 4 31B → V4 Flash migration</div>
+      <div class="finding-body">Polo migrated 2026-04-30 from Gemma 131k to DeepSeek V4 Flash 1M due to context saturation. The compaction thresholds set for 131k became wildly inappropriate for 1M without adjustment.</div>
+    </div>
+  </div>
+</div>
+
+<div class="rule">OpenClaw · spiral arc · 2026-07-18 · bible: workspace/bible/models.md</div>
+
+</body>
+</html>
