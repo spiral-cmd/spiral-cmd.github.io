@@ -330,11 +330,12 @@
   const grid = document.getElementById("calGrid");
   const labelsCol = document.getElementById("monthLabels");
 
-  // 3 weeks: Jul 21–27, Jul 28–Aug 3, Aug 4–10
+  // 4 weeks: Jul 20–26, Jul 27–Aug 2, Aug 3–9, Aug 10–16
   const weeks = [
-    { label: "Jul", rowStart: new Date(2026, 6, 21) },
-    { label: null,  rowStart: new Date(2026, 6, 28) },
-    { label: "Aug", rowStart: new Date(2026, 7, 4)  },
+    { label: "Jul", rowStart: new Date(2026, 6, 20) },
+    { label: null,  rowStart: new Date(2026, 6, 27) },
+    { label: "Aug", rowStart: new Date(2026, 7, 3)  },
+    { label: null,  rowStart: new Date(2026, 7, 10) },
   ];
 
   weeks.forEach((week, wi) => {
