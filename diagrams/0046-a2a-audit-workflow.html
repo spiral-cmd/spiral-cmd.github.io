@@ -1,0 +1,495 @@
+<title>A2A Protocol Audit</title>
+<style>
+:root {
+  --bg:#EEF1F9; --sf:#FFF; --t1:#17243E; --t2:#576080; --t3:#8A95B0;
+  --ac:#1B4ED8; --acs:#EEF2FF; --bd:#CDD5EC;
+  --pass:#15803D; --pbg:#DCFCE7;
+  --warn:#A16207; --wbg:#FEF9C3;
+  --fail:#B91C1C; --fbg:#FEE2E2;
+  --sans:'Helvetica Neue',system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,monospace;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0D1220; --sf:#162035; --t1:#E5EAF8; --t2:#8490B0; --t3:#576080;
+  --ac:#5080F8; --acs:#1A2850; --bd:#283050;
+  --pass:#4ADE80; --pbg:#052E16; --warn:#FCD34D; --wbg:#1C1200;
+  --fail:#F87171; --fbg:#2B0A0A;
+}}
+:root[data-theme=light]{--bg:#EEF1F9;--sf:#FFF;--t1:#17243E;--t2:#576080;--t3:#8A95B0;--ac:#1B4ED8;--acs:#EEF2FF;--bd:#CDD5EC;--pass:#15803D;--pbg:#DCFCE7;--warn:#A16207;--wbg:#FEF9C3;--fail:#B91C1C;--fbg:#FEE2E2;}
+:root[data-theme=dark]{--bg:#0D1220;--sf:#162035;--t1:#E5EAF8;--t2:#8490B0;--t3:#576080;--ac:#5080F8;--acs:#1A2850;--bd:#283050;--pass:#4ADE80;--pbg:#052E16;--warn:#FCD34D;--wbg:#1C1200;--fail:#F87171;--fbg:#2B0A0A;}
+
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased}
+
+.deck{position:fixed;inset:0;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);opacity:0;transition:opacity .28s ease;pointer-events:none}
+.slide.active{opacity:1;pointer-events:all}
+
+.s0{background-image:radial-gradient(circle,var(--bd) 1px,transparent 1px);background-size:28px 28px}
+
+.inner{flex:1;padding:44px 80px 68px;overflow-y:auto;position:relative}
+.inner::-webkit-scrollbar{width:4px}
+.inner::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.s0 .inner{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+
+.wm{position:absolute;bottom:48px;right:52px;font-size:22vw;font-weight:900;color:var(--t1);opacity:.032;line-height:1;pointer-events:none;user-select:none;z-index:0;font-family:var(--sans)}
+
+.nav{position:fixed;bottom:0;left:0;right:0;height:50px;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--bg);border-top:1px solid var(--bd);z-index:100}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--bd);cursor:pointer;border:none;transition:background .2s,transform .2s;padding:0}
+.dot.on{background:var(--ac);transform:scale(1.45)}
+.arr{position:fixed;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:var(--sf);border:1px solid var(--bd);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;font-size:18px;transition:background .15s,color .15s;line-height:1}
+.arr:hover{background:var(--acs);color:var(--ac)}
+.al{left:14px}.ar{right:14px}
+
+.ey{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.ey::before{content:'';width:18px;height:2px;background:var(--ac);flex-shrink:0}
+h1{font-size:32px;font-weight:800;letter-spacing:-.03em;color:var(--t1);line-height:1.18;text-wrap:balance;margin-bottom:6px}
+h2{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin-bottom:10px;margin-top:18px}
+.big{font-size:52px;font-weight:900;letter-spacing:-.04em;margin-bottom:16px;line-height:1.05;color:var(--t1)}
+.tag{font-size:16px;color:var(--t2);max-width:500px;line-height:1.65;margin-bottom:10px;text-wrap:balance}
+.meta{font-family:var(--mono);font-size:11.5px;color:var(--t3);margin-bottom:38px}
+
+.steps{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin-top:36px}
+.stp{display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 14px;position:relative}
+.stp::after{content:'→';position:absolute;right:-4px;top:14px;color:var(--t3);font-size:13px}
+.stp:last-child::after{display:none}
+.sn{width:36px;height:36px;border-radius:50%;background:var(--ac);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sl{font-size:11.5px;font-weight:700;color:var(--t1);text-align:center;max-width:88px;line-height:1.3}
+.ss{font-size:10.5px;color:var(--t3);text-align:center}
+
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:18px}
+.ch{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);margin-bottom:11px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:14px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:14px 0}
+
+.cl{list-style:none;display:flex;flex-direction:column;gap:7px}
+.cl li{display:flex;gap:11px;font-size:13.5px;color:var(--t1);line-height:1.5;align-items:flex-start}
+.cl li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:7px}
+
+.tw{background:var(--sf);border:1px solid var(--bd);border-radius:10px;overflow:hidden;overflow-x:auto;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:2px solid var(--bd);text-align:left;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--bd);color:var(--t1);vertical-align:top;line-height:1.45}
+tr:last-child td{border-bottom:none}
+
+.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:700;white-space:nowrap}
+.cp{background:var(--pbg);color:var(--pass)}
+.cf{background:var(--fbg);color:var(--fail)}
+.cw{background:var(--wbg);color:var(--warn)}
+.ci{background:var(--acs);color:var(--ac)}
+.cn{background:var(--sf);color:var(--t2);border:1px solid var(--bd)}
+
+.gr{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:7px;font-size:16px;font-weight:900;flex-shrink:0}
+.gA{background:var(--pbg);color:var(--pass)}
+.gB{background:#DBEAFE;color:#1D4ED8}
+.gC{background:var(--wbg);color:var(--warn)}
+.gD{background:#FFEDD5;color:#C2410C}
+.gF{background:var(--fbg);color:var(--fail)}
+@media(prefers-color-scheme:dark){.gB{background:#1E3A5F;color:#93C5FD}}
+:root[data-theme=dark] .gB{background:#1E3A5F;color:#93C5FD}
+:root[data-theme=light] .gB{background:#DBEAFE;color:#1D4ED8}
+
+.dn{color:var(--fail);font-weight:800;font-size:12px}
+.du{color:var(--pass);font-weight:800;font-size:12px}
+.df{color:var(--t3);font-size:12px}
+
+code{font-family:var(--mono);font-size:.83em;background:var(--acs);color:var(--ac);padding:1px 5px;border-radius:4px}
+pre{font-family:var(--mono);font-size:11.5px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;overflow-x:auto;color:var(--t1);line-height:1.65;margin:10px 0}
+hr{border:none;border-top:1px solid var(--bd);margin:16px 0}
+p{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:8px}
+.z{position:relative;z-index:1}
+</style>
+
+<div class="deck">
+
+<!-- 0: TITLE -->
+<div class="slide s0 active">
+  <div class="inner z">
+    <div class="ey">OpenClaw · Weekly Protocol</div>
+    <div class="big">A2A Protocol<br>Audit</div>
+    <div class="tag">Five-part compliance check — agent topology knowledge and live end-to-end message delivery.</div>
+    <div class="meta">Monday 10:00 Europe/London &nbsp;·&nbsp; main (Polo) &nbsp;·&nbsp; claude -p a2a-audit.md --allowedTools Bash,Read</div>
+    <div class="steps">
+      <div class="stp"><div class="sn">1</div><div class="sl">Bible Review</div><div class="ss">§ check</div></div>
+      <div class="stp"><div class="sn">2</div><div class="sl">Cold Test</div><div class="ss">no bible</div></div>
+      <div class="stp"><div class="sn">3</div><div class="sl">Post-Bible Scenario</div><div class="ss">exact cmds</div></div>
+      <div class="stp"><div class="sn">4</div><div class="sl">Report</div><div class="ss">sermo + jsonl</div></div>
+      <div class="stp"><div class="sn">5</div><div class="sl">Live Relay</div><div class="ss">delivery proof</div></div>
+    </div>
+  </div>
+  <div class="wm">A2A</div>
+</div>
+
+<!-- 1: PART 1 -->
+<div class="slide s1">
+  <div class="inner">
+    <div class="ey">Part 1 of 5 · Bible Review</div>
+    <h1>Read a2abible.md in full.<br>Flag every error.</h1>
+    <p>The bible is the source of truth. Six categories to check:</p>
+    <div class="g2">
+      <div class="card">
+        <div class="ch">Model drift</div>
+        <ul class="cl">
+          <li>§1 &amp; §16 model names vs <code>agents/*/agent/IDENTITY.md</code></li>
+          <li>Compare <code>openclaw.json</code> channels › accounts section</li>
+          <li>Topology table — all <code>openclaw.json</code> agents listed</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch">Structural</div>
+        <ul class="cl">
+          <li>Internal contradictions — header vs table content</li>
+          <li>Duplicate section numbers</li>
+          <li>Changelog date order</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch">IDENTITY.md divergence</div>
+        <ul class="cl">
+          <li>Polo &amp; io vs bible on: ping timeout &amp; retry values</li>
+          <li>Escalation channel — <code>mailbox.sqlite</code> vs <code>to-cc.md</code></li>
+          <li>Codo spawn method</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch">Output format</div>
+        <ul class="cl">
+          <li>Number as <strong>E1, E2…</strong> — section / says / should say / agent risk</li>
+          <li>Assign severity: <span class="chip cf">critical</span> <span class="chip cw">stale</span> <span class="chip cn">structural</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wm">1</div>
+  </div>
+</div>
+
+<!-- 2: PART 2 -->
+<div class="slide s2">
+  <div class="inner">
+    <div class="ey">Part 2 of 5 · Cold Test</div>
+    <h1>Send in parallel. No bible read first.<br>Wait ~90 seconds.</h1>
+    <p>Collect from <code>mailbox.sqlite</code> (last 10 min) + last 6 messages of each session <code>.jsonl</code>.</p>
+    <div class="g3">
+      <div class="card">
+        <div class="ch">Polo</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-bottom:9px;font-family:var(--mono)">openclaw agent --agent main</div>
+        <ul class="cl" style="font-size:12.5px">
+          <li>Q1 Full topology — channels &amp; session keys</li>
+          <li>Q2 Exact sqlite3 report-to-CC command</li>
+          <li>Q3 Exact sessions_send to io</li>
+          <li>Q4 PACE notation — tag for Polo→io</li>
+          <li>Q5 io health check — timeout &amp; retry values</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch">io</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-bottom:9px;font-family:var(--mono)">sessions_send agent:io:main</div>
+        <ul class="cl" style="font-size:12.5px">
+          <li>Q1 Full topology — channels &amp; session keys</li>
+          <li>Q2 Exact sqlite3 report-to-CC command</li>
+          <li>Q3 Exact sessions_send to Polo</li>
+          <li>Q4 PACE notation — tag for io→Polo</li>
+          <li>Q5 Health check before delegating</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch">Cato</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-bottom:9px;font-family:var(--mono)">openclaw agent --agent cato</div>
+        <ul class="cl" style="font-size:12.5px">
+          <li>Q1 Who can message whom</li>
+          <li>Q2 Exact sqlite3 report-to-CC — path &amp; table</li>
+          <li>Q3 Exact command to message Polo or io</li>
+          <li>Q4 What sermo is and how Cato uses it</li>
+          <li>Q5 Ambient [Polo] sermo post — reply or not?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Q</th><th>Pass condition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Q1</strong> Topology</td><td>Correct session key named for every route</td></tr>
+          <tr><td><strong>Q2</strong> CC reporting</td><td>sqlite3 to mailbox.sqlite, absolute path + <code>touch cc_pending</code></td></tr>
+          <tr><td><strong>Q3</strong> Peer routing</td><td>Correct session key — <code>agent:main:main</code> or <code>agent:io:main</code></td></tr>
+          <tr><td><strong>Q4</strong> PACE</td><td>p:SS a:PI for Polo↔io; states Polo↔io only (or "unsure")</td></tr>
+          <tr><td><strong>Q5</strong> Health / sermo rule</td><td>io: 15 s / 60 s retry &nbsp;·&nbsp; Cato: NO_REPLY to ambient [From] posts</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wm">2</div>
+  </div>
+</div>
+
+<!-- 3: PART 3 -->
+<div class="slide s3">
+  <div class="inner">
+    <div class="ey">Part 3 of 5 · Post-Bible Scenario</div>
+    <h1>Read bible, then answer with<br>exact commands — no descriptions.</h1>
+    <p>Send to all three in parallel. Wait ~2 minutes. Score against rubric.</p>
+    <div class="g3">
+      <div class="card">
+        <div class="ch">Polo — A / B / C</div>
+        <ul class="cl" style="font-size:12.5px">
+          <li><strong>A</strong> Task phase done → exact sessions_send to io + PACE tag</li>
+          <li><strong>B</strong> io silent 15 min post phase_complete, one ping sent → next steps</li>
+          <li><strong>C</strong> Report to CC → exact sqlite3 (path, table, cols) + what immediately after</li>
+        </ul>
+        <hr>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6">
+          A: <code>agent:io:main</code> + PACE p:SS a:PI + io-inbox.md event + topic 10 mirror<br>
+          B: mailbox priority=high + sermo (retries exhausted)<br>
+          C: INSERT OR IGNORE INTO inbox + touch cc_pending + sermo
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch">io — A / B / C</div>
+        <ul class="cl" style="font-size:12.5px">
+          <li><strong>A</strong> Delegate to Polo → exact sessions_send, key, PACE tag</li>
+          <li><strong>B</strong> Polo emits phase_complete → exact sqlite3 to CC (path, table, cols)</li>
+          <li><strong>C</strong> Health check before delegating → call + steps on 2nd failure</li>
+        </ul>
+        <hr>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6">
+          A: <code>agent:main:main</code> + PACE p:SS a:PI<br>
+          B: col names exact (sent_at not sentat) + touch cc_pending<br>
+          C: 15 s timeout, retry 60 s; escalate after 2nd fail
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch">Cato — A / B / C</div>
+        <ul class="cl" style="font-size:12.5px">
+          <li><strong>A</strong> Send message to Polo → exact command &amp; session key</li>
+          <li><strong>B</strong> Report error to CC → exact sqlite3 (abs path, table, cols) + what after?</li>
+          <li><strong>C</strong> See '[Polo] Task X complete' on sermo → reply? Cite [From] vs [From→To]</li>
+        </ul>
+        <hr>
+        <div style="font-size:11px;color:var(--t2);line-height:1.6">
+          A: <code>sessions_send agent:main:main</code><br>
+          B: abs path + table=inbox + touch cc_pending<br>
+          C: NO — ambient [From], no →, bible rule = NO_REPLY
+        </div>
+      </div>
+    </div>
+    <div class="wm">3</div>
+  </div>
+</div>
+
+<!-- 4: PART 4 -->
+<div class="slide s4">
+  <div class="inner">
+    <div class="ey">Part 4 of 5 · Report</div>
+    <h1>Write to mailbox.sqlite, post sermo,<br>append to audit-history.jsonl.</h1>
+    <div class="g2">
+      <div>
+        <h2>Report structure (INSERT into mailbox.sqlite)</h2>
+        <pre>## A2A Audit — [DATE]
+
+### Bible errors: N found
+E1: § / says / should say / risk: critical|stale|structural
+E2: …
+
+### Cold test grades: Polo X | io X | Cato X
+[one line per agent, key errors only]
+
+### Post-bible grades: Polo X | io X | Cato X
+
+### Live relay grades: Polo→io X | io→Polo X | Cato→CC X
+[ghost-write: CLEAN or FAIL:timestamp-batch]
+
+### Regressions vs last audit:
+[compare a2a-audit-history.jsonl]
+
+### Actions needed:
+1. …</pre>
+      </div>
+      <div>
+        <h2>Sermo post (topic 111)</h2>
+        <div class="card" style="margin-bottom:14px">
+          <code style="font-size:11px;display:block;line-height:1.7">[CC] Weekly A2A audit complete.<br>Bible errors: N. Grades: Polo X / io X / Cato X.<br>[key regressions or improvements]<br>Actions: N items.</code>
+        </div>
+        <h2>JSON append to audit-history.jsonl</h2>
+        <div class="card">
+          <pre style="font-size:11px;margin:0">{"date":"YYYY-MM-DD",
+ "bible_errors": N,
+ "polo_cold":"X", "polo_post":"X",
+ "io_cold":"X",   "io_post":"X",
+ "cato_cold":"X", "cato_post":"X",
+ "relay_polo_to_io":"PASS|FAIL",
+ "relay_io_to_polo":"PASS|FAIL",
+ "relay_cato_to_cc":"PASS|FAIL",
+ "ghost_write_detected": false,
+ "regressions":[…],
+ "improvements":[…],
+ "actions":[…]}</pre>
+        </div>
+      </div>
+    </div>
+    <div class="wm">4</div>
+  </div>
+</div>
+
+<!-- 5: PART 5 -->
+<div class="slide s5">
+  <div class="inner">
+    <div class="ey">Part 5 of 5 · Live Relay Test</div>
+    <h1>Verify actual delivery.<br>Score by reading files — not agent reports.</h1>
+    <p>Token: <code>audit-relay-YYYYMMDDTHHMM</code> — fresh each run. Send Polo + io in parallel, wait 3 minutes.</p>
+    <div class="g2" style="margin-top:14px">
+      <div class="card">
+        <div class="ch">Polo — execute in order</div>
+        <ul class="cl" style="font-size:13px">
+          <li>Append JSON line to <code>io-inbox.md</code> with TOKEN</li>
+          <li>sessions_send to <code>agent:io:main</code> — ask io to confirm via mailbox.sqlite</li>
+          <li>sqlite3 INSERT mailbox.sqlite <code>from_agent='polo'</code></li>
+          <li>touch <code>cc_pending</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ch">io — execute in order</div>
+        <ul class="cl" style="font-size:13px">
+          <li>sessions_send to <code>agent:main:main</code> — ask Polo to confirm via mailbox.sqlite</li>
+          <li>sqlite3 INSERT mailbox.sqlite <code>from_agent='io'</code></li>
+          <li>touch <code>cc_pending</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Leg</th><th>Pass condition</th><th>Ghost-write tell</th></tr></thead>
+        <tbody>
+          <tr><td>Polo → io-inbox.md</td><td>File contains TOKEN line</td><td>—</td></tr>
+          <tr><td>Polo → sessions_send → io</td><td>io-inbox.md + io mailbox row at distinct timestamp</td><td>Same-second batch = FAIL</td></tr>
+          <tr><td>io → sessions_send → Polo</td><td><code>from_agent='polo'</code> mailbox row confirming receipt</td><td>—</td></tr>
+          <tr><td>io → mailbox.sqlite direct</td><td><code>from_agent='io'</code> at distinct timestamp from Polo batch</td><td>Same ts as polo rows = ghost-write</td></tr>
+          <tr><td>Cato → mailbox.sqlite</td><td><code>from_agent='cato'</code> row present</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wm">5</div>
+  </div>
+</div>
+
+<!-- 6: LAST RUN -->
+<div class="slide s6">
+  <div class="inner">
+    <div class="ey">Last Run · 2026-07-20</div>
+    <h1>5 regressions. 7 bible errors.<br>io post-bible: total execution failure.</h1>
+    <div class="g2">
+      <div>
+        <h2>Grade summary</h2>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Agent</th><th>Cold</th><th>Δ</th><th>Post-bible</th><th>Δ</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Polo</strong></td>
+                <td><span class="gr gD">D</span></td>
+                <td><span class="dn">↓ B</span></td>
+                <td><span class="gr gA">A</span></td>
+                <td><span class="df">→</span></td>
+              </tr>
+              <tr>
+                <td><strong>io</strong></td>
+                <td><span class="gr gD">D</span></td>
+                <td><span class="dn">↓ B–</span></td>
+                <td><span class="gr gF">F</span></td>
+                <td><span class="dn">↓ B</span></td>
+              </tr>
+              <tr>
+                <td><strong>Cato</strong></td>
+                <td><span class="gr gF">F</span></td>
+                <td><span class="dn">↓ D</span></td>
+                <td><span class="gr gC">C</span></td>
+                <td><span class="df">→</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2>Relay legs</h2>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Leg</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>Polo → io</td><td><span class="chip cp">PASS</span></td></tr>
+              <tr><td>io → Polo</td><td><span class="chip cf">FAIL</span></td></tr>
+              <tr><td>Cato → CC</td><td><span class="chip cf">FAIL</span></td></tr>
+              <tr><td>Ghost-write</td><td><span class="chip cp">CLEAN</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h2>Regressions (5)</h2>
+        <ul class="cl" style="font-size:13px;margin-bottom:16px">
+          <li>Polo cold B→D — bot-to-bot hallucination; PACE wrong</li>
+          <li>io cold B-→D — identity mismatch blocker; polo-io-handoff.md hallucination</li>
+          <li>io post B→F — execution loop; cannot answer any questions</li>
+          <li>Cato cold D→F — zero response</li>
+          <li>io mailbox delivery broken — identity mismatch false positive blocks all writes</li>
+        </ul>
+        <h2>Improvements (2)</h2>
+        <ul class="cl" style="font-size:13px;margin-bottom:16px">
+          <li>Cato post: sermo reply rule now correct</li>
+          <li>Polo post: stable A</li>
+        </ul>
+        <h2>Priority actions</h2>
+        <ul class="cl" style="font-size:13px">
+          <li><span class="chip cf" style="margin-right:4px">critical</span> Fix E2 — io IDENTITY garbled printf block</li>
+          <li><span class="chip cf" style="margin-right:4px">critical</span> Fix E3 — io IDENTITY health check 5s → 15s</li>
+          <li>Investigate io identity mismatch false positive</li>
+          <li>Fix Polo bot-to-bot hallucination in IDENTITY</li>
+          <li>Fix Polo PACE (expansion + tag)</li>
+          <li>Fix io post-bible execution failure</li>
+          <li>Fix E7 structural — CLI mirror thread-id 111 → 10</li>
+        </ul>
+      </div>
+    </div>
+    <div class="wm">✓</div>
+  </div>
+</div>
+
+</div><!-- .deck -->
+
+<nav class="nav">
+  <button class="arr al" id="prev">&#8592;</button>
+  <button class="dot on" data-i="0"></button>
+  <button class="dot" data-i="1"></button>
+  <button class="dot" data-i="2"></button>
+  <button class="dot" data-i="3"></button>
+  <button class="dot" data-i="4"></button>
+  <button class="dot" data-i="5"></button>
+  <button class="dot" data-i="6"></button>
+  <button class="arr ar" id="next">&#8594;</button>
+</nav>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+let cur = 0;
+const N = slides.length;
+
+function goTo(n) {
+  if (n < 0 || n >= N || n === cur) return;
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('on');
+  cur = n;
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('on');
+}
+
+document.getElementById('prev').onclick = () => goTo(cur - 1);
+document.getElementById('next').onclick = () => goTo(cur + 1);
+dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(cur + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(cur - 1);
+});
+
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) goTo(dx < 0 ? cur + 1 : cur - 1);
+}, {passive:true});
+</script>
