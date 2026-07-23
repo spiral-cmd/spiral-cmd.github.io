@@ -1,0 +1,680 @@
+<title>a2a Bus — Architecture</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F8F9FB;
+    --surface: #FFFFFF;
+    --gateway-fill: #EEF2FF;
+    --gateway-border: #6366F1;
+    --bus-fill: #FFFBEB;
+    --bus-border: #D97706;
+    --agent-fill: #F0FDF4;
+    --agent-border: #16A34A;
+    --db-fill: #F1F5F9;
+    --db-border: #94A3B8;
+    --reaper-fill: #FFF7ED;
+    --reaper-border: #EA580C;
+    --text-primary: #1E293B;
+    --text-secondary: #475569;
+    --text-code: #312E81;
+    --arrow-ok: #16A34A;
+    --arrow-fail: #DC2626;
+    --arrow-retry: #EA580C;
+    --arrow-neutral: #6366F1;
+    --status-pending: #FEF3C7;
+    --status-pending-t: #92400E;
+    --status-disp: #DBEAFE;
+    --status-disp-t: #1E40AF;
+    --status-inj: #D1FAE5;
+    --status-inj-t: #065F46;
+    --status-fail: #FEE2E2;
+    --status-fail-t: #991B1B;
+    --status-exp: #F3F4F6;
+    --status-exp-t: #4B5563;
+    --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-code: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  }
+
+  body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+  }
+
+  .slide {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .header {
+    margin-bottom: 32px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── Three-zone layout ── */
+  .diagram {
+    display: grid;
+    grid-template-columns: 160px 1fr 160px;
+    grid-template-rows: auto auto;
+    gap: 0 20px;
+    align-items: start;
+  }
+
+  /* ── Zone labels ── */
+  .zone-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+
+  /* ── Agent columns ── */
+  .col-senders, .col-recipients {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 42px; /* align vertically with bus internals */
+  }
+
+  .agent-box {
+    background: var(--agent-fill);
+    border: 1.5px solid var(--agent-border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .agent-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #15803D;
+  }
+  .agent-role {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .entry-label {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 4px 0;
+    margin-top: 4px;
+  }
+
+  /* ── Gateway container ── */
+  .gateway {
+    background: var(--gateway-fill);
+    border: 2px solid var(--gateway-border);
+    border-radius: 14px;
+    padding: 16px;
+    position: relative;
+  }
+  .gateway-label {
+    position: absolute;
+    top: -13px;
+    left: 16px;
+    background: var(--gateway-border);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+
+  /* ── Bus plugin ── */
+  .bus-plugin {
+    background: var(--bus-fill);
+    border: 2px solid var(--bus-border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 4px;
+  }
+  .bus-plugin-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .bus-plugin-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #92400E;
+    font-family: var(--font-code);
+  }
+  .bus-tag {
+    font-size: 10px;
+    background: #FDE68A;
+    color: #78350F;
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-weight: 600;
+  }
+
+  /* ── Status pipeline ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 14px;
+    overflow-x: auto;
+  }
+  .status-pill {
+    font-family: var(--font-code);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .pill-pending  { background: var(--status-pending); color: var(--status-pending-t); }
+  .pill-disp     { background: var(--status-disp);    color: var(--status-disp-t); }
+  .pill-inj      { background: var(--status-inj);     color: var(--status-inj-t); }
+  .pill-fail     { background: var(--status-fail);     color: var(--status-fail-t); }
+  .pill-exp      { background: var(--status-exp);      color: var(--status-exp-t); }
+
+  .pipe-arrow {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+  .pipe-arrow.ok   { color: var(--arrow-ok); }
+  .pipe-arrow.fail { color: var(--arrow-fail); }
+  .pipe-arrow.sep  { color: #CBD5E1; }
+
+  /* ── Two-col internals ── */
+  .bus-internals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .internal-box {
+    background: var(--surface);
+    border: 1.5px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .internal-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .internal-code {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--text-code);
+    line-height: 1.7;
+  }
+
+  /* ── SQLite box ── */
+  .sqlite-box {
+    background: var(--db-fill);
+    border: 1.5px solid var(--db-border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 10px;
+  }
+  .sqlite-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sqlite-icon {
+    font-size: 13px;
+  }
+  .sqlite-cols {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .col-chip {
+    font-family: var(--font-code);
+    font-size: 9.5px;
+    background: var(--surface);
+    border: 1px solid #CBD5E1;
+    border-radius: 4px;
+    padding: 3px 7px;
+    color: var(--text-secondary);
+  }
+  .col-chip.pk { border-color: #6366F1; color: var(--gateway-border); }
+
+  /* ── Reaper box ── */
+  .reaper-box {
+    background: var(--reaper-fill);
+    border: 1.5px solid var(--reaper-border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 10px;
+  }
+  .reaper-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #C2410C;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
+  }
+  .reaper-text {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: #9A3412;
+    line-height: 1.65;
+  }
+
+  /* ── Flow arrows section ── */
+  .flow-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #CBD5E1;
+  }
+  .flow-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .flow-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+  .flow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-ok     { background: var(--arrow-ok); }
+  .dot-fail   { background: var(--arrow-fail); }
+  .dot-retry  { background: var(--arrow-retry); }
+  .dot-replay { background: var(--gateway-border); }
+  .flow-code {
+    font-family: var(--font-code);
+    font-size: 10px;
+    background: #F1F5F9;
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--text-code);
+  }
+
+  /* ── SDK call strip ── */
+  .sdk-strip {
+    background: #F8F4FF;
+    border: 1.5px solid #A855F7;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sdk-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #7C3AED;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
+  .sdk-code {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: #5B21B6;
+    line-height: 1.6;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #E2E8F0;
+    align-items: center;
+  }
+  .legend-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-right: 4px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .legend-swatch {
+    width: 28px;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── Connectors (visual arrows between zones) ── */
+  .connector-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+  }
+
+  /* arrows between zones rendered as SVG */
+  .zone-arrows {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding-top: 42px;
+  }
+  .arrow-svg {
+    display: block;
+  }
+  .arrow-label {
+    font-family: var(--font-code);
+    font-size: 9px;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.4;
+    background: var(--bg);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* ── Retry annotation ── */
+  .retry-note {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: #FFF1F2;
+    border-left: 3px solid var(--arrow-fail);
+    border-radius: 0 5px 5px 0;
+    font-size: 10.5px;
+    color: #991B1B;
+    line-height: 1.55;
+  }
+  .retry-note code {
+    font-family: var(--font-code);
+    font-size: 10px;
+    background: #FEE2E2;
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  .replay-note {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: #EFF6FF;
+    border-left: 3px solid var(--gateway-border);
+    border-radius: 0 5px 5px 0;
+    font-size: 10.5px;
+    color: #1E40AF;
+    line-height: 1.55;
+  }
+  .replay-note code {
+    font-family: var(--font-code);
+    font-size: 10px;
+    background: #DBEAFE;
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 780px) {
+    .diagram { grid-template-columns: 1fr; }
+    .col-senders, .col-recipients { flex-direction: row; flex-wrap: wrap; padding-top: 0; }
+    .zone-arrows { flex-direction: row; padding-top: 0; }
+    .bus-internals { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="slide">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow">OpenClaw · CoA Infrastructure</div>
+    <div class="title">a2a Bus — Message Delivery Architecture</div>
+    <div class="subtitle">
+      Async agent-to-agent messaging via gateway plugin &nbsp;·&nbsp; SQLite-backed persistence &nbsp;·&nbsp; exponential-backoff retry &nbsp;·&nbsp; startup replay
+    </div>
+  </div>
+
+  <!-- Main diagram -->
+  <div class="diagram">
+
+    <!-- Zone: Senders -->
+    <div>
+      <div class="zone-label">Senders</div>
+      <div class="col-senders">
+        <div class="agent-box"><div class="agent-name">Polo</div><div class="agent-role">agent:main</div></div>
+        <div class="agent-box"><div class="agent-name">io</div><div class="agent-role">agent:io</div></div>
+        <div class="agent-box"><div class="agent-name">Cato</div><div class="agent-role">agent:cato</div></div>
+        <div class="agent-box"><div class="agent-name">Codo</div><div class="agent-role">agent:codo</div></div>
+        <div class="entry-label">via tool<br><strong>a2a_send</strong><br>— or —<br>RPC <strong>a2a.publish</strong></div>
+      </div>
+    </div>
+
+    <!-- Zone: Gateway + Bus -->
+    <div>
+      <div class="zone-label">openclaw Gateway</div>
+      <div class="gateway">
+        <div class="gateway-label">openclaw gateway plugin</div>
+
+        <!-- Bus plugin -->
+        <div class="bus-plugin">
+          <div class="bus-plugin-header">
+            <span class="bus-plugin-title">A2ABus</span>
+            <span class="bus-tag">plugin</span>
+          </div>
+
+          <!-- Status pipeline -->
+          <div class="pipeline">
+            <span class="status-pill pill-pending">pending</span>
+            <span class="pipe-arrow ok">→</span>
+            <span class="status-pill pill-disp">dispatching</span>
+            <span class="pipe-arrow ok">→</span>
+            <span class="status-pill pill-inj">injected</span>
+            <span class="pipe-arrow sep">│</span>
+            <span class="status-pill pill-fail">failed</span>
+            <span class="pipe-arrow fail">→</span>
+            <span class="status-pill pill-exp">expired</span>
+          </div>
+
+          <!-- Internal methods grid -->
+          <div class="bus-internals">
+            <div class="internal-box">
+              <div class="internal-title">publish()</div>
+              <div class="internal-code">
+                INSERT status=pending<br>
+                idempotencyKey (UNIQUE)<br>
+                recipient, body, ttlMs<br>
+                → calls dispatch()
+              </div>
+            </div>
+            <div class="internal-box">
+              <div class="internal-title">dispatch()</div>
+              <div class="internal-code">
+                UPDATE status=dispatching<br>
+                inflight.add(id)<br>
+                enqueueNextTurnInjection()<br>
+                on success → injected<br>
+                on error → failed
+              </div>
+            </div>
+            <div class="internal-box">
+              <div class="internal-title">inflight Set</div>
+              <div class="internal-code">
+                in-memory guard<br>
+                prevents double-dispatch<br>
+                cleared on inject/fail
+              </div>
+            </div>
+            <div class="internal-box">
+              <div class="internal-title">replay()</div>
+              <div class="internal-code">
+                runs on gateway start<br>
+                picks pending + failed<br>
+                + stalled dispatching<br>
+                re-enqueues each row
+              </div>
+            </div>
+          </div>
+
+          <!-- SQLite -->
+          <div class="sqlite-box">
+            <div class="sqlite-title"><span class="sqlite-icon">🗄</span> SQLite — a2a_messages</div>
+            <div class="sqlite-cols">
+              <span class="col-chip pk">id PK</span>
+              <span class="col-chip">idempotency_key</span>
+              <span class="col-chip">from_agent</span>
+              <span class="col-chip">to_agent</span>
+              <span class="col-chip">body</span>
+              <span class="col-chip">status</span>
+              <span class="col-chip">attempts</span>
+              <span class="col-chip">next_retry_at</span>
+              <span class="col-chip">created_at</span>
+              <span class="col-chip">ttl_ms</span>
+            </div>
+          </div>
+
+          <!-- Reaper -->
+          <div class="reaper-box">
+            <div class="reaper-title">⏱ Reaper — setTimeout loop</div>
+            <div class="reaper-text">
+              Polls every ~30 s &nbsp;·&nbsp; picks rows where status=failed AND next_retry_at ≤ NOW<br>
+              Backoff: 2ⁿ seconds &nbsp;·&nbsp; maxAttempts = 4 (1 initial + 3 retries) &nbsp;·&nbsp; → expired after 4th fail
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SDK call -->
+        <div class="sdk-strip">
+          <div class="sdk-label">SDK</div>
+          <div class="sdk-code">
+            enqueueNextTurnInjection({&nbsp;sessionKey,&nbsp;text,&nbsp;idempotencyKey,&nbsp;ttlMs&nbsp;})
+          </div>
+        </div>
+
+        <!-- Flow annotations -->
+        <div class="flow-section">
+          <div class="flow-title">Message flows</div>
+          <div class="flow-rows">
+            <div class="flow-row">
+              <span class="flow-dot dot-ok"></span>
+              <strong>Normal:</strong>&nbsp;
+              <span class="flow-code">publish</span> → INSERT pending → <span class="flow-code">dispatch</span> → dispatching → SDK call → <span class="flow-code">injected</span> ✓
+            </div>
+            <div class="flow-row">
+              <span class="flow-dot dot-fail"></span>
+              <strong>Failure:</strong>&nbsp;
+              SDK throws → <span class="flow-code">failed</span>, attempts++ → reaper picks up after 2ⁿ s → retry → expired at attempt 4
+            </div>
+            <div class="flow-row">
+              <span class="flow-dot dot-replay"></span>
+              <strong>Startup replay:</strong>&nbsp;
+              <span class="flow-code">replay()</span> re-enqueues all pending / failed / stalled rows found on gateway start
+            </div>
+            <div class="flow-row">
+              <span class="flow-dot dot-retry"></span>
+              <strong>External RPC:</strong>&nbsp;
+              external callers call <span class="flow-code">a2a.publish</span> via gateway RPC; agents call <span class="flow-code">a2a_send</span> tool from a turn
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /gateway -->
+    </div>
+
+    <!-- Zone: Recipients -->
+    <div>
+      <div class="zone-label">Recipients</div>
+      <div class="col-recipients">
+        <div class="agent-box"><div class="agent-name">Polo</div><div class="agent-role">agent:main</div></div>
+        <div class="agent-box"><div class="agent-name">io</div><div class="agent-role">agent:io</div></div>
+        <div class="agent-box"><div class="agent-name">Cato</div><div class="agent-role">agent:cato</div></div>
+        <div class="agent-box"><div class="agent-name">Codo</div><div class="agent-role">agent:codo</div></div>
+        <div class="entry-label">message injected<br>as next turn<br>in session</div>
+      </div>
+    </div>
+
+  </div><!-- /diagram -->
+
+  <!-- Retry + Replay callout notes -->
+  <div class="retry-note">
+    <strong>Retry schedule:</strong> attempt 1 immediate &nbsp;·&nbsp; attempt 2 after 2 s &nbsp;·&nbsp; attempt 3 after 4 s &nbsp;·&nbsp; attempt 4 after 8 s → <code>expired</code>. Idempotency key prevents duplicate delivery on replay.
+  </div>
+  <div class="replay-note">
+    <strong>Startup replay:</strong> on every gateway restart, <code>replay()</code> queries rows with <code>status IN ('pending','failed')</code> or <code>status='dispatching'</code> with stale <code>updated_at</code>, then re-dispatches. Guarantees at-least-once delivery across restarts.
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span class="legend-title">Key</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#16A34A"></span>success / inject path</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#DC2626"></span>failure / expired path</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#EA580C"></span>reaper / retry loop</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#6366F1"></span>gateway / replay</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#A855F7"></span>SDK call</span>
+    <span class="legend-item"><span class="legend-swatch" style="background:#D97706"></span>bus plugin (A2ABus)</span>
+  </div>
+
+</div>
