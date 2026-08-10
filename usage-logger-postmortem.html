@@ -1,0 +1,668 @@
+<title>Build Post-Mortem: Usage Logger · August 2026</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F6F8;
+    --surface: #FFFFFF;
+    --text: #111827;
+    --text-2: #4B5563;
+    --text-3: #9CA3AF;
+    --border: #E4E7ED;
+    --blue: #1D5FCC;
+    --blue-light: #EBF0FB;
+    --red: #D43B2A;
+    --red-light: #FDECEA;
+    --green: #1A9965;
+    --green-light: #E6F5EF;
+    --amber: #B45309;
+    --amber-light: #FEF3C7;
+    --stripe-w: 5px;
+    --slide-pad: 64px 80px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  .deck {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  /* ── Slides ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: var(--slide-pad);
+    background: var(--surface);
+    border-left: var(--stripe-w) solid var(--blue);
+  }
+  .slide.active { display: flex; }
+
+  .slide.failure  { border-left-color: var(--red); }
+  .slide.fix      { border-left-color: var(--green); }
+  .slide.root     { border-left-color: var(--amber); }
+  .slide.status   { border-left-color: var(--blue); }
+  .slide.title-slide { border-left-color: var(--text); }
+
+  /* ── Eyebrow ── */
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .slide.failure  .eyebrow { color: var(--red); }
+  .slide.fix      .eyebrow { color: var(--green); }
+  .slide.root     .eyebrow { color: var(--amber); }
+  .slide.status   .eyebrow { color: var(--blue); }
+  .slide.title-slide .eyebrow { color: var(--text-2); }
+
+  /* ── Headings ── */
+  h1 {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    text-wrap: balance;
+    margin-bottom: 10px;
+    letter-spacing: -.02em;
+  }
+  h2 {
+    font-size: clamp(26px, 3vw, 40px);
+    font-weight: 800;
+    line-height: 1.15;
+    text-wrap: balance;
+    margin-bottom: 10px;
+    letter-spacing: -.02em;
+  }
+  .sub {
+    font-size: 17px;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin-bottom: 36px;
+    max-width: 680px;
+  }
+
+  /* ── Title slide specifics ── */
+  .title-slide .meta {
+    margin-top: auto;
+    display: flex;
+    gap: 32px;
+    font-size: 13px;
+    color: var(--text-3);
+    font-variant-numeric: tabular-nums;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+  }
+  .title-slide .meta span { display: block; }
+  .title-slide .meta strong { color: var(--text-2); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
+
+  .big-stat {
+    font-size: clamp(60px, 8vw, 96px);
+    font-weight: 800;
+    letter-spacing: -.04em;
+    line-height: 1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .big-stat small { font-size: .35em; font-weight: 500; color: var(--text-2); letter-spacing: 0; }
+
+  /* ── Body content layouts ── */
+  .body { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* ── Callout blocks ── */
+  .callout {
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .callout.fail { background: var(--red-light); border-left: 3px solid var(--red); }
+  .callout.ok   { background: var(--green-light); border-left: 3px solid var(--green); }
+  .callout.info { background: var(--blue-light); border-left: 3px solid var(--blue); }
+  .callout.warn { background: var(--amber-light); border-left: 3px solid var(--amber); }
+
+  .callout-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .callout.fail .callout-label { color: var(--red); }
+  .callout.ok   .callout-label { color: var(--green); }
+  .callout.info .callout-label { color: var(--blue); }
+  .callout.warn .callout-label { color: var(--amber); }
+
+  .callout p { font-size: 15px; line-height: 1.55; color: var(--text); }
+  .callout code { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; font-size: 13px; background: rgba(0,0,0,.06); padding: 1px 5px; border-radius: 3px; }
+
+  /* ── Status table ── */
+  .status-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .status-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 0 16px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .status-table tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 99px;
+    font-variant-numeric: tabular-nums;
+  }
+  .badge.pass  { background: var(--green-light); color: var(--green); }
+  .badge.fail  { background: var(--red-light); color: var(--red); }
+  .badge.prog  { background: var(--blue-light); color: var(--blue); }
+  .badge.pend  { background: #F3F4F6; color: var(--text-3); }
+
+  /* ── Timeline ── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item { display: flex; gap: 20px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .tl-item:last-child { border-bottom: none; }
+  .tl-time { font-size: 12px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 70px; padding-top: 2px; }
+  .tl-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .tl-dot.ok   { background: var(--green); }
+  .tl-dot.fail { background: var(--red); }
+  .tl-dot.warn { background: var(--amber); }
+  .tl-dot.info { background: var(--blue); }
+  .tl-body { flex: 1; }
+  .tl-body strong { font-size: 14px; display: block; margin-bottom: 2px; }
+  .tl-body p { font-size: 13px; color: var(--text-2); line-height: 1.45; }
+
+  /* ── Rule list ── */
+  .rule-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .rule-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 15px; line-height: 1.5; color: var(--text);
+  }
+  .rule-list li::before {
+    content: '→';
+    color: var(--green);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .rule-list.bad li::before { content: '✗'; color: var(--red); }
+
+  /* ── Nav ── */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 8px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all .18s ease;
+    border: none;
+  }
+  .dot.active { background: var(--text); transform: scale(1.3); }
+  .dot.failure { }
+  .dot.active.failure  { background: var(--red); }
+  .dot.active.fix      { background: var(--green); }
+  .dot.active.root     { background: var(--amber); }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-2);
+    font-size: 16px;
+    padding: 2px 4px;
+    line-height: 1;
+    transition: color .15s;
+  }
+  .nav-btn:hover { color: var(--text); }
+
+  /* ── Slide counter ── */
+  .counter {
+    position: fixed;
+    top: 24px;
+    right: 36px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-3);
+    font-weight: 600;
+  }
+
+  /* ── Highlight ── */
+  mark { background: #FFF0A0; padding: 1px 3px; border-radius: 2px; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+</style>
+
+<div class="deck" id="deck">
+
+  <!-- ─── SLIDE 1: Title ─── -->
+  <div class="slide title-slide active" data-type="title">
+    <div class="eyebrow">OpenClaw CoA · August 2026</div>
+    <h1>Usage Logger<br>Build Post-Mortem</h1>
+    <div class="sub">Option D — DIY in-process observability. What shipped, what broke, and what the build exposed about CC supervision quality.</div>
+
+    <div class="body" style="flex-direction: row; align-items: flex-start; gap: 48px; margin-top: 20px;">
+      <div>
+        <div class="big-stat">6 <small>chunks</small></div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:8px;">C1 → C6 (soak in progress)</div>
+      </div>
+      <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+      <div>
+        <div class="big-stat">226 <small>rows</small></div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:8px;">agent_usage logged to observability.db</div>
+      </div>
+      <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+      <div>
+        <div class="big-stat">5 <small>failures</small></div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:8px;">identified in CC supervision execution</div>
+      </div>
+    </div>
+
+    <div class="meta">
+      <div><strong>Project</strong>observability.db + transport hook</div>
+      <div><strong>Stack</strong>Node.js hook → SQLite → Python summary</div>
+      <div><strong>Verdict</strong>Plan good. Execution poor.</div>
+      <div><strong>Date</strong>2026-08-10</div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 2: What shipped ─── -->
+  <div class="slide status" data-type="status">
+    <div class="eyebrow">Deliverable Status</div>
+    <h2>What shipped</h2>
+    <div class="sub">Six chunks: database, transport hook, agent-tag fix, circuit-breaker, write verifier, daily summary, and 24h soak.</div>
+    <div class="body">
+      <table class="status-table">
+        <thead>
+          <tr>
+            <th>Chunk</th>
+            <th>Deliverable</th>
+            <th>Result</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>C1</strong></td>
+            <td>SQLite schema — <code>agent_usage</code> + <code>write_verifications</code></td>
+            <td><span class="badge pass">PASS</span></td>
+            <td style="color:var(--text-2);font-size:13px;"><code>http_status</code> added via ALTER TABLE post-create</td>
+          </tr>
+          <tr>
+            <td><strong>C2 / C2.5</strong></td>
+            <td>Transport hook in <code>openai-transport-stream-*.js</code></td>
+            <td><span class="badge pass">PASS</span></td>
+            <td style="color:var(--text-2);font-size:13px;">Agent tag fix: reads <code>{sessionId}.jsonl</code> not sessions.json</td>
+          </tr>
+          <tr>
+            <td><strong>C3</strong></td>
+            <td>402 circuit-breaker — <code>checkOpenRouterBalance()</code> + Map</td>
+            <td><span class="badge pass">PASS</span></td>
+            <td style="color:var(--text-2);font-size:13px;">Done 21:39 BST; CC blind for 67 min (a2a-bus expiry)</td>
+          </tr>
+          <tr>
+            <td><strong>C4</strong></td>
+            <td><code>write_verifier.py</code> — silent-fail tracking</td>
+            <td><span class="badge pass">PASS</span></td>
+            <td style="color:var(--text-2);font-size:13px;">3 rows in write_verifications; cron retrofit in progress</td>
+          </tr>
+          <tr>
+            <td><strong>C5</strong></td>
+            <td><code>observability_summary.py</code> — daily sermo post at 06:00 BST</td>
+            <td><span class="badge pass">PASS</span></td>
+            <td style="color:var(--text-2);font-size:13px;">Script on disk; cron registration pending</td>
+          </tr>
+          <tr>
+            <td><strong>C6</strong></td>
+            <td>24h live soak — all agents, summary fires at 06:00 BST</td>
+            <td><span class="badge prog">IN PROGRESS</span></td>
+            <td style="color:var(--text-2);font-size:13px;">226 rows live; summary fires tomorrow 06:00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 3: Failure 1 — Brief quality ─── -->
+  <div class="slide failure" data-type="failure">
+    <div class="eyebrow">Failure 1 of 5</div>
+    <h2>The brief was under-specified</h2>
+    <div class="sub">Sub-step ack requirements and Codo-fail escalation paths were missing from the original brief. Both had to be patched mid-flight.</div>
+    <div class="body two-col">
+      <div>
+        <div class="callout fail">
+          <div class="callout-label">What was missing</div>
+          <p>No sub-step ack protocol (Polo acks after each named sub-step). No explicit escalation path if Codo is unavailable. No delivery-channel contract (a2a-bus vs to-cc.md vs mailbox).</p>
+        </div>
+        <div class="callout fail">
+          <div class="callout-label">What happened instead</div>
+          <p>Martin flagged missing acks 15 min into C2. CC patched protocol mid-chunk. Codo routing broke and CC had no pre-planned pivot — took 3 failed attempts to confirm Codo was broken, then pivoted to Polo-direct.</p>
+        </div>
+      </div>
+      <div>
+        <div class="callout ok">
+          <div class="callout-label">The fix (§5.3)</div>
+          <p>Sub-step ack protocol added to <code>a2abible.md</code>. Every chunk brief must now name required acks (<code>C2-a</code>, <code>C2-b</code>, etc.) and explicitly specify the delivery channel. Escalation path (Codo unavailable → Polo-direct) must be in the brief before it is sent.</p>
+        </div>
+        <div class="callout info">
+          <div class="callout-label">Lesson</div>
+          <p>A brief that doesn't name its failure modes is incomplete. Write the escalation path before you need it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 4: Failure 2 — Passive monitoring ─── -->
+  <div class="slide failure" data-type="failure">
+    <div class="eyebrow">Failure 2 of 5</div>
+    <h2>Silence monitoring was passive</h2>
+    <div class="sub">CC announced a 20-minute silence threshold but built a monitor that only fires on new messages — silence and stalling look identical.</div>
+    <div class="body">
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-time">+0 min</div>
+          <div class="tl-dot info"></div>
+          <div class="tl-body"><strong>C2 briefed to Polo</strong><p>20-min threshold announced. Monitor <code>b3ihaso9m</code> started — watched mailbox for new messages.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">+20 min</div>
+          <div class="tl-dot warn"></div>
+          <div class="tl-body"><strong>Threshold breached — no action by CC</strong><p>Monitor firing stale alerts every 2 min (LAST_ACK_TS not updating). CC did not enforce threshold.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">+50 min</div>
+          <div class="tl-dot fail"></div>
+          <div class="tl-body"><strong>Martin ran /csn — CC still hadn't acted</strong><p>First intervention. CC should have triggered ~idf 30 minutes prior. Second /csn required before CC escalated.</p></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">Resolution</div>
+          <div class="tl-dot ok"></div>
+          <div class="tl-body"><strong>§5.4 added: CC proactive timed-check obligation</strong><p>Silence alert must trigger active a2a-mailbox poll. ~idf fires automatically at 20-min mark, not on Martin's prompt. CC must not treat silence as safe.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 5: Failure 3 — Infra not validated ─── -->
+  <div class="slide failure" data-type="failure">
+    <div class="eyebrow">Failure 3 of 5</div>
+    <h2>Infrastructure not validated pre-build</h2>
+    <div class="sub">Codo's model routing was broken before the build started. CC included Codo in the plan without confirming it could actually run inference.</div>
+    <div class="body two-col">
+      <div>
+        <div class="callout fail">
+          <div class="callout-label">The Codo/zai problem</div>
+          <p><code>agent.json</code> set <code>siliconflow/deepseek-ai/DeepSeek-V3.2</code> but the gateway's global provider resolved to <code>zai/glm-5.1</code> at spawn — which had no credits. Every Codo session spawned and immediately failed.</p>
+        </div>
+        <div class="callout fail">
+          <div class="callout-label">3 attempts wasted</div>
+          <p>C3-a, C3-b, C3-c all attempted via Codo-chain before Polo confirmed the routing was broken. 3 failed attempts = 3 wasted time slots, each with a 20-min timeout.</p>
+        </div>
+      </div>
+      <div>
+        <div class="callout warn">
+          <div class="callout-label">Root cause</div>
+          <p>Global provider in <code>openclaw.json</code> overrides per-agent <code>agent.json</code> at spawn time. A pre-build infra check would have caught this in 30 seconds: spawn Codo, run a 1-token inference, confirm response.</p>
+        </div>
+        <div class="callout ok">
+          <div class="callout-label">Fix</div>
+          <p>Disable zai failover (Martin vai). Codo now uses SiliconFlow directly. Pre-build infra validation added as a mandatory CC step before any Codo-involved chunk is released. Chipped as <code>task_5d112eb9</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 6: Failure 4 — a2a-bus blind spots ─── -->
+  <div class="slide failure" data-type="failure">
+    <div class="eyebrow">Failure 4 of 5</div>
+    <h2>a2a-bus messages expired silently</h2>
+    <div class="sub">Polo's acks to <code>agent:cc:main</code> all expired — CC session rejected injection. C3 was done at 21:39; CC didn't know until 22:46.</div>
+    <div class="body two-col">
+      <div>
+        <div class="callout fail">
+          <div class="callout-label">The injection failure</div>
+          <p>Polo sends via <code>a2a_send(to="agent:cc:main")</code>. The CC session rejects injection with "not found or at capacity." Message expires. From CC's perspective: silence. Polo thinks ack was delivered.</p>
+        </div>
+        <div class="callout fail">
+          <div class="callout-label">67-minute blind spot</div>
+          <p>C3 completed at 21:39 BST with full PASS verdict. CC discovered this only at 22:46 by reading <code>a2a-mailbox.db</code> directly. During those 67 minutes CC was sending ~idf signals on a completed chunk.</p>
+        </div>
+      </div>
+      <div>
+        <div class="callout info">
+          <div class="callout-label">The multi-channel confusion</div>
+          <p>Three delivery channels active simultaneously: <code>a2a-bus</code> (Polo), <code>mailbox.sqlite</code> (io), <code>to-cc.md</code> (protocol). CC's monitor watched only mailbox and to-cc.md. Polo's channel was invisible.</p>
+        </div>
+        <div class="callout ok">
+          <div class="callout-label">Working fix</div>
+          <p>On every silence alert, CC queries <code>a2a-mailbox.db</code> directly before escalating. Polo a2a-bus injection fix is a separate tracked item — session key format mismatch.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 7: Failure 5 — Session ≠ Inference ─── -->
+  <div class="slide failure" data-type="failure">
+    <div class="eyebrow">Failure 5 of 5</div>
+    <h2>Session creation ≠ inference success</h2>
+    <div class="sub">CC read a Codo session spawn event and declared "Codo is working." The session spawned, then immediately failed over to zai. The declaration was wrong.</div>
+    <div class="body">
+      <div class="callout fail" style="margin-bottom:16px;">
+        <div class="callout-label">What CC said</div>
+        <p>"Codo session spawned 1 min ago — it is working." This was stated with confidence in the channel. Polo's parallel test at the same moment was C3-a-FAIL.</p>
+      </div>
+      <div class="callout warn" style="margin-bottom:16px;">
+        <div class="callout-label">Why it was wrong</div>
+        <p>Session creation (spawn → session file written) and inference success (first token returned from the target model) are two separate events. The gateway can spawn a session, route to zai, fail, and the session record still exists. CC read the first event and inferred the second.</p>
+      </div>
+      <div class="callout ok">
+        <div class="callout-label">Rule going forward</div>
+        <p>Never declare an agent "working" from session existence alone. Verify with a 1-token inference result or an explicit ack from Polo citing the model name and first response.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 8: Root cause ─── -->
+  <div class="slide root" data-type="root">
+    <div class="eyebrow">Root Cause</div>
+    <h2>Reactive supervision throughout</h2>
+    <div class="sub">Every problem in this build was caught by Martin running /csn or by CC checking a2a-mailbox after the fact — not by CC's own monitoring.</div>
+    <div class="body two-col">
+      <div>
+        <ul class="rule-list bad">
+          <li>Brief sent without sub-step acks — Martin flagged it</li>
+          <li>Silence threshold breached — Martin ran /csn</li>
+          <li>Second breach — Martin ran /csn again</li>
+          <li>Codo declared working — wrong; Polo proved otherwise</li>
+          <li>C3 complete — CC discovered 67 min late via manual DB read</li>
+          <li>C4/C5 deadlines breached — CC sent ~idf only after Martin said "~idr"</li>
+        </ul>
+      </div>
+      <div>
+        <div class="callout warn">
+          <div class="callout-label">Pattern</div>
+          <p>CC announced rules it didn't enforce. Thresholds were stated in channel but not backed by automated checks that actually triggered escalation. Martin had to provide the enforcement pressure that should have come from CC.</p>
+        </div>
+        <div class="callout info">
+          <div class="callout-label">Required shift</div>
+          <p>Supervision must be proactive: timed checks fire automatically, CC polls all delivery channels on silence, wrong calls are corrected immediately not post-hoc. Martin should be informed of exceptions, not asked to find them.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 9: Protocol fixes ─── -->
+  <div class="slide fix" data-type="fix">
+    <div class="eyebrow">Protocol Changes</div>
+    <h2>What changes going forward</h2>
+    <div class="sub">Three concrete protocol additions and two verification rules that address the root cause directly.</div>
+    <div class="body three-col">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:12px;">Brief standards</div>
+        <ul class="rule-list" style="font-size:14px;">
+          <li>Name all required sub-step acks in every brief (<code>C{N}-a</code>, <code>C{N}-b</code>…)</li>
+          <li>Specify delivery channel explicitly (a2a-bus + sermo echo)</li>
+          <li>Write the Codo-unavailable escalation path before briefing</li>
+          <li>Run a 1-token inference check before any Codo chunk</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:12px;">Silence monitoring</div>
+        <ul class="rule-list" style="font-size:14px;">
+          <li>20-min threshold is hard — ~idf fires automatically, not on Martin's prompt</li>
+          <li>On every silence alert: query <code>a2a-mailbox.db</code> before escalating</li>
+          <li>Monitor must cover all channels: mailbox, to-cc.md, a2a-bus</li>
+          <li>Sermo update every 5 min during active build; kill + ~idr at 10 min silence</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:12px;">Verification rules</div>
+        <ul class="rule-list" style="font-size:14px;">
+          <li>Session existence ≠ inference success; verify with model-name ack</li>
+          <li>Agent "fixed and verified" is a claim — check live state before relaying to Martin</li>
+          <li>CIV gate: CC explicitly ACKs each chunk-complete before next chunk releases</li>
+          <li>Forgejo issue must be in every brief — no exceptions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SLIDE 10: Remaining ─── -->
+  <div class="slide status" data-type="status">
+    <div class="eyebrow">Open Items</div>
+    <h2>What remains</h2>
+    <div class="sub">The logger is live. These items are outstanding after the C6 soak window.</div>
+    <div class="body two-col" style="gap:40px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;">Build completion</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot prog"></div>
+            <div class="tl-body"><strong>C6 — 24h soak</strong><p>Runs until 06:00 BST. Summary must appear in sermo at that time.</p></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot warn"></div>
+            <div class="tl-body"><strong>C4 cron retrofit</strong><p>bible-stale-check retrofit mid-flight at 21:47 BST. Needs completion + io eval.</p></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot warn"></div>
+            <div class="tl-body"><strong>observability-summary cron registration</strong><p>Script exists; not yet registered as a cron job at 06:00 BST.</p></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot warn"></div>
+            <div class="tl-body"><strong>Bible §5.3/§5.4 on disk</strong><p>Brief sent to Polo; ack expired in a2a-bus. Needs disk verification.</p></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;">Infrastructure</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot fail"></div>
+            <div class="tl-body"><strong>Polo a2a-bus injection fix</strong><p>CC session rejects injection from Polo's a2a messages. Session key format mismatch. Separate investigation needed.</p></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot prog"></div>
+            <div class="tl-body"><strong>Codo zai failover fix</strong><p>Chipped as <code>task_5d112eb9</code>. Running independently.</p></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot warn"></div>
+            <div class="tl-body"><strong>10 Cato cron failures</strong><p>Unchanged. bible-stale-check ⚠6, cato-a2a-task ⚠6, shareradar ⚠5, etc. Backlogged.</p></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot warn"></div>
+            <div class="tl-body"><strong>Forgejo issue for Usage Logger</strong><p>Status unknown. Polo was supposed to open it before C1.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Counter -->
+<div class="counter" id="counter">1 / 10</div>
+
+<!-- Nav -->
+<nav class="nav" id="nav"></nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('nav');
+  const counter = document.getElementById('counter');
+  let cur = 0;
+
+  const types = Array.from(slides).map(s => s.dataset.type || 'status');
+  const typeClass = { failure: 'failure', fix: 'fix', root: 'root', status: 'status', title: '' };
+
+  // Build nav
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'nav-btn'; prevBtn.textContent = '‹'; prevBtn.onclick = () => go(cur - 1);
+  nav.appendChild(prevBtn);
+
+  const dots = [];
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot ' + (typeClass[types[i]] || '');
+    d.onclick = () => go(i);
+    nav.appendChild(d);
+    dots.push(d);
+  });
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'nav-btn'; nextBtn.textContent = '›'; nextBtn.onclick = () => go(cur + 1);
+  nav.appendChild(nextBtn);
+
+  function go(n) {
+    if (n < 0 || n >= slides.length) return;
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+    counter.textContent = (cur + 1) + ' / ' + slides.length;
+  }
+
+  go(0);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(cur + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(cur - 1);
+  });
+</script>
