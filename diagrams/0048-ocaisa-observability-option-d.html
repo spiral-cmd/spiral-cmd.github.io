@@ -1,0 +1,661 @@
+<title>OCaisa Observability — Option D Architecture</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F7F9FC;
+    --surface:   #FFFFFF;
+    --border:    #D9E4EF;
+    --border-strong: #B8CCDE;
+    --text-1:    #1A2635;
+    --text-2:    #4A5F74;
+    --text-3:    #7A90A4;
+    --accent:    #2B6CB0;
+    --accent-lt: #EBF2FA;
+    --accent-mid:#4A90D9;
+    --cbk:       #C05621;
+    --cbk-lt:    #FEF3EB;
+    --ok:        #276749;
+    --ok-lt:     #E8F5EE;
+    --shadow:    0 1px 3px rgba(26,38,53,.07), 0 4px 12px rgba(26,38,53,.04);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    padding: 40px 48px 56px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .slide-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .slide-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+    color: var(--text-1);
+    line-height: 1.2;
+  }
+  .slide-header h1 span {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-3);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .slide-meta {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.7;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    background: var(--ok-lt);
+    color: var(--ok);
+    border: 1px solid #B7DECA;
+    border-radius: 4px;
+    padding: 3px 9px;
+    margin-bottom: 6px;
+  }
+
+  /* ── MAIN FLOW ── */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 24px;
+  }
+
+  /* connector */
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .connector::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--border-strong);
+    transform: translateY(-50%);
+  }
+  .connector-arrow {
+    position: relative;
+    z-index: 1;
+    background: var(--border-strong);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .connector::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 8px solid var(--border-strong);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+  }
+
+  /* component box */
+  .box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .box-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 2px;
+  }
+  .box-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -.2px;
+  }
+  .box-sub {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+
+  /* provider box */
+  .box-providers {
+    width: 180px;
+    flex-shrink: 0;
+  }
+  .provider-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--accent-lt);
+    border: 1px solid #C5D9EF;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .provider-item + .provider-item { margin-top: 8px; }
+  .provider-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .provider-note {
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--text-3);
+    display: block;
+    margin-top: 1px;
+  }
+
+  /* runtime box — wider */
+  .box-runtime {
+    flex: 1;
+    min-width: 0;
+    border-color: var(--accent);
+    border-width: 1.5px;
+  }
+  .runtime-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .runtime-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .normalize-tag {
+    font-size: 11px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    background: #F0F4F8;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--text-2);
+  }
+  .sub-boxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 2px;
+  }
+  .sub-box {
+    border-radius: 7px;
+    padding: 12px 14px;
+    border: 1px solid;
+  }
+  .sub-box-hook {
+    background: var(--accent-lt);
+    border-color: #C5D9EF;
+  }
+  .sub-box-cbk {
+    background: var(--cbk-lt);
+    border-color: #F0CCAC;
+  }
+  .sub-box-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+  .sub-box-hook .sub-box-label { color: var(--accent); }
+  .sub-box-cbk  .sub-box-label { color: var(--cbk); }
+  .sub-box-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 11.5px;
+    color: var(--text-2);
+    line-height: 1.45;
+    margin-bottom: 4px;
+  }
+  .sub-box-row:last-child { margin-bottom: 0; }
+  .row-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .hook-dot { background: var(--accent); }
+  .cbk-dot  { background: var(--cbk); }
+  .mono {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: .9em;
+    color: var(--text-1);
+  }
+
+  /* storage box */
+  .box-storage {
+    width: 200px;
+    flex-shrink: 0;
+    border-color: var(--ok);
+  }
+  .table-block {
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .table-block + .table-block { margin-top: 8px; }
+  .table-name {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    background: var(--ok-lt);
+    color: var(--ok);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-col {
+    font-size: 10.5px;
+    color: var(--text-2);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    padding: 3px 10px;
+    line-height: 1.7;
+    background: var(--surface);
+  }
+  .col-type {
+    color: var(--text-3);
+    font-size: 9.5px;
+  }
+
+  /* ── CRON ROW ── */
+  .cron-section {
+    margin-top: 8px;
+  }
+  .section-divider {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .cron-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .cron-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .cron-box-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 4px;
+  }
+  .cron-box-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .cron-box-note {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 3px;
+  }
+  .cron-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    position: relative;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+  .cron-connector::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1.5px;
+    background: var(--border-strong);
+  }
+  .cron-connector::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    border-left: 7px solid var(--border-strong);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+  .cron-connector-label {
+    position: relative;
+    z-index: 1;
+    background: var(--bg);
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--text-3);
+    padding: 1px 4px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    border-radius: 3px;
+  }
+  .verify-box {
+    border-color: #B7DECA;
+    background: var(--ok-lt);
+  }
+  .verify-box .cron-box-title { color: var(--ok); }
+
+  /* ── FOOTER STATS ── */
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .stat {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .stat-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-lt);
+  }
+  .stat-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-1);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.3px;
+    line-height: 1.1;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+  .stat-ok .stat-icon { background: var(--ok-lt); }
+  .stat-warn .stat-icon { background: var(--cbk-lt); }
+</style>
+
+<!-- HEADER -->
+<header class="slide-header">
+  <h1>
+    <span>OCaisa Observability</span>
+    Option D — DIY In-Process Usage Logger
+  </h1>
+  <div class="slide-meta">
+    <div class="badge">✓ CoA Approved</div>
+    <div>2026-08-10 · CC + io + Polo</div>
+    <div>Langfuse demoted to stretch-goal fallback</div>
+  </div>
+</header>
+
+<!-- MAIN FLOW -->
+<div class="flow">
+
+  <!-- PROVIDERS -->
+  <div class="box box-providers">
+    <div>
+      <div class="box-label">LLM Providers</div>
+      <div class="box-title">API Sources</div>
+    </div>
+    <div class="provider-item">
+      <div class="provider-dot"></div>
+      <div>
+        OpenRouter
+        <span class="provider-note">100+ models · dynamic pricing</span>
+      </div>
+    </div>
+    <div class="provider-item">
+      <div class="provider-dot"></div>
+      <div>
+        DeepSeek Direct
+        <span class="provider-note">v4-flash · fixed pricing</span>
+      </div>
+    </div>
+    <div class="box-sub" style="font-size:11px">All return OpenAI-compatible <span class="mono">response.usage</span></div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- RUNTIME -->
+  <div class="box box-runtime">
+    <div class="runtime-header">
+      <div class="runtime-icon">⚙</div>
+      <div>
+        <div class="box-label">OpenClaw Runtime</div>
+        <div class="box-title">Transport Layer</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="normalize-tag">normalize(response)</span>
+        <span class="normalize-tag">calculateCost()</span>
+      </div>
+    </div>
+    <div class="sub-boxes">
+      <!-- Hook -->
+      <div class="sub-box sub-box-hook">
+        <div class="sub-box-label">Post-Response Hook</div>
+        <div class="sub-box-row">
+          <div class="row-dot hook-dot"></div>
+          <div>Read <span class="mono">output.usage</span> after normalization</div>
+        </div>
+        <div class="sub-box-row">
+          <div class="row-dot hook-dot"></div>
+          <div>Tag row: agent, session key, model, provider</div>
+        </div>
+        <div class="sub-box-row">
+          <div class="row-dot hook-dot"></div>
+          <div><span class="mono">INSERT</span> → <span class="mono">agent_usage</span> SQLite</div>
+        </div>
+        <div class="sub-box-row">
+          <div class="row-dot hook-dot"></div>
+          <div>On failure: log row with <span class="mono">error TEXT</span>, tokens nullable</div>
+        </div>
+      </div>
+      <!-- Circuit Breaker -->
+      <div class="sub-box sub-box-cbk">
+        <div class="sub-box-label">Circuit Breaker</div>
+        <div class="sub-box-row">
+          <div class="row-dot cbk-dot"></div>
+          <div>Session start → <span class="mono">GET /api/v1/credits</span></div>
+        </div>
+        <div class="sub-box-row">
+          <div class="row-dot cbk-dot"></div>
+          <div>Abort if remaining &lt; <strong>$2</strong> (configurable)</div>
+        </div>
+        <div class="sub-box-row">
+          <div class="row-dot cbk-dot"></div>
+          <div>On 402 response → set halt flag, block all further OpenRouter dispatch</div>
+        </div>
+        <div class="sub-box-row">
+          <div class="row-dot cbk-dot"></div>
+          <div>Current balance: <span class="mono">~$8.43</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"></div>
+
+  <!-- STORAGE -->
+  <div class="box box-storage">
+    <div>
+      <div class="box-label">Local Storage</div>
+      <div class="box-title">SQLite · single file</div>
+      <div class="box-sub" style="font-size:11px;margin-top:4px">No SaaS · no proxy · &lt;10 MB</div>
+    </div>
+
+    <div class="table-block">
+      <div class="table-name">agent_usage</div>
+      <div class="table-col">
+        ts <span class="col-type">TEXT</span><br>
+        agent <span class="col-type">TEXT</span><br>
+        session_key <span class="col-type">TEXT</span><br>
+        model, provider <span class="col-type">TEXT NOT NULL</span><br>
+        input/output_tokens <span class="col-type">INTEGER</span><br>
+        cost_usd <span class="col-type">REAL</span><br>
+        error <span class="col-type">TEXT</span>
+      </div>
+    </div>
+
+    <div class="table-block">
+      <div class="table-name">write_verifications</div>
+      <div class="table-col">
+        ts <span class="col-type">TEXT</span><br>
+        job, target <span class="col-type">TEXT</span><br>
+        verified <span class="col-type">INTEGER 0|1</span><br>
+        error <span class="col-type">TEXT</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CRON ROW -->
+<div class="cron-section">
+  <div class="section-divider">Cron — Silent Failure Detection</div>
+  <div class="cron-flow">
+    <div class="cron-box" style="width:148px">
+      <div class="cron-box-label">Background Agent</div>
+      <div class="cron-box-title">Cato Cron Job</div>
+      <div class="cron-box-note">e.g. bible-stale-check<br>script exits 0</div>
+    </div>
+    <div class="cron-connector"><span class="cron-connector-label">writes to</span></div>
+    <div class="cron-box" style="width:148px">
+      <div class="cron-box-label">External API</div>
+      <div class="cron-box-title">Google Sheets / Telegram</div>
+      <div class="cron-box-note">write may silently fail</div>
+    </div>
+    <div class="cron-connector"><span class="cron-connector-label">then verify</span></div>
+    <div class="cron-box verify-box" style="width:180px">
+      <div class="cron-box-label">Post-Write Verification</div>
+      <div class="cron-box-title">Re-read from API</div>
+      <div class="cron-box-note">compare expected vs actual</div>
+    </div>
+    <div class="cron-connector"><span class="cron-connector-label">INSERT</span></div>
+    <div class="cron-box verify-box" style="flex:1">
+      <div class="cron-box-label">SQLite</div>
+      <div class="cron-box-title">write_verifications</div>
+      <div class="cron-box-note"><span class="mono">verified=0</span> → silent failure captured<br><span class="mono">verified=1</span> → write confirmed</div>
+    </div>
+    <div class="cron-connector" style="width:32px"></div>
+    <div class="cron-box" style="width:148px;background:var(--accent-lt);border-color:#C5D9EF">
+      <div class="cron-box-label">Query</div>
+      <div class="cron-box-title">Daily SQL Summary</div>
+      <div class="cron-box-note">token cost · error rate · failed writes → sermo</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat stat-ok">
+    <div class="stat-icon">⏱</div>
+    <div>
+      <div class="stat-val">~3h</div>
+      <div class="stat-lbl">Estimated build time</div>
+    </div>
+  </div>
+  <div class="stat stat-ok">
+    <div class="stat-icon">💾</div>
+    <div>
+      <div class="stat-val">&lt;10 MB</div>
+      <div class="stat-lbl">Storage footprint</div>
+    </div>
+  </div>
+  <div class="stat stat-ok">
+    <div class="stat-icon">$</div>
+    <div>
+      <div class="stat-val">$0</div>
+      <div class="stat-lbl">Ongoing SaaS cost</div>
+    </div>
+  </div>
+  <div class="stat">
+    <div class="stat-icon" style="background:#F0F4F8">🔌</div>
+    <div>
+      <div class="stat-val">0</div>
+      <div class="stat-lbl">External services required</div>
+    </div>
+  </div>
+  <div class="stat stat-warn">
+    <div class="stat-icon">🛡</div>
+    <div>
+      <div class="stat-val">$2</div>
+      <div class="stat-lbl">Circuit breaker threshold</div>
+    </div>
+  </div>
+  <div class="stat">
+    <div class="stat-icon" style="background:#F0F4F8">📦</div>
+    <div>
+      <div class="stat-val">3</div>
+      <div class="stat-lbl">Agents instrumented</div>
+    </div>
+  </div>
+</div>
