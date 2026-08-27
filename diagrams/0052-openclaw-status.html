@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Status</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #f0f3f7;
+    --surface: #ffffff;
+    --surface-2: #f7f9fc;
+    --border: #dde3ec;
+    --text: #1a2035;
+    --text-muted: #6b7a99;
+    --done: #15803d;
+    --done-bg: #dcfce7;
+    --done-border: #86efac;
+    --pending: #92400e;
+    --pending-bg: #fef3c7;
+    --pending-border: #fcd34d;
+    --blocked: #991b1b;
+    --blocked-bg: #fee2e2;
+    --blocked-border: #fca5a5;
+    --deferred: #4b5563;
+    --deferred-bg: #f3f4f6;
+    --deferred-border: #d1d5db;
+    --arrow: #94a3b8;
+    --lane-label: #374151;
+    --accent: #3b5bdb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111827;
+      --surface: #1f2937;
+      --surface-2: #161d2b;
+      --border: #2d3748;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --done: #4ade80;
+      --done-bg: #052e16;
+      --done-border: #166534;
+      --pending: #fbbf24;
+      --pending-bg: #1c1506;
+      --pending-border: #78350f;
+      --blocked: #f87171;
+      --blocked-bg: #1c0505;
+      --blocked-border: #7f1d1d;
+      --deferred: #9ca3af;
+      --deferred-bg: #1f2937;
+      --deferred-border: #374151;
+      --arrow: #4b5563;
+      --lane-label: #cbd5e1;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #111827;
+    --surface: #1f2937;
+    --surface-2: #161d2b;
+    --border: #2d3748;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --done: #4ade80;
+    --done-bg: #052e16;
+    --done-border: #166534;
+    --pending: #fbbf24;
+    --pending-bg: #1c1506;
+    --pending-border: #78350f;
+    --blocked: #f87171;
+    --blocked-bg: #1c0505;
+    --blocked-border: #7f1d1d;
+    --deferred: #9ca3af;
+    --deferred-bg: #1f2937;
+    --deferred-border: #374151;
+    --arrow: #4b5563;
+    --lane-label: #cbd5e1;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 2.5rem 2rem;
+    min-height: 100vh;
+  }
+
+  header {
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  header p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-dot.done { background: var(--done); }
+  .legend-dot.pending { background: var(--pending); }
+  .legend-dot.blocked { background: var(--blocked); }
+  .legend-dot.deferred { background: var(--deferred); }
+
+  .lanes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .lane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.125rem 1.25rem;
+    overflow-x: auto;
+  }
+
+  .lane-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .lane-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.15rem 0.45rem;
+  }
+
+  .lane-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--lane-label);
+  }
+
+  .lane-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    min-width: max-content;
+  }
+
+  .node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .node-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    border: 1.5px solid;
+    white-space: nowrap;
+  }
+
+  .node-pill.done {
+    background: var(--done-bg);
+    border-color: var(--done-border);
+    color: var(--done);
+  }
+
+  .node-pill.pending {
+    background: var(--pending-bg);
+    border-color: var(--pending-border);
+    color: var(--pending);
+  }
+
+  .node-pill.blocked {
+    background: var(--blocked-bg);
+    border-color: var(--blocked-border);
+    color: var(--blocked);
+  }
+
+  .node-pill.deferred {
+    background: var(--deferred-bg);
+    border-color: var(--deferred-border);
+    color: var(--deferred);
+  }
+
+  .check { font-size: 0.7rem; }
+  .node-sub {
+    font-size: 0.6375rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+    max-width: 90px;
+    line-height: 1.3;
+  }
+
+  .arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 0.25rem;
+    margin-bottom: 1.125rem; /* align with pill center */
+    flex-shrink: 0;
+  }
+
+  .arrow svg {
+    width: 20px;
+    height: 12px;
+  }
+
+  .arrow.blocked-arrow svg line,
+  .arrow.blocked-arrow svg polyline {
+    stroke: var(--blocked);
+    stroke-dasharray: 4 3;
+    opacity: 0.5;
+  }
+
+  /* Gate node — diamond shape */
+  .gate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .gate-diamond {
+    width: 32px;
+    height: 32px;
+    transform: rotate(45deg);
+    border: 1.5px solid var(--pending-border);
+    background: var(--pending-bg);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gate-label {
+    font-size: 0.6375rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+    margin-bottom: 1.125rem;
+  }
+
+  /* All-done lane */
+  .lane.all-done {
+    border-color: var(--done-border);
+    background: var(--done-bg);
+  }
+
+  .lane.all-done .lane-title { color: var(--done); }
+  .lane.all-done .lane-tag {
+    border-color: var(--done-border);
+    color: var(--done);
+    background: var(--done-bg);
+  }
+
+  .section-divider {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 1.5rem 0 0.75rem;
+    padding-left: 0.125rem;
+  }
+
+  .cron-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+
+  .cron-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+  }
+
+  .cron-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--surface-2);
+  }
+
+  .cron-chip.warn {
+    border-color: var(--blocked-border);
+    color: var(--blocked);
+    background: var(--blocked-bg);
+  }
+
+  .cron-chip.ok {
+    border-color: var(--done-border);
+    color: var(--done);
+    background: var(--done-bg);
+  }
+</style>
+
+<header>
+  <h1>OpenClaw — Work Status</h1>
+  <p>2026-08-27 · 5 active projects</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot done"></div> Done / iiv-pass</div>
+    <div class="legend-item"><div class="legend-dot pending"></div> Remaining / in-flight</div>
+    <div class="legend-item"><div class="legend-dot blocked"></div> Blocked</div>
+    <div class="legend-item"><div class="legend-dot deferred"></div> Deferred</div>
+  </div>
+</header>
+
+<div class="lanes">
+
+  <!-- Loop Prevention — ALL DONE -->
+  <div class="lane all-done">
+    <div class="lane-header">
+      <span class="lane-tag">#141</span>
+      <span class="lane-title">Loop Prevention</span>
+      <span class="lane-note" style="color:var(--done);font-size:0.75rem;font-weight:600;">✓ ALL CHUNKS COMPLETE</span>
+    </div>
+    <div class="flow">
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> C1</div>
+        <div class="node-sub">Escalation ladder</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--done)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--done)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> C2</div>
+        <div class="node-sub">A2A envelope</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--done)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--done)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> C3</div>
+        <div class="node-sub">ACKs + tool flags</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--done)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--done)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> C4</div>
+        <div class="node-sub">Max steps budget</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Circuit Breaker -->
+  <div class="lane">
+    <div class="lane-header">
+      <span class="lane-tag">#16</span>
+      <span class="lane-title">Circuit Breaker</span>
+    </div>
+    <div class="flow">
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> #79</div>
+        <div class="node-sub">Hard abort plugin</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> #81</div>
+        <div class="node-sub">Review budget IDENTITY.md</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill deferred">#80</div>
+        <div class="node-sub">Token budget kill</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Track A -->
+  <div class="lane">
+    <div class="lane-header">
+      <span class="lane-tag">#69</span>
+      <span class="lane-title">Health Check v2 — Track A</span>
+      <span class="lane-note">usage-logger recovery</span>
+    </div>
+    <div class="flow">
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> C1-A</div>
+        <div class="node-sub">Hook repatch</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> C2-A</div>
+        <div class="node-sub">Resilience script</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">C3-A</div>
+        <div class="node-sub">Summary 0-row alert</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">C4-A</div>
+        <div class="node-sub">IIV</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Track B -->
+  <div class="lane">
+    <div class="lane-header">
+      <span class="lane-tag">#70</span>
+      <span class="lane-title">Health Check v2 — Track B</span>
+      <span class="lane-note">Cato health cron</span>
+    </div>
+    <div class="flow">
+      <div class="node">
+        <div class="node-pill blocked">Track A complete</div>
+        <div class="node-sub">gate</div>
+      </div>
+      <div class="arrow blocked-arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--blocked)" stroke-width="1.5" stroke-dasharray="4 3"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--blocked)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">Cato cron build</div>
+        <div class="node-sub">not started</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EGO -->
+  <div class="lane">
+    <div class="lane-header">
+      <span class="lane-tag">#12</span>
+      <span class="lane-title">EGO — Evidence-Gated Orchestration</span>
+    </div>
+    <div class="flow">
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> A</div>
+        <div class="node-sub">Ledger schema</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill done"><span class="check">✓</span> B</div>
+        <div class="node-sub">Plugin scaffold</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">D</div>
+        <div class="node-sub">io IDENTITY.md (CC-owned)</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">Shadow 1</div>
+        <div class="node-sub">criteria 1-3,9,11,12</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">FIX-27</div>
+        <div class="node-sub">io compliance measure</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">C (warn)</div>
+        <div class="node-sub">Output gate warning mode</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">Shadow 2</div>
+        <div class="node-sub">criteria 4-8,10</div>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 20 12"><line x1="0" y1="6" x2="14" y2="6" stroke="var(--arrow)" stroke-width="1.5"/><polyline points="10,2 16,6 10,10" fill="none" stroke="var(--arrow)" stroke-width="1.5"/></svg></div>
+      <div class="node">
+        <div class="node-pill pending">E</div>
+        <div class="node-sub">Hardening + dashboard</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Cron health -->
+<div class="section-divider">Cron / Infra</div>
+<div class="cron-row">
+  <div class="lane-header" style="margin-bottom:0;">
+    <span class="lane-title" style="font-size:0.8125rem;">39/46 ok — 7 need attention</span>
+  </div>
+  <div class="cron-items">
+    <span class="cron-chip warn">lossless-claw-research ⚠ error 8h</span>
+    <span class="cron-chip warn">xdigest-review ⚠ error 23h (#134)</span>
+    <span class="cron-chip warn">ctx-guard-eval-summary never fired (#137)</span>
+    <span class="cron-chip warn">ocaisa-health idle / never run</span>
+    <span class="cron-chip warn">coa-orchestrator idle / never run</span>
+    <span class="cron-chip ok">cc-loop141-watch running</span>
+    <span class="cron-chip ok">bible-sync running</span>
+    <span class="cron-chip ok">cc-inbox-watcher running</span>
+  </div>
+</div>
+
