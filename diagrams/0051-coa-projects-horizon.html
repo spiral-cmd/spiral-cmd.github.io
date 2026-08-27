@@ -141,6 +141,21 @@
     font-weight: 500;
     line-height: 1.3;
     border-left: 3px solid transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .box .label { flex: 1; }
+
+  .box .ticket {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    opacity: .65;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .box.done    { background: var(--done);    border-color: var(--done-b);    color: var(--done-t); }
@@ -193,8 +208,8 @@
 
     <div class="group">
       <div class="boxes">
-        <div class="box done">Cato Reliability</div>
-        <div class="box done">Forgejo Task Tracking</div>
+        <div class="box done"><span class="label">Cato Reliability</span></div>
+        <div class="box done"><span class="label">Forgejo Task Tracking</span></div>
       </div>
     </div>
   </div>
@@ -204,16 +219,17 @@
 
     <div class="group">
       <div class="boxes">
-        <div class="box done">Loop Prevention</div>
-        <div class="box done">A2A Infrastructure</div>
-        <div class="box done">A2A Receipts</div>
-        <div class="box done">Protocol Chunks</div>
-        <div class="box done">Forgejo Backup</div>
-        <div class="box done">Usage Logger</div>
-        <div class="box done">io Token Fix</div>
-        <div class="box done">Sermo Delivery Ban</div>
-        <div class="box done">ntfy Push Wrapper</div>
-        <div class="box done">CC Inbox (passive)</div>
+        <div class="box done"><span class="label">Loop Prevention</span><span class="ticket">#141</span></div>
+        <div class="box done"><span class="label">A2A Infrastructure</span><span class="ticket">#130–131</span></div>
+        <div class="box done"><span class="label">A2A Receipts</span><span class="ticket">#132</span></div>
+        <div class="box done"><span class="label">Protocol Chunks</span><span class="ticket">#143–145</span></div>
+        <div class="box done"><span class="label">Forgejo Backup</span></div>
+        <div class="box done"><span class="label">Usage Logger</span></div>
+        <div class="box done"><span class="label">io Token Fix</span></div>
+        <div class="box done"><span class="label">Sermo Delivery Ban</span></div>
+        <div class="box done"><span class="label">ntfy Push Wrapper</span></div>
+        <div class="box done"><span class="label">CC Inbox (passive)</span></div>
+        <div class="box done"><span class="label">SiliconFlow Setup</span></div>
       </div>
     </div>
   </div>
@@ -224,32 +240,31 @@
     <div class="group">
       <div class="group-label">In progress</div>
       <div class="boxes">
-        <div class="box active">Cato Heartbeat</div>
-        <div class="box active">Gateway Heartbeat Bug</div>
+        <div class="box active"><span class="label">Cato Heartbeat</span><span class="ticket">#128</span></div>
+        <div class="box active"><span class="label">Gateway Heartbeat Bug</span><span class="ticket">#150</span></div>
       </div>
     </div>
 
     <div class="group">
       <div class="group-label">Sprint #148</div>
       <div class="boxes">
-        <div class="box next">cc-push Active Session</div>
-        <div class="box next">A2A Dedup Fix</div>
-        <div class="box next">DB Cleanup Cron</div>
-        <div class="box next">xdigest Fix</div>
-        <div class="box next">ctx-guard Eval</div>
-        <div class="box next">Forgejo Upgrade</div>
+        <div class="box next"><span class="label">cc-push Active Session</span><span class="ticket">#149</span></div>
+        <div class="box next"><span class="label">A2A Dedup Fix</span><span class="ticket">#133</span></div>
+        <div class="box next"><span class="label">DB Cleanup Cron</span><span class="ticket">#146</span></div>
+        <div class="box next"><span class="label">xdigest Fix</span><span class="ticket">#134</span></div>
+        <div class="box next"><span class="label">ctx-guard Eval</span><span class="ticket">#137</span></div>
+        <div class="box next"><span class="label">Forgejo Upgrade</span><span class="ticket">#147</span></div>
       </div>
     </div>
 
     <div class="group">
       <div class="group-label">Backlog</div>
       <div class="boxes">
-        <div class="box backlog">SecretRefs Migration</div>
-        <div class="box backlog">History DB Research</div>
-        <div class="box backlog">io Routing Pipeline</div>
-        <div class="box backlog">Mezzo / io Onboarding</div>
-        <div class="box backlog">io Model Check Cron</div>
-        <div class="box backlog">SiliconFlow Setup</div>
+        <div class="box backlog"><span class="label">SecretRefs Migration</span><span class="ticket">#116</span></div>
+        <div class="box backlog"><span class="label">History DB Research</span><span class="ticket">#140</span></div>
+        <div class="box backlog"><span class="label">io Routing Pipeline</span><span class="ticket">#115</span></div>
+        <div class="box backlog"><span class="label">Mezzo / io Onboarding</span><span class="ticket">#112</span></div>
+        <div class="box backlog"><span class="label">io Model Check Cron</span></div>
       </div>
     </div>
   </div>
