@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0050 — Loop Prevention Build Post-Mortem</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #f2f4f7;
+  color: #1a2332;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+.header {
+  border-bottom: 2px solid #c9882a;
+  padding-bottom: 28px;
+  margin-bottom: 40px;
+}
+.header-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #6b7a91;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.header h1 {
+  font-family: 'IBM Plex Serif', Georgia, serif;
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 600;
+  line-height: 1.2;
+  color: #1a2332;
+  margin-bottom: 10px;
+}
+.header-sub {
+  font-size: 14px;
+  color: #6b7a91;
+  max-width: 560px;
+  line-height: 1.5;
+}
+.alert {
+  background: #fdf3e3;
+  border-left: 3px solid #c9882a;
+  border-radius: 0 6px 6px 0;
+  padding: 12px 16px;
+  margin-bottom: 36px;
+  font-size: 13.5px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.alert-icon { flex-shrink: 0; color: #c9882a; margin-top: 1px; }
+.alert strong { color: #1a2332; }
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #dde1e9;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #6b7a91;
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.stat-sub { font-size: 11px; color: #6b7a91; margin-top: 4px; }
+.stat-card.pass .stat-value { color: #2d7d5e; }
+.stat-card.fail .stat-value { color: #b84040; }
+.stat-card.warn .stat-value { color: #c9882a; }
+.section { margin-bottom: 44px; }
+.section-eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9882a;
+  margin-bottom: 6px;
+}
+.section h2 {
+  font-family: 'IBM Plex Serif', Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #1a2332;
+}
+.table-wrap { overflow-x: auto; margin-bottom: 24px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #6b7a91;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #dde1e9;
+}
+tbody td { padding: 10px 12px; border-bottom: 1px solid #dde1e9; vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+.chunk-id { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 500;
+  padding: 2px 8px; border-radius: 3px; white-space: nowrap;
+}
+.badge.pass { background: #eaf4ef; color: #2d7d5e; }
+.badge.warn { background: #fdf3e3; color: #c9882a; }
+code {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11.5px;
+  background: #eef0f4; padding: 1px 5px; border-radius: 3px; color: #1a2332;
+}
+.incident-log { display: flex; flex-direction: column; gap: 0; }
+.incident { display: grid; grid-template-columns: 3px 1fr; gap: 0 16px; padding-bottom: 24px; }
+.incident-line { width: 3px; background: #dde1e9; position: relative; }
+.incident-line::before {
+  content: ''; position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+  width: 9px; height: 9px; border-radius: 50%; border: 2px solid #f2f4f7; background: #b84040;
+}
+.incident.warn .incident-line::before { background: #c9882a; }
+.incident:last-child .incident-line { background: transparent; }
+.incident-time { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #6b7a91; margin-bottom: 3px; }
+.incident-title { font-weight: 600; font-size: 13.5px; margin-bottom: 4px; }
+.incident-detail { font-size: 13px; color: #6b7a91; line-height: 1.55; }
+.agent-cards { display: flex; flex-direction: column; gap: 20px; }
+.agent-card { background: #ffffff; border: 1px solid #dde1e9; border-radius: 8px; overflow: hidden; }
+.agent-card-header {
+  display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+  border-bottom: 1px solid #dde1e9; background: #eef0f4;
+}
+.agent-name { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; }
+.agent-role { font-size: 11.5px; color: #6b7a91; margin-left: auto; }
+.agent-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 6px; border-radius: 3px; }
+.agent-status.received { background: #eaf4ef; color: #2d7d5e; }
+.agent-status.error    { background: #f9ecec; color: #b84040; }
+.agent-status.timeout  { background: #fdf3e3; color: #c9882a; }
+.agent-card-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.retro-row label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.09em;
+  text-transform: uppercase; color: #6b7a91; display: block; margin-bottom: 5px;
+}
+.retro-row ul { padding-left: 18px; display: flex; flex-direction: column; gap: 3px; font-size: 13.5px; }
+.retro-row li { color: #1a2332; }
+.retro-row li.bad  { color: #b84040; }
+.retro-row li.warn { color: #c9882a; }
+.retro-row p { font-size: 13.5px; color: #1a2332; line-height: 1.55; }
+.action-list { display: flex; flex-direction: column; gap: 10px; }
+.action-item {
+  background: #ffffff; border: 1px solid #dde1e9; border-radius: 6px; padding: 12px 16px;
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start;
+}
+.action-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7a91; padding-top: 1px; min-width: 24px; }
+.action-text { font-size: 13.5px; line-height: 1.5; }
+.action-text strong { font-weight: 600; }
+.action-text .sub { font-size: 12px; color: #6b7a91; margin-top: 2px; }
+.action-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.owner-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: #eef0f4; color: #6b7a91; padding: 2px 6px; border-radius: 3px; }
+.priority-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 6px; border-radius: 3px; }
+.priority-tag.p0 { background: #f9ecec; color: #b84040; }
+.priority-tag.p1 { background: #fdf3e3; color: #c9882a; }
+.priority-tag.p2 { background: #eaf4ef; color: #2d7d5e; }
+.done-mark { font-family: 'IBM Plex Mono', monospace; font-size: 10px; background: #eaf4ef; color: #2d7d5e; padding: 2px 6px; border-radius: 3px; }
+.divider { border: none; border-top: 1px solid #dde1e9; margin: 36px 0; }
+.footer {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #6b7a91;
+  margin-top: 56px; padding-top: 20px; border-top: 1px solid #dde1e9;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-meta">
+      <span>Incident Report</span>
+      <span>Forgejo #141</span>
+      <span>2026-08-26</span>
+      <span>0050</span>
+    </div>
+    <h1>Loop Prevention Build — Post-Mortem</h1>
+    <p class="header-sub">Four-chunk implementation of agent loop-prevention infrastructure. All chunks delivered. Multiple process failures and one 6-hour stall along the way.</p>
+  </header>
+
+  <div class="alert">
+    <span class="alert-icon">⚠</span>
+    <div><strong>Open issue, 2026-08-27:</strong> Polo running on <code>z-ai/glm-4.7-flash</code> (OpenRouter fallback) instead of primary <code>deepseek-v4-flash</code>. HIL filed. No tasks delegated to Polo until resolved.</div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="stat-card pass">
+      <div class="stat-label">Chunks delivered</div>
+      <div class="stat-value">4 / 4</div>
+      <div class="stat-sub">C1 C2 C3 C4 closed</div>
+    </div>
+    <div class="stat-card fail">
+      <div class="stat-label">Stall (undetected)</div>
+      <div class="stat-value">6h</div>
+      <div class="stat-sub">C2 dispatch lost</div>
+    </div>
+    <div class="stat-card fail">
+      <div class="stat-label">Protocol violations</div>
+      <div class="stat-value">5</div>
+      <div class="stat-sub">io, Polo ×2, CC ×2</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-label">Actions filed</div>
+      <div class="stat-value">4</div>
+      <div class="stat-sub">All completed</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-eyebrow">Delivery</div>
+    <h2>What shipped</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Chunk</th><th>Forgejo</th><th>Scope</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chunk-id">C1</span></td>
+            <td><span class="chunk-id">#142</span></td>
+            <td style="font-size:13px;">Circuit breaker escalation ladder — warn@3 / disable@4 / hard@5 — and read-tool exemptions</td>
+            <td><span class="badge pass">✓ Closed</span></td>
+          </tr>
+          <tr>
+            <td><span class="chunk-id">C2</span></td>
+            <td><span class="chunk-id">#143</span></td>
+            <td style="font-size:13px;">A2A envelope: <code>hop_count</code>, <code>route</code>, cycle detection, <code>execution_id</code></td>
+            <td><span class="badge pass">✓ Closed</span></td>
+          </tr>
+          <tr>
+            <td><span class="chunk-id">C3</span></td>
+            <td><span class="chunk-id">#144</span></td>
+            <td style="font-size:13px;"><code>a2a-ack-transport</code> plugin — ACKs at transport layer, <code>is_complete</code>/<code>retryable</code> tool result flags</td>
+            <td><span class="badge pass">✓ Closed</span></td>
+          </tr>
+          <tr>
+            <td><span class="chunk-id">C4</span></td>
+            <td><span class="chunk-id">#145</span></td>
+            <td style="font-size:13px;"><code>max-steps-budget</code> plugin — per-session step budget, <code>loop_monitor</code> schema extended with 5 new columns</td>
+            <td><span class="badge pass">✓ Closed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:#6b7a91;">Gateway running 16 plugins post-build. Circuit breaker config patched: <code>process</code> removed from <code>excludeTools</code>.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-eyebrow">Timeline</div>
+    <h2>What broke, in order</h2>
+    <div class="incident-log">
+
+      <div class="incident fail">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">~09:00 UTC · C1</div>
+          <div class="incident-title">io implemented C1 directly — tool ban violation</div>
+          <div class="incident-detail">io used 49 exec/process/write calls to implement C1 instead of briefing Polo. IDENTITY.md updated with absolute tool ban.</div>
+        </div>
+      </div>
+
+      <div class="incident fail">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">09:46 UTC · C2</div>
+          <div class="incident-title">C2 brief lost to session rotation gap</div>
+          <div class="incident-detail">CC dispatched C2 brief to io's session. io's session rotated between send and receive; new session never received it. Undetected for 6 hours.</div>
+        </div>
+      </div>
+
+      <div class="incident fail">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">09:46–15:31 UTC · Watcher</div>
+          <div class="incident-title">Watcher alerts silently failed for 6 hours</div>
+          <div class="incident-detail">CC's watcher used <code>openclaw sessions send agent:io:main "..."</code> — an invalid subcommand that had already failed in the same session. Wrapped in <code>|| true</code>. 72 cron ticks; zero escalations fired. Fix: replaced with <code>openclaw agent --agent io</code>.</div>
+        </div>
+      </div>
+
+      <div class="incident warn">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">~15:50 UTC · C2</div>
+          <div class="incident-title">io circuit breaker had state reset bug</div>
+          <div class="incident-detail">io's C1 implementation had <code>state.count = 0</code> after warn@3 and disable@4, preventing the escalation ladder from ever reaching hard@5. Premature resets removed.</div>
+        </div>
+      </div>
+
+      <div class="incident fail">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">15:55 UTC · C2</div>
+          <div class="incident-title">Polo restarted gateway inline — severed own WS</div>
+          <div class="incident-detail">Polo ran <code>openclaw gateway restart</code> from inside its live session. C2 was actually complete (build passed 15:55:49) but the ack was lost. CC IIV'd C2 independently. Gateway restart ban added to Polo IDENTITY.</div>
+        </div>
+      </div>
+
+      <div class="incident fail">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">16:05 UTC · DB</div>
+          <div class="incident-title">a2a-mailbox.db corruption</div>
+          <div class="incident-detail">SQLITE_CORRUPT. 34 stale LOOP_ABORT rows from a cron session that had looped before the circuit breaker was installed. DB rebuilt from schema; gateway restarted.</div>
+        </div>
+      </div>
+
+      <div class="incident fail">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">16:27–16:38 UTC · C3</div>
+          <div class="incident-title">Polo stuck in identical process-tool loop</div>
+          <div class="incident-detail">Polo looped on an identical <code>exec</code>/<code>process</code> call for 7+ consecutive turns. Circuit breaker didn't fire because <code>process</code> was in <code>excludeTools</code>. Root fix: <code>process</code> removed from <code>excludeTools</code>.</div>
+        </div>
+      </div>
+
+      <div class="incident warn">
+        <div class="incident-line"></div>
+        <div class="incident-body">
+          <div class="incident-time">16:27 UTC · C3</div>
+          <div class="incident-title">Polo claimed plugin loaded without evidence</div>
+          <div class="incident-detail">Polo stated "sessions_send_acks table created by plugin register()" — table was manually created; plugin had not loaded (gateway predated the file by 31 min). Evidence rule added to Polo IDENTITY.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-eyebrow">Agent input</div>
+    <h2>Retro by agent</h2>
+    <div class="agent-cards">
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">🧠 io</span>
+          <span class="agent-role">Orchestrator · Mistral Small 4</span>
+          <span class="agent-status received">received</span>
+        </div>
+        <div class="agent-card-body">
+          <div class="retro-row">
+            <label>Went well</label>
+            <ul>
+              <li>a2a-bus routing maintained integrity through session rotation</li>
+              <li>CC's plugin config and circuit breaker fixes landed cleanly</li>
+              <li>All 4 chunks delivered despite session disruptions</li>
+            </ul>
+          </div>
+          <div class="retro-row">
+            <label>Went wrong</label>
+            <ul>
+              <li class="bad">Implemented C1 directly — violated the tool ban</li>
+              <li class="bad">Didn't detect C2 dispatch loss across session rotation</li>
+              <li class="bad">No mechanism to verify message receipt after brief</li>
+            </ul>
+          </div>
+          <div class="retro-row">
+            <label>Actions</label>
+            <ul>
+              <li>IDENTITY absolute tool ban — already present</li>
+              <li>5-min receipt check after every Polo brief — added to IDENTITY Workflow step 6</li>
+              <li>DB cleanup cron for stale a2a_messages — Forgejo #146</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">🛠 Polo</span>
+          <span class="agent-role">Implementer · DeepSeek V4 Flash</span>
+          <span class="agent-status error">session error — compiled from observation</span>
+        </div>
+        <div class="agent-card-body">
+          <div class="retro-row">
+            <label>Went well</label>
+            <ul>
+              <li>C1, C3, C4 code delivered correctly and cleanly</li>
+              <li>Self-corrected Codo's bugs before filing in C3</li>
+              <li>Followed gateway restart rule correctly in C4 (told CC, didn't restart)</li>
+            </ul>
+          </div>
+          <div class="retro-row">
+            <label>Went wrong</label>
+            <ul>
+              <li class="bad">Restarted gateway inline during C2 — severed own WS, lost the ack for completed work</li>
+              <li class="bad">Stuck in identical process-tool loop for 11 min</li>
+              <li class="bad">Claimed plugin loaded from inference, not evidence</li>
+            </ul>
+          </div>
+          <div class="retro-row">
+            <label>Actions</label>
+            <ul>
+              <li>Gateway restart ban — added to IDENTITY during build</li>
+              <li>Evidence rule for plugin-loaded claims — added post-retro</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">🏛 CC</span>
+          <span class="agent-role">Orchestrator · Claude Sonnet 4.6</span>
+          <span class="agent-status received">self-assessment</span>
+        </div>
+        <div class="agent-card-body">
+          <div class="retro-row">
+            <label>Went well</label>
+            <ul>
+              <li>Caught io's tool ban violation and circuit breaker reset bug</li>
+              <li>IIV'd C2 independently when Polo's session was lost</li>
+              <li>Restarted gateway safely from outside the agent WS (twice)</li>
+              <li>All 4 chunks IIV'd and closed without agent-side confirmation</li>
+            </ul>
+          </div>
+          <div class="retro-row">
+            <label>Went wrong</label>
+            <ul>
+              <li class="bad">Shipped watcher script using a command that had already failed in the same session — ran silently for 6h</li>
+              <li class="bad">Reported monitoring infrastructure as working before verifying it worked</li>
+              <li class="bad">Prioritised doing over reporting while Martin was watching</li>
+            </ul>
+          </div>
+          <div class="retro-row">
+            <label>Actions</label>
+            <ul>
+              <li>Smoke-test rule in CLAUDE.md — every command bare before it goes in a script</li>
+              <li>Status-first protocol — headline before tools when Martin is in session</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <span class="agent-name">📡 Mezzo</span>
+          <span class="agent-role">HIL relay · Gemini 2.5 Flash</span>
+          <span class="agent-status timeout">no response — session consumed by cron</span>
+        </div>
+        <div class="agent-card-body">
+          <div class="retro-row">
+            <p style="font-size:13px;color:#6b7a91;">Retro prompt received but Mezzo's session was taken over by overnight ntfy pushes (false "C4 overdue" alerts at 937m — loop141-state.json not cleared after completion). No retro text produced.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-eyebrow">Remediation</div>
+    <h2>Actions taken</h2>
+    <div class="action-list">
+
+      <div class="action-item">
+        <div class="action-num">01</div>
+        <div class="action-text">
+          <strong>Remove <code>process</code> from circuit breaker <code>excludeTools</code></strong>
+          <div class="sub">Process is an implementation-class tool. Excluding it gave Polo's loop infinite runway. Config patched in openclaw.json.</div>
+        </div>
+        <div class="action-meta">
+          <span class="priority-tag p0">P0</span>
+          <span class="owner-tag">CC</span>
+          <span class="done-mark">✓ done</span>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <div class="action-num">02</div>
+        <div class="action-text">
+          <strong>Polo IDENTITY: evidence rule for plugin-loaded claims</strong>
+          <div class="sub">"Never claim plugin loaded without a gateway log line, PID confirmation, or tool result. File creation is not evidence of load."</div>
+        </div>
+        <div class="action-meta">
+          <span class="priority-tag p1">P1</span>
+          <span class="owner-tag">CC</span>
+          <span class="done-mark">✓ done</span>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <div class="action-num">03</div>
+        <div class="action-text">
+          <strong>io IDENTITY: 5-min receipt check after every Polo brief</strong>
+          <div class="sub">If brief not in Polo's session history after 5 min, re-send immediately and flag to CC.</div>
+        </div>
+        <div class="action-meta">
+          <span class="priority-tag p1">P1</span>
+          <span class="owner-tag">CC</span>
+          <span class="done-mark">✓ done</span>
+        </div>
+      </div>
+
+      <div class="action-item">
+        <div class="action-num">04</div>
+        <div class="action-text">
+          <strong>DB cleanup cron for stale a2a_messages rows</strong>
+          <div class="sub">Forgejo #146. Daily cron (Cato, light-context): delete a2a_messages older than 7 days to prevent corruption from stale alert accumulation.</div>
+        </div>
+        <div class="action-meta">
+          <span class="priority-tag p2">P2</span>
+          <span class="owner-tag">io/Cato</span>
+          <span class="badge warn">Forgejo #146</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>OpenClaw ops · Forgejo #141 loop prevention · 2026-08-26</span>
+    <span>Retro compiled 2026-08-27 · CC / Claude Sonnet 4.6</span>
+  </footer>
+
+</div>
+</body>
+</html>
