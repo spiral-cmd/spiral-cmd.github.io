@@ -1,0 +1,234 @@
+<title>A2A CC Delivery</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #ddd9d2;
+    --text: #2a2e38;
+    --muted: #8a919f;
+    --sep: #eceae4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1117;
+      --surface: #181c27;
+      --border: #252c3d;
+      --text: #d4d0c8;
+      --muted: #5a6278;
+      --sep: #1e2330;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --border: #252c3d;
+    --text: #d4d0c8;
+    --muted: #5a6278;
+    --sep: #1e2330;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'IBM Plex Mono', 'Menlo', monospace;
+    color: var(--text);
+    padding: 28px 20px 32px;
+    min-height: 100vh;
+  }
+  .title {
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .scenarios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 640px) { .scenarios { grid-template-columns: 1fr; } }
+
+  .scenario {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+  }
+  .scenario-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--sep);
+  }
+  .scenario-num { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: .1em; }
+  .scenario-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: auto;
+    font-weight: 500;
+    letter-spacing: .06em;
+  }
+  .badge.works { background: #e4f2eb; color: #1d6644; }
+  .badge.wait  { background: #fdf0e0; color: #8a5010; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .badge.works { background: #0d2018; color: #70c090; }
+    :root:not([data-theme="light"]) .badge.wait  { background: #1e1808; color: #e0a060; }
+  }
+  :root[data-theme="dark"] .badge.works { background: #0d2018; color: #70c090; }
+  :root[data-theme="dark"] .badge.wait  { background: #1e1808; color: #e0a060; }
+
+  .flow { display: flex; flex-direction: column; gap: 4px; }
+  .row { display: flex; align-items: center; gap: 6px; }
+  .node {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border-left: 2px solid transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  /* Light node colours */
+  .node.agent   { background: #e8f0fa; border-color: #2d6aaa; color: #1a4e80; }
+  .node.mailbox { background: #f0e8fa; border-color: #6040a0; color: #3a1a70; }
+  .node.watcher { background: #e8f5ee; border-color: #3a7a50; color: #1d5030; }
+  .node.inbox   { background: #fafae8; border-color: #8a8030; color: #504810; }
+  .node.cc      { background: #e8eefc; border-color: #3060c0; color: #1a3880; }
+  .node.martin  { background: #fce8ec; border-color: #a03040; color: #701020; }
+  .node.notif   { background: #fdf0e4; border-color: #a05020; color: #703010; }
+  /* Dark overrides */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .node.agent   { background: #1a3a5c; border-color: #2d6aaa; color: #7ab4e0; }
+    :root:not([data-theme="light"]) .node.mailbox { background: #2a2040; border-color: #6040a0; color: #b090e0; }
+    :root:not([data-theme="light"]) .node.watcher { background: #1a3020; border-color: #3a7a50; color: #70c090; }
+    :root:not([data-theme="light"]) .node.inbox   { background: #2a2a18; border-color: #8a8030; color: #d4c860; }
+    :root:not([data-theme="light"]) .node.cc      { background: #1a2a40; border-color: #3060a0; color: #80b0e0; }
+    :root:not([data-theme="light"]) .node.martin  { background: #3a1a20; border-color: #a03040; color: #e07080; }
+    :root:not([data-theme="light"]) .node.notif   { background: #2a1a10; border-color: #a05020; color: #e0a060; }
+  }
+  :root[data-theme="dark"] .node.agent   { background: #1a3a5c; border-color: #2d6aaa; color: #7ab4e0; }
+  :root[data-theme="dark"] .node.mailbox { background: #2a2040; border-color: #6040a0; color: #b090e0; }
+  :root[data-theme="dark"] .node.watcher { background: #1a3020; border-color: #3a7a50; color: #70c090; }
+  :root[data-theme="dark"] .node.inbox   { background: #2a2a18; border-color: #8a8030; color: #d4c860; }
+  :root[data-theme="dark"] .node.cc      { background: #1a2a40; border-color: #3060a0; color: #80b0e0; }
+  :root[data-theme="dark"] .node.martin  { background: #3a1a20; border-color: #a03040; color: #e07080; }
+  :root[data-theme="dark"] .node.notif   { background: #2a1a10; border-color: #a05020; color: #e0a060; }
+
+  .arrow { color: var(--muted); font-size: 11px; flex-shrink: 0; }
+  .label { font-size: 9px; color: var(--muted); flex: 1; min-width: 0; }
+  .divider { height: 1px; background: var(--sep); margin: 5px 0; }
+
+  .outcome {
+    font-size: 10px;
+    margin-top: 10px;
+    padding: 6px 8px;
+    border-radius: 3px;
+    border-left: 2px solid;
+  }
+  .outcome.ok   { background: #edf7f2; border-color: #3d8a62; color: #1d5030; }
+  .outcome.wait { background: #fdf5e8; border-color: #c07830; color: #7a4a10; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .outcome.ok   { background: #0d2018; border-color: #3a7a50; color: #70c090; }
+    :root:not([data-theme="light"]) .outcome.wait { background: #1e1808; border-color: #a05020; color: #e0a060; }
+  }
+  :root[data-theme="dark"] .outcome.ok   { background: #0d2018; border-color: #3a7a50; color: #70c090; }
+  :root[data-theme="dark"] .outcome.wait { background: #1e1808; border-color: #a05020; color: #e0a060; }
+
+  .legend {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--muted); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+</style>
+
+<div class="title">A2A → CC Delivery · after fix</div>
+
+<div class="scenarios">
+
+  <div class="scenario">
+    <div class="scenario-head">
+      <span class="scenario-num">01</span>
+      <span class="scenario-label">CC live · Martin local</span>
+      <span class="badge works">auto</span>
+    </div>
+    <div class="flow">
+      <div class="row"><div class="node agent">Agent</div><div class="arrow">→</div><div class="node mailbox">a2a-mailbox.db</div></div>
+      <div class="row"><div class="node watcher">watcher</div><div class="arrow">→</div><div class="label">active branch · writes cc_inbox + terminal-notifier</div></div>
+      <div class="row"><div class="node inbox">cc_inbox</div><div class="arrow">+</div><div class="node notif">notifier</div></div>
+      <div class="row"><div class="node cc">sermo-check.sh</div><div class="label">reads cc_inbox at next UserPromptSubmit</div></div>
+      <div class="row"><div class="node cc">CC sees msg</div><div class="label">surfaces in context block</div></div>
+    </div>
+    <div class="outcome ok">✓ Delivered at Martin's next keystroke. No relay needed.</div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-head">
+      <span class="scenario-num">02</span>
+      <span class="scenario-label">CC live · Martin remote</span>
+      <span class="badge wait">queued</span>
+    </div>
+    <div class="flow">
+      <div class="row"><div class="node agent">Agent</div><div class="arrow">→</div><div class="node mailbox">a2a-mailbox.db</div></div>
+      <div class="row"><div class="node watcher">watcher</div><div class="arrow">→</div><div class="label">active branch · writes cc_inbox + Telegram nudge</div></div>
+      <div class="row"><div class="node inbox">cc_inbox</div><div class="arrow">+</div><div class="node notif">Telegram ping</div></div>
+      <div class="row"><div class="node martin">Martin (phone)</div><div class="label">sees ping · session still warm ≤30m</div></div>
+      <div class="row"><div class="node cc">sermo-check.sh</div><div class="label">surfaces cc_inbox on Martin's return</div></div>
+    </div>
+    <div class="outcome wait">⏸ Queued in cc_inbox. Delivered the moment Martin types on return. Nudge tells him something's waiting.</div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-head">
+      <span class="scenario-num">03</span>
+      <span class="scenario-label">CC idle · Martin local</span>
+      <span class="badge works">auto on wake</span>
+    </div>
+    <div class="flow">
+      <div class="row"><div class="node agent">Agent</div><div class="arrow">→</div><div class="node mailbox">a2a-mailbox.db</div></div>
+      <div class="row"><div class="node watcher">watcher</div><div class="arrow">→</div><div class="label">idle branch · writes cc_inbox + marks injected</div></div>
+      <div class="row"><div class="node inbox">cc_inbox</div><div class="label">message parked · a2a status = injected</div></div>
+      <div class="row"><div class="node martin">Martin opens CC</div><div class="label">first UserPromptSubmit fires</div></div>
+      <div class="row"><div class="node cc">sermo-check.sh</div><div class="arrow">→</div><div class="node cc">CC sees msg</div></div>
+    </div>
+    <div class="outcome ok">✓ Delivered on first CC keystroke after wake. No headless claude -p needed.</div>
+  </div>
+
+  <div class="scenario">
+    <div class="scenario-head">
+      <span class="scenario-num">04</span>
+      <span class="scenario-label">CC idle · Martin remote</span>
+      <span class="badge wait">waits for return</span>
+    </div>
+    <div class="flow">
+      <div class="row"><div class="node agent">Agent</div><div class="arrow">→</div><div class="node mailbox">a2a-mailbox.db</div></div>
+      <div class="row"><div class="node watcher">watcher</div><div class="arrow">→</div><div class="label">idle branch · writes cc_inbox + Telegram nudge</div></div>
+      <div class="row"><div class="node inbox">cc_inbox</div><div class="arrow">+</div><div class="node notif">Telegram ping</div></div>
+      <div class="row"><div class="node martin">Martin (phone)</div><div class="label">notified · CC not running · can't relay</div></div>
+      <div class="divider"></div>
+      <div class="row"><div class="node martin">Martin returns to Mac</div></div>
+      <div class="row"><div class="node cc">sermo-check.sh</div><div class="arrow">→</div><div class="node cc">CC sees msg</div></div>
+    </div>
+    <div class="outcome wait">⏸ Weakest path. Message safe in cc_inbox. Delivered on first CC keystroke. Nudge tells Martin it's waiting.</div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="leg"><div class="leg-dot" style="background:#2d6aaa"></div>agent (io/polo/cato)</div>
+  <div class="leg"><div class="leg-dot" style="background:#6040a0"></div>a2a-mailbox.db</div>
+  <div class="leg"><div class="leg-dot" style="background:#3a7a50"></div>a2a-cc-watcher.sh (launchd)</div>
+  <div class="leg"><div class="leg-dot" style="background:#8a8030"></div>cc_inbox (coordination.sqlite)</div>
+  <div class="leg"><div class="leg-dot" style="background:#3060c0"></div>CC / sermo-check.sh</div>
+  <div class="leg"><div class="leg-dot" style="background:#a03040"></div>Martin</div>
+  <div class="leg"><div class="leg-dot" style="background:#a05020"></div>notification (Telegram / notifier)</div>
+</div>
