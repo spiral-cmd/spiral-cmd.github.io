@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0054 — io → CC Message Delivery</title>
+<style>
+  body { margin: 0; background: #f8f9fa; display: flex; flex-direction: column; align-items: center; padding: 32px 16px; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+  h1 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin: 0 0 8px 0; }
+  p.sub { font-size: 12px; color: #6b7280; margin: 0 0 24px 0; }
+  svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<h1>0054 — io → CC Message Delivery (Current State)</h1>
+<p class="sub">Shows the a2a-bus CC special-case bypass, dormant cc-inject chain, and the one-line fix. 2026-08-29.</p>
+
+<svg viewBox="0 0 1100 660" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'Inter', 'Segoe UI', system-ui, sans-serif">
+  <title>io → CC message delivery (current state)</title>
+  <desc>End-to-end flow of a message from io agent to CC, showing the a2a-bus CC special-case bypass and the dormant cc-inject chain</desc>
+
+  <rect width="1100" height="660" fill="#f8f9fa" rx="10"/>
+  <text x="550" y="36" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a2e">io → CC message delivery — current state</text>
+
+  <!-- LEGEND -->
+  <rect x="580" y="52" width="14" height="14" rx="3" fill="#2563eb"/>
+  <text x="600" y="63" font-size="11" fill="#444">active path</text>
+  <rect x="710" y="52" width="14" height="14" rx="3" fill="#d1d5db"/>
+  <text x="730" y="63" font-size="11" fill="#777">dormant / bypassed</text>
+  <rect x="900" y="52" width="14" height="14" rx="3" fill="#dc2626"/>
+  <text x="920" y="63" font-size="11" fill="#dc2626">gap</text>
+
+  <!-- io box -->
+  <rect x="40" y="100" width="130" height="64" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="105" y="126" text-anchor="middle" font-size="14" font-weight="700" fill="#1e40af">io</text>
+  <text x="105" y="146" text-anchor="middle" font-size="11" fill="#3b82f6">agent</text>
+
+  <!-- Arrow io → a2a-bus -->
+  <line x1="170" y1="132" x2="246" y2="132" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+  <text x="208" y="122" text-anchor="middle" font-size="10" fill="#2563eb">a2a_send()</text>
+  <text x="208" y="148" text-anchor="middle" font-size="10" fill="#2563eb">to=agent:cc:main</text>
+
+  <!-- a2a-bus box -->
+  <rect x="246" y="88" width="172" height="88" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="332" y="116" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">a2a-bus</text>
+  <text x="332" y="134" text-anchor="middle" font-size="10" fill="#374151">extensions/a2a-bus/</text>
+  <text x="332" y="150" text-anchor="middle" font-size="10" fill="#374151">src/index.ts</text>
+  <text x="332" y="167" text-anchor="middle" font-size="10" fill="#92400e">if (toAgent === 'cc')</text>
+
+  <!-- Arrow a2a-bus → cchub.sqlite -->
+  <line x1="418" y1="132" x2="500" y2="132" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+  <text x="459" y="120" text-anchor="middle" font-size="10" fill="#2563eb">writes directly</text>
+  <text x="459" y="148" text-anchor="middle" font-size="10" fill="#dc2626">↓ skips a2a-mailbox.db</text>
+
+  <!-- cchub.sqlite box -->
+  <rect x="500" y="88" width="172" height="88" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="586" y="120" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">cchub.sqlite</text>
+  <text x="586" y="138" text-anchor="middle" font-size="10" fill="#374151">workspace/data/</text>
+  <text x="586" y="155" text-anchor="middle" font-size="10" fill="#374151">cc_inbox table</text>
+
+  <!-- Arrow cchub → waits -->
+  <line x1="586" y1="176" x2="586" y2="238" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+
+  <!-- "waits" box -->
+  <rect x="490" y="238" width="192" height="64" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="586" y="264" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">sits in cc_inbox</text>
+  <text x="586" y="283" text-anchor="middle" font-size="10" fill="#92400e">until Martin's next keystroke</text>
+
+  <!-- Arrow waits → sermo-check -->
+  <line x1="586" y1="302" x2="586" y2="368" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+  <text x="640" y="338" font-size="10" fill="#2563eb">UserPromptSubmit</text>
+  <text x="640" y="352" font-size="10" fill="#2563eb">hook fires</text>
+
+  <!-- sermo-check.sh box -->
+  <rect x="490" y="368" width="192" height="72" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="586" y="395" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">sermo-check.sh</text>
+  <text x="586" y="413" text-anchor="middle" font-size="10" fill="#374151">reads cc_inbox</text>
+  <text x="586" y="429" text-anchor="middle" font-size="10" fill="#374151">on every CC turn</text>
+
+  <!-- Arrow sermo-check → CC -->
+  <line x1="682" y1="404" x2="754" y2="404" stroke="#2563eb" stroke-width="2" marker-end="url(#ab)"/>
+
+  <!-- CC box -->
+  <rect x="754" y="364" width="150" height="88" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="829" y="398" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">CC</text>
+  <text x="829" y="418" text-anchor="middle" font-size="11" fill="#1e40af">reads message</text>
+  <text x="829" y="436" text-anchor="middle" font-size="11" fill="#3b82f6">at next turn ↑</text>
+
+  <!-- Dashed arrow: a2a-bus → a2a-mailbox.db -->
+  <line x1="332" y1="176" x2="332" y2="238" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#ag)"/>
+
+  <!-- a2a-mailbox.db box -->
+  <rect x="200" y="238" width="264" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.8"/>
+  <text x="332" y="264" text-anchor="middle" font-size="13" font-weight="600" fill="#6b7280">a2a-mailbox.db</text>
+  <text x="332" y="283" text-anchor="middle" font-size="10" fill="#9ca3af">~/.openclaw/ — WAL never touched</text>
+
+  <!-- GAP badge -->
+  <rect x="482" y="248" width="86" height="44" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+  <text x="525" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">GAP</text>
+  <text x="525" y="284" text-anchor="middle" font-size="10" fill="#dc2626">WAL never fires</text>
+
+  <!-- Dashed arrow: a2a-mailbox.db → watcher -->
+  <line x1="332" y1="302" x2="332" y2="368" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#ag)"/>
+  <text x="384" y="340" font-size="10" fill="#9ca3af">launchd</text>
+  <text x="384" y="354" font-size="10" fill="#9ca3af">WatchPaths</text>
+
+  <!-- a2a-cc-watcher.sh box -->
+  <rect x="190" y="368" width="284" height="64" rx="10" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.8"/>
+  <text x="332" y="395" text-anchor="middle" font-size="13" font-weight="600" fill="#6b7280">a2a-cc-watcher.sh</text>
+  <text x="332" y="413" text-anchor="middle" font-size="10" fill="#9ca3af">launchd daemon — never fires for CC msgs</text>
+
+  <!-- Dashed arrow: watcher → cc_pending -->
+  <line x1="332" y1="432" x2="332" y2="492" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#ag)"/>
+  <text x="376" y="466" font-size="10" fill="#9ca3af">touch cc_pending</text>
+
+  <!-- cc_pending box -->
+  <rect x="218" y="492" width="228" height="56" rx="10" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.8"/>
+  <text x="332" y="518" text-anchor="middle" font-size="13" font-weight="600" fill="#6b7280">cc_pending</text>
+  <text x="332" y="536" text-anchor="middle" font-size="10" fill="#9ca3af">signal file — dormant</text>
+
+  <!-- Dashed arrow: cc_pending → cc-inject -->
+  <line x1="446" y1="520" x2="524" y2="520" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#ag)"/>
+  <text x="485" y="510" text-anchor="middle" font-size="10" fill="#9ca3af">WatchPaths</text>
+
+  <!-- cc-inject box -->
+  <rect x="524" y="492" width="200" height="56" rx="10" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.8"/>
+  <text x="624" y="518" text-anchor="middle" font-size="13" font-weight="600" fill="#6b7280">cc-inject</text>
+  <text x="624" y="536" text-anchor="middle" font-size="10" fill="#9ca3af">Swift binary — dormant</text>
+
+  <!-- Dashed arrow: cc-inject → Claude Desktop -->
+  <line x1="724" y1="520" x2="804" y2="520" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#ag)"/>
+  <text x="764" y="510" text-anchor="middle" font-size="10" fill="#9ca3af">injects /csn</text>
+
+  <!-- Claude Desktop box (dormant) -->
+  <rect x="804" y="492" width="172" height="56" rx="10" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1.8"/>
+  <text x="890" y="518" text-anchor="middle" font-size="13" font-weight="600" fill="#6b7280">Claude Desktop</text>
+  <text x="890" y="536" text-anchor="middle" font-size="10" fill="#9ca3af">never reached</text>
+
+  <!-- FIX CALLOUT -->
+  <rect x="40" y="580" width="1020" height="58" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8"/>
+  <text x="550" y="602" text-anchor="middle" font-size="12" font-weight="700" fill="#15803d">Fix: one line added to index.ts — after writing cc_inbox, also touch cc_pending</text>
+  <text x="550" y="624" text-anchor="middle" font-size="11" fill="#166534">Result: a2a-bus fires cc-inject directly → Claude Desktop injects /csn → CC reads in ~2s, no keystroke needed</text>
+
+  <defs>
+    <marker id="ab" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L9,3.5 z" fill="#2563eb"/>
+    </marker>
+    <marker id="ag" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L9,3.5 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+</svg>
+</body>
+</html>
