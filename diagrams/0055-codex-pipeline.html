@@ -1,0 +1,305 @@
+<title>Codex Pipeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --border: #d6d2c8;
+  --text: #1a1924;
+  --muted: #7a7690;
+  --dim: #a8a4b8;
+
+  --blue: #2356b0;
+  --blue-bg: #edf1fc;
+  --purple: #6840b8;
+  --purple-bg: #f0ebfc;
+  --green: #1a7a48;
+  --green-bg: #e6f5ed;
+  --red: #b82828;
+  --red-bg: #fceaea;
+  --amber: #b85c10;
+  --amber-bg: #fdf2e4;
+  --arrow: #b0abc8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12111e; --surface: #1c1b2e; --border: #2c2a45;
+    --text: #e5e2f5; --muted: #9490b5; --dim: #5e5a7a;
+    --blue: #7aa0f0; --blue-bg: #18244a;
+    --purple: #b090f5; --purple-bg: #221848;
+    --green: #4ec888; --green-bg: #0d2820;
+    --red: #e07070; --red-bg: #2e1010;
+    --amber: #e89020; --amber-bg: #2e1a06;
+    --arrow: #4a4668;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12111e; --surface: #1c1b2e; --border: #2c2a45;
+  --text: #e5e2f5; --muted: #9490b5; --dim: #5e5a7a;
+  --blue: #7aa0f0; --blue-bg: #18244a;
+  --purple: #b090f5; --purple-bg: #221848;
+  --green: #4ec888; --green-bg: #0d2820;
+  --red: #e07070; --red-bg: #2e1010;
+  --amber: #e89020; --amber-bg: #2e1a06;
+  --arrow: #4a4668;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 32px 28px 48px;
+}
+h1 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 24px;
+}
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px 24px 24px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 18px;
+}
+figure { margin: 0; }
+figcaption {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 14px;
+  font-style: italic;
+  line-height: 1.5;
+}
+svg { max-width: 100%; height: auto; display: block; }
+</style>
+
+<h1>Codex — ingest &amp; read paths</h1>
+
+<div class="section">
+  <p class="section-label">Ingest — Martin tags a PDF</p>
+  <figure>
+    <svg viewBox="0 0 860 230" role="img" aria-label="PDF ingest pipeline: Martin drops PDF into pdf-in, Hazel fires tag_watcher, low-confidence goes to Tag UI for review, high-confidence auto-routes, both paths converge on ditto move to codex-1 folder, tag_worker.py then writes to codex_docs, codex_fts, and codex-text cache." xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="var(--arrow)"/>
+        </marker>
+        <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="var(--blue)"/>
+        </marker>
+      </defs>
+
+      <!-- Martin -->
+      <rect x="0" y="36" width="90" height="44" rx="5" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="45" y="54" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--text)">Martin</text>
+      <text x="45" y="69" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--muted)">drops PDF</text>
+
+      <!-- arrow -->
+      <line x1="90" y1="58" x2="116" y2="58" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- pdf-in -->
+      <rect x="118" y="36" width="106" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="171" y="54" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--blue)">pdf-in/</text>
+      <text x="171" y="69" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--blue)">drop zone</text>
+
+      <!-- arrow -->
+      <line x1="224" y1="58" x2="250" y2="58" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Hazel -->
+      <rect x="252" y="36" width="130" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="317" y="54" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--blue)">Hazel</text>
+      <text x="317" y="69" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--blue)">tag_watcher.sh</text>
+
+      <!-- high-confidence label + arrow right -->
+      <line x1="382" y1="50" x2="438" y2="50" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="408" y="44" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--green)">high conf</text>
+
+      <!-- low-confidence label + arrow down -->
+      <line x1="317" y1="80" x2="317" y2="128" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="326" y="110" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--amber)">low conf</text>
+
+      <!-- Tag UI box -->
+      <rect x="252" y="130" width="130" height="44" rx="5" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1.5"/>
+      <text x="317" y="148" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--amber)">Tag UI :5555</text>
+      <text x="317" y="163" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--amber)">Martin reviews</text>
+
+      <!-- Tag UI → right to join main flow -->
+      <line x1="382" y1="152" x2="438" y2="152" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="438" y1="152" x2="438" y2="66" stroke="var(--arrow)" stroke-width="1.5"/>
+      <!-- join point is at x=438 y=58 already covered by high-conf arrow -->
+
+      <!-- ditto -->
+      <rect x="440" y="36" width="120" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="500" y="54" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--blue)">ditto move</text>
+      <text x="500" y="69" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--blue)">xattrs preserved</text>
+
+      <!-- arrow -->
+      <line x1="560" y1="58" x2="584" y2="58" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- codex-1 -->
+      <rect x="586" y="36" width="138" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="655" y="54" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--blue)">codex-1/&lt;tag&gt;/</text>
+      <text x="655" y="69" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--blue)">final location</text>
+
+      <!-- arrow down to tag_worker -->
+      <line x1="655" y1="80" x2="655" y2="106" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- tag_worker -->
+      <rect x="586" y="108" width="138" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="655" y="126" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--blue)">tag_worker.py</text>
+      <text x="655" y="141" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--blue)">async after confirm</text>
+
+      <!-- tag_worker → three stores -->
+      <!-- to codex_docs -->
+      <line x1="586" y1="130" x2="518" y2="130" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="518" y1="130" x2="518" y2="178" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- to codex_fts (straight down) -->
+      <line x1="655" y1="152" x2="655" y2="178" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- to codex-text -->
+      <line x1="724" y1="130" x2="792" y2="130" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="792" y1="130" x2="792" y2="178" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Store: codex_docs -->
+      <rect x="456" y="180" width="124" height="44" rx="5" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+      <text x="518" y="198" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--purple)">codex_docs</text>
+      <text x="518" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--purple)">SQLite · text col</text>
+
+      <!-- Store: codex_fts -->
+      <rect x="591" y="180" width="128" height="44" rx="5" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+      <text x="655" y="198" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--purple)">codex_fts</text>
+      <text x="655" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--purple)">FTS5 + vec index</text>
+
+      <!-- Store: codex-text -->
+      <rect x="730" y="180" width="128" height="44" rx="5" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+      <text x="794" y="198" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--purple)">codex-text/</text>
+      <text x="794" y="213" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--purple)">.txt cache · from Jul-17</text>
+    </svg>
+    <figcaption>Low-confidence files pause at Tag UI for Martin to confirm; high-confidence files skip it. Both converge on the same ditto move. tag_worker.py writes to all three stores in parallel. The .txt cache only exists for docs ingested after Jul 17 2026.</figcaption>
+  </figure>
+</div>
+
+<div class="section">
+  <p class="section-label">Zeno read path — per request</p>
+  <figure>
+    <svg viewBox="0 0 860 296" role="img" aria-label="Zeno read path: codex.search returns FTS snippets and works for all docs. codex.read checks the .txt cache file first — hits for post-July docs, misses for 1770 pre-July docs — then should check the DB text column (not implemented, issue 180) then falls back to PDF extraction which fails with EPERM on Zeno's process." xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="var(--arrow)"/>
+        </marker>
+        <marker id="arr2-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="var(--green)"/>
+        </marker>
+        <marker id="arr2-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="var(--red)"/>
+        </marker>
+        <marker id="arr2-amber" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="var(--amber)"/>
+        </marker>
+      </defs>
+
+      <!-- Zeno node -->
+      <rect x="0" y="20" width="80" height="44" rx="5" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="40" y="38" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--text)">Zeno</text>
+      <text x="40" y="53" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--muted)">query</text>
+
+      <!-- Branch: up to search, down to read -->
+      <line x1="80" y1="35" x2="112" y2="35" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="112" y1="35" x2="112" y2="8" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="112" y1="8" x2="136" y2="8" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <line x1="80" y1="52" x2="112" y2="52" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="112" y1="52" x2="112" y2="120" stroke="var(--arrow)" stroke-width="1.5"/>
+      <line x1="112" y1="120" x2="136" y2="120" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+      <!-- ── SEARCH PATH (top row) ── -->
+      <!-- codex.search() -->
+      <rect x="138" y="0" width="134" height="32" rx="5" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="205" y="12" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--green)">codex.search()</text>
+      <text x="205" y="25" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--green)">query string</text>
+
+      <line x1="272" y1="16" x2="296" y2="16" stroke="var(--green)" stroke-width="1.5" marker-end="url(#arr2-green)"/>
+
+      <!-- FTS5 + vec -->
+      <rect x="298" y="0" width="118" height="32" rx="5" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1.5"/>
+      <text x="357" y="12" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--purple)">FTS5 + vec</text>
+      <text x="357" y="25" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--purple)">hybrid RRF</text>
+
+      <line x1="416" y1="16" x2="440" y2="16" stroke="var(--green)" stroke-width="1.5" marker-end="url(#arr2-green)"/>
+
+      <!-- snippets result -->
+      <rect x="442" y="0" width="140" height="32" rx="5" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="512" y="12" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--green)">snippets ✓</text>
+      <text x="512" y="25" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--green)">all 1,967 docs · works</text>
+
+      <!-- ── READ PATH (lower section) ── -->
+      <!-- codex.read() -->
+      <rect x="138" y="104" width="134" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+      <text x="205" y="122" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" font-weight="600" fill="var(--blue)">codex.read()</text>
+      <text x="205" y="137" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="var(--blue)">by doc_id / hash</text>
+
+      <!-- arrow to Tier 1 -->
+      <line x1="272" y1="126" x2="316" y2="126" stroke="var(--arrow)" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <text x="292" y="120" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">checks</text>
+
+      <!-- Tier 1 box -->
+      <rect x="318" y="104" width="190" height="44" rx="5" fill="var(--blue-bg)" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="339" y="118" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="8.5" font-weight="600" fill="var(--dim)">TIER 1</text>
+      <text x="413" y="122" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10.5" font-weight="600" fill="var(--text)">.txt cache file</text>
+      <text x="413" y="138" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--muted)">codex-text/&lt;h[:2]&gt;/&lt;h&gt;.txt</text>
+
+      <!-- Tier 1 outcomes: hit (green right) and miss (red down) -->
+      <!-- HIT → right -->
+      <line x1="508" y1="116" x2="540" y2="116" stroke="var(--green)" stroke-width="1.5" marker-end="url(#arr2-green)"/>
+      <text x="522" y="110" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--green)">hit</text>
+      <rect x="542" y="104" width="162" height="32" rx="5" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+      <text x="623" y="117" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--green)">text returned ✓</text>
+      <text x="623" y="129" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--green)">197 post-Jul-17 docs</text>
+
+      <!-- MISS → down -->
+      <line x1="413" y1="148" x2="413" y2="176" stroke="var(--amber)" stroke-width="1.5" marker-end="url(#arr2-amber)"/>
+      <text x="422" y="165" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--amber)">miss · 1,770 pre-Jul docs</text>
+
+      <!-- Tier 2 box — MISSING / NOT IMPLEMENTED -->
+      <rect x="318" y="178" width="190" height="52" rx="5" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="2"/>
+      <text x="339" y="192" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="8.5" font-weight="600" fill="var(--amber)">TIER 2 — NOT IMPLEMENTED</text>
+      <text x="413" y="208" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10.5" font-weight="600" fill="var(--amber)">DB text column</text>
+      <text x="413" y="222" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--amber)">1,164 pre-Jul docs have text here</text>
+
+      <!-- issue badge -->
+      <rect x="542" y="182" width="68" height="20" rx="4" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1"/>
+      <text x="576" y="196" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" font-weight="600" fill="var(--amber)">#180 fix</text>
+
+      <!-- skipped arrow (dashed) down to Tier 3 -->
+      <line x1="413" y1="230" x2="413" y2="258" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr2-red)"/>
+      <text x="422" y="248" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--red)">falls through (text col empty)</text>
+
+      <!-- Tier 3 box -->
+      <rect x="318" y="260" width="190" height="32" rx="5" fill="var(--bg)" stroke="var(--border)" stroke-width="1.5"/>
+      <text x="339" y="274" text-anchor="start" font-family="IBM Plex Mono,monospace" font-size="8.5" font-weight="600" fill="var(--dim)">TIER 3</text>
+      <text x="413" y="278" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10.5" font-weight="600" fill="var(--muted)">PDF extraction</text>
+
+      <!-- EPERM outcome -->
+      <line x1="508" y1="276" x2="540" y2="276" stroke="var(--red)" stroke-width="1.5" marker-end="url(#arr2-red)"/>
+      <rect x="542" y="260" width="162" height="32" rx="5" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+      <text x="623" y="273" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="600" fill="var(--red)">EPERM ✗</text>
+      <text x="623" y="285" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8.5" fill="var(--red)">Zeno lacks TCC FDA</text>
+    </svg>
+    <figcaption><b>search path</b> (top): codex.search() hits FTS5 for all 1,967 docs — works fine, no issue. &nbsp;<b>read path</b> (below): Tier 1 hits for the 197 docs ingested after Jul 17; for the 1,770 older ones the cache file is missing. codex.read() currently skips straight to Tier 3 (PDF extraction) which fails with EPERM on Zeno's process. Tier 2 — reading the inline DB text column, which has text for 1,164 of those 1,770 docs — is the #180 fix.</figcaption>
+  </figure>
+</div>
