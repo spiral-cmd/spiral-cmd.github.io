@@ -198,24 +198,13 @@
 
 <header>
   <h1>COA Projects</h1>
-  <span class="date">2026-08-28</span>
+  <span class="date">2026-08-31</span>
 </header>
 
 <div class="board">
 
   <div class="col">
     <div class="col-head">Done — 14–7 days</div>
-
-    <div class="group">
-      <div class="boxes">
-        <div class="box done"><span class="label">Cato Reliability</span></div>
-        <div class="box done"><span class="label">Forgejo Task Tracking</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col">
-    <div class="col-head">Done — last 7 days</div>
 
     <div class="group">
       <div class="boxes">
@@ -239,11 +228,28 @@
   </div>
 
   <div class="col">
+    <div class="col-head">Done — last 7 days</div>
+
+    <div class="group">
+      <div class="boxes">
+        <div class="box done"><span class="label">Codex Backfill (605 rows)</span><span class="ticket">#182</span></div>
+        <div class="box done"><span class="label">Codex Cache Relocation (TCC fix)</span></div>
+        <div class="box done"><span class="label">Zeno Codex Access + Model Fix</span></div>
+        <div class="box done"><span class="label">codex-runbook.md</span></div>
+        <div class="box done"><span class="label">sermo-cato-purge Skill</span><span class="ticket">#186</span></div>
+        <div class="box done"><span class="label">CoA Pipeline (Runs 30–32)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
     <div class="col-head">Horizon</div>
 
     <div class="group">
-      <div class="group-label">In progress</div>
+      <div class="group-label">In progress (io)</div>
       <div class="boxes">
+        <div class="box active"><span class="label">sessions_send Injection Fix</span><span class="ticket">#156</span></div>
+        <div class="box active"><span class="label">a2a-mailbox Retirement</span><span class="ticket">#179</span></div>
         <div class="box active"><span class="label">Cato Heartbeat</span><span class="ticket">#128</span></div>
         <div class="box active"><span class="label">Gateway Heartbeat Bug</span><span class="ticket">#150</span></div>
         <div class="box active"><span class="label">cchub Rename</span></div>
@@ -251,8 +257,13 @@
     </div>
 
     <div class="group">
-      <div class="group-label">Sprint #148</div>
+      <div class="group-label">Queued (io work order)</div>
       <div class="boxes">
+        <div class="box next"><span class="label">a2aPolicy Gate on cc_inbox</span><span class="ticket">#164</span></div>
+        <div class="box next"><span class="label">sermo-cato-guard Cron</span><span class="ticket">#187</span></div>
+        <div class="box next"><span class="label">openrouter-rankings Patch</span><span class="ticket">#185</span></div>
+        <div class="box next"><span class="label">Gateway Reasoning Model</span><span class="ticket">#183</span></div>
+        <div class="box next"><span class="label">CoA Sprint Build Order</span><span class="ticket">#148</span></div>
         <div class="box next"><span class="label">DB Cleanup Cron</span><span class="ticket">#146</span></div>
         <div class="box next"><span class="label">xdigest Fix</span><span class="ticket">#134</span></div>
         <div class="box next"><span class="label">ctx-guard Eval</span><span class="ticket">#137</span></div>
@@ -269,8 +280,8 @@
         <div class="box backlog"><span class="label">Mezzo / io Onboarding</span><span class="ticket">#112</span></div>
         <div class="box backlog"><span class="label">io Model Check Cron</span></div>
         <div class="box backlog"><span class="label">SHA256 Dedup + 24h Window</span><span class="ticket">#151</span></div>
-        <div class="box backlog"><span class="label">sessions_send Injection Gap</span><span class="ticket">#156</span></div>
         <div class="box backlog"><span class="label">Gateway sessionTarget Bug</span><span class="ticket">#154</span></div>
+        <div class="box backlog"><span class="label">Horizon Diagram Skill</span><span class="ticket">#163</span></div>
       </div>
     </div>
   </div>
@@ -280,6 +291,6 @@
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--done-b)"></div>done</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--active-b)"></div>in progress</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--next-b)"></div>sprint</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--next-b)"></div>queued</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--backlog-b)"></div>backlog</div>
 </div>
