@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0057 — io Compaction Loop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #eef1f5;
+  --surface:  #ffffff;
+  --surface2: #f4f6f9;
+  --border:   #cdd3db;
+  --border2:  #e2e7ed;
+  --text:     #1a2130;
+  --muted:    #5b6779;
+  --faint:    #9ba8b8;
+  --accent:   #c0392b;
+  --accent-bg:#fdf0ef;
+  --accent-border:#e8b4b0;
+  --blue:     #1a6fc4;
+  --blue-bg:  #eef4fc;
+  --blue-border:#aac7e8;
+  --green:    #1a7f37;
+  --green-bg: #eef7f1;
+  --green-border:#a8d8b5;
+  --amber:    #875700;
+  --amber-bg: #fef9ec;
+  --amber-border:#e8d59a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:       #0d1117;
+    --surface:  #161b22;
+    --surface2: #1c2230;
+    --border:   #30363d;
+    --border2:  #21262d;
+    --text:     #e6edf3;
+    --muted:    #8d96a0;
+    --faint:    #484f58;
+    --accent:   #f47067;
+    --accent-bg:#2d1b19;
+    --accent-border:#8e3b35;
+    --blue:     #58a6ff;
+    --blue-bg:  #161f2e;
+    --blue-border:#1f4070;
+    --green:    #3fb950;
+    --green-bg: #131e19;
+    --green-border:#1e4a28;
+    --amber:    #d29922;
+    --amber-bg: #1e1a0f;
+    --amber-border:#5a4408;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --surface2: #1c2230;
+  --border:   #30363d;
+  --border2:  #21262d;
+  --text:     #e6edf3;
+  --muted:    #8d96a0;
+  --faint:    #484f58;
+  --accent:   #f47067;
+  --accent-bg:#2d1b19;
+  --accent-border:#8e3b35;
+  --blue:     #58a6ff;
+  --blue-bg:  #161f2e;
+  --blue-border:#1f4070;
+  --green:    #3fb950;
+  --green-bg: #131e19;
+  --green-border:#1e4a28;
+  --amber:    #d29922;
+  --amber-bg: #1e1a0f;
+  --amber-border:#5a4408;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  padding: 48px 20px 80px;
+}
+
+.page { max-width: 740px; margin: 0 auto; }
+
+/* Header */
+.doc-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(20px, 3.5vw, 28px);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+  text-wrap: balance;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 14.5px;
+  color: var(--muted);
+  max-width: 580px;
+  line-height: 1.55;
+  margin-bottom: 36px;
+}
+
+/* Section */
+.section { margin-bottom: 44px; }
+
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.eyebrow.blue { color: var(--blue); }
+.eyebrow.green { color: var(--green); }
+.eyebrow.amber { color: var(--amber); }
+
+h2 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-wrap: balance;
+}
+
+p { margin-bottom: 12px; color: var(--text); }
+p:last-child { margin-bottom: 0; }
+
+/* Alert box */
+.alert {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+.alert strong { color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+
+/* The loop diagram */
+.loop-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 32px 24px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.loop-wrap svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+/* Cause cards */
+.causes { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+
+.cause-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cause-header {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--border2);
+}
+
+.cause-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  padding: 12px 0;
+  background: var(--accent-bg);
+  border-right: 1px solid var(--accent-border);
+}
+
+.cause-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 12px 16px;
+}
+
+.cause-body {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.cause-body strong { color: var(--text); font-weight: 500; }
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+/* Context bar */
+.ctx-bar-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+.ctx-bar-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+.ctx-bar-track {
+  position: relative;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  height: 22px;
+  margin-bottom: 8px;
+}
+.ctx-bar-fill {
+  position: absolute;
+  left: 0; top: 0; height: 100%;
+  border-radius: 4px;
+}
+.ctx-bar-marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 28px;
+}
+.ctx-bar-marker-label {
+  position: absolute;
+  top: 28px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  color: var(--muted);
+}
+.ctx-bar-meta {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.ctx-bar-meta span strong { color: var(--text); font-weight: 500; }
+
+/* Fix table */
+.fix-table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+thead th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border2);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tbody tr:last-child td { border-bottom: none; }
+
+.tag {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.tag.p0 { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); }
+.tag.p1 { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.tag.p2 { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.tag.ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+.divider { border: none; border-top: 1px solid var(--border2); margin: 40px 0; }
+
+.footer {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border2);
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-meta">
+    <span>0057</span>
+    <span>io · telegram</span>
+    <span>2026-09-03</span>
+    <span>diagnosis</span>
+  </div>
+
+  <h1>io Compaction Loop — Root Cause</h1>
+  <p class="subtitle">Why io's Telegram direct session compacts repeatedly within a single conversation, and what to fix.</p>
+
+  <!-- Alert -->
+  <div class="alert">
+    <strong>OBSERVED SYMPTOM</strong><br>
+    io flags an incoming message from <code>agent:io:telegram:direct:8335771088</code> as unverified → user supplies
+    verification → <em>"Compacting context… / Compaction complete"</em> fires immediately — then the cycle restarts on the next message from the same channel.
+  </div>
+
+  <!-- The loop diagram -->
+  <div class="section">
+    <div class="eyebrow">Root Cause</div>
+    <h2>A two-failure feedback loop</h2>
+    <p>Two independent defects interlock. Either one alone is tolerable; together they create a self-sustaining compaction cycle.</p>
+
+    <div class="loop-wrap">
+      <svg viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg"
+           role="img" font-family="'IBM Plex Mono', 'Courier New', monospace">
+        <title>io compaction loop — cause diagram</title>
+
+        <!-- ── node colours via CSS vars resolved to fallback literals for SVG ── -->
+
+        <!-- Node: Telegram message arrives -->
+        <rect x="20" y="160" width="160" height="56" rx="7"
+              fill="#eef4fc" stroke="#aac7e8" stroke-width="1.5"/>
+        <text x="100" y="182" text-anchor="middle" font-size="11" font-weight="600" fill="#1a6fc4">Telegram message</text>
+        <text x="100" y="199" text-anchor="middle" font-size="10" fill="#5b6779">arrives on direct channel</text>
+
+        <!-- Arrow right: → trust check -->
+        <line x1="180" y1="188" x2="236" y2="188" stroke="#8d96a0" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+        <!-- Node: trust check -->
+        <rect x="236" y="160" width="158" height="56" rx="7"
+              fill="#fdf0ef" stroke="#e8b4b0" stroke-width="1.5"/>
+        <text x="315" y="181" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">Trust check runs</text>
+        <text x="315" y="197" text-anchor="middle" font-size="10" fill="#5b6779">verbose unverified-channel</text>
+        <text x="315" y="212" text-anchor="middle" font-size="10" fill="#5b6779">response generated</text>
+
+        <!-- Arrow right: → context grows -->
+        <line x1="394" y1="188" x2="448" y2="188" stroke="#8d96a0" stroke-width="1.5" marker-end="url(#arr-grey)"/>
+
+        <!-- Node: context near threshold -->
+        <rect x="448" y="160" width="158" height="56" rx="7"
+              fill="#fef9ec" stroke="#e8d59a" stroke-width="1.5"/>
+        <text x="527" y="182" text-anchor="middle" font-size="11" font-weight="600" fill="#875700">Context ≥160k tok</text>
+        <text x="527" y="199" text-anchor="middle" font-size="10" fill="#5b6779">softThreshold crossed</text>
+
+        <!-- Arrow down: → compaction -->
+        <line x1="527" y1="216" x2="527" y2="272" stroke="#c0392b" stroke-width="2" marker-end="url(#arr-red)"/>
+
+        <!-- Node: COMPACTION FIRES (centre, bottom) -->
+        <rect x="370" y="272" width="188" height="56" rx="7"
+              fill="#c0392b" stroke="#c0392b" stroke-width="2"/>
+        <text x="464" y="294" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">COMPACTION FIRES</text>
+        <text x="464" y="313" text-anchor="middle" font-size="10" fill="#f8c9c6">context summarised to 24k chars</text>
+
+        <!-- Arrow left+up: trust state lost → back to start -->
+        <line x1="370" y1="300" x2="100" y2="300" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <line x1="100" y1="300" x2="100" y2="216" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arr-red)"/>
+
+        <!-- Annotation on the return path -->
+        <rect x="22" y="310" width="160" height="32" rx="5" fill="#fdf0ef" stroke="#e8b4b0" stroke-width="1"/>
+        <text x="102" y="323" text-anchor="middle" font-size="9.5" fill="#c0392b" font-weight="600">trust state NOT in summary</text>
+        <text x="102" y="337" text-anchor="middle" font-size="9.5" fill="#875700">→ next msg flagged again</text>
+
+        <!-- Failure badge 1 -->
+        <rect x="236" y="226" width="158" height="22" rx="4" fill="#fdf0ef" stroke="#e8b4b0"/>
+        <text x="315" y="241" text-anchor="middle" font-size="9.5" fill="#c0392b" font-weight="600">① CONTEXT BLOAT</text>
+
+        <!-- Failure badge 2 -->
+        <rect x="22" y="244" width="158" height="22" rx="4" fill="#fdf0ef" stroke="#e8b4b0"/>
+        <text x="101" y="259" text-anchor="middle" font-size="9.5" fill="#c0392b" font-weight="600">② STATE LOSS ON COMPACT</text>
+
+        <!-- Defs -->
+        <defs>
+          <marker id="arr-grey" markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L8,3.5 z" fill="#8d96a0"/>
+          </marker>
+          <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L8,3.5 z" fill="#c0392b"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Context bar for io -->
+  <div class="section">
+    <div class="eyebrow amber">Context window</div>
+    <h2>io — GLM-4.7 Flash — 200k tokens</h2>
+    <div class="ctx-bar-section">
+      <div class="ctx-bar-label">Token budget visualisation (post-refit thresholds from 0045)</div>
+      <div class="ctx-bar-track">
+        <div class="ctx-bar-fill" style="width:80%;background:linear-gradient(90deg,#c8e6c9 0%,#c8e6c9 79.5%,#fff3cd 79.5%);border-radius:4px 0 0 4px;"></div>
+        <div class="ctx-bar-fill" style="left:80%;width:8%;background:#fff3cd;border-radius:0;"></div>
+        <div class="ctx-bar-fill" style="left:88%;width:12%;background:#ffcdd2;border-radius:0 4px 4px 0;"></div>
+        <!-- flush marker -->
+        <div class="ctx-bar-marker" style="left:80%;background:#c0392b;">
+          <span class="ctx-bar-marker-label" style="color:#c0392b;">flush @ 80%<br>160k used</span>
+        </div>
+        <!-- post-compact marker -->
+        <div class="ctx-bar-marker" style="left:12%;background:#1a6fc4;">
+          <span class="ctx-bar-marker-label" style="color:#1a6fc4;">post-compact<br>≈24k chars</span>
+        </div>
+      </div>
+      <div class="ctx-bar-meta" style="margin-top:36px;">
+        <span><strong>softThreshold:</strong> 40k remaining → fires at 160k used</span>
+        <span><strong>postCompactionMaxChars:</strong> 24,000</span>
+        <span><strong>Gap to re-trigger:</strong> 154k tokens — large, but reachable in long COA sessions</span>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);">
+      The July 2026 refit correctly registered io's 200k window and set the threshold accordingly.
+      The problem is not the threshold value — it's the <strong>contents</strong> that fill the window
+      (verbose trust-check prose) and what <strong>falls out</strong> of the compaction summary (channel trust state).
+    </p>
+  </div>
+
+  <!-- Three causes -->
+  <div class="section">
+    <div class="eyebrow">Cause analysis</div>
+    <h2>Three contributing factors</h2>
+    <div class="causes">
+
+      <div class="cause-card">
+        <div class="cause-header">
+          <div class="cause-num">①</div>
+          <div class="cause-title">Trust check verbosity — context bloat</div>
+        </div>
+        <div class="cause-body">
+          Every incoming message on <code>agent:io:telegram:direct:8335771088</code> triggers a full
+          multi-paragraph trust analysis. The response visible in the screenshot is ~300–500 tokens of
+          explanation per message. When io is mid-session on a heavy task (COA retro planning with
+          tool calls, context from prior exchanges), this routine prose accumulates fast and
+          pushes total usage over the 160k flush line.
+          <br><br>
+          <strong>Why it's new:</strong> the COA retro context is denser than typical io workloads.
+          Trust checks that were background noise previously now land near a full threshold.
+        </div>
+      </div>
+
+      <div class="cause-card">
+        <div class="cause-header">
+          <div class="cause-num">②</div>
+          <div class="cause-title">Trust state not compaction-resistant</div>
+        </div>
+        <div class="cause-body">
+          When compaction fires, io's session context is summarised to <code>postCompactionMaxChars</code>
+          (24,000 chars). The compaction summary template does not include a
+          <strong>trusted-channels list</strong> as a named section, so the fact that Martin confirmed
+          <code>8335771088</code> as a verified channel is at best in the free-text summary and
+          frequently dropped under the char limit.
+          <br><br>
+          After compaction, io resumes with no memory that the channel was verified. The next incoming
+          Telegram message re-triggers the full trust check. The loop closes.
+        </div>
+      </div>
+
+      <div class="cause-card">
+        <div class="cause-header">
+          <div class="cause-num">③</div>
+          <div class="cause-title">postCompactionMaxChars insufficient for COA sessions</div>
+        </div>
+        <div class="cause-body">
+          24,000 chars was sized for io's typical lightweight routing workload. A COA retro planning
+          session carries: project context, prior exchanges, action items, channel routing rules, and
+          trust decisions. These compete for the same 24k char budget, and trust state — being
+          <strong>meta-information about the session</strong>, not the task itself — loses to
+          task content under compression pressure.
+          <br><br>
+          Even if trust state is written first into the summary, a dense COA session will push it
+          toward the char limit and risk truncation on the next compaction.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Fix table -->
+  <div class="section">
+    <div class="eyebrow green">Fixes</div>
+    <h2>Proposed remediation</h2>
+    <div class="fix-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Change</th>
+            <th>Mechanism</th>
+            <th>Addresses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag p0">P0</span></td>
+            <td>Persist channel trust to a file</td>
+            <td>io writes a <code>~/.openclaw/trusted-channels.json</code> when a channel is confirmed; reads it at session start before running any trust check</td>
+            <td>② — survives compaction</td>
+          </tr>
+          <tr>
+            <td><span class="tag p0">P0</span></td>
+            <td>Pin trust state as first compaction section</td>
+            <td>Add <code>trusted_channels</code> as the first named section in io's <code>postCompactionSections</code> list — it is written before task content and cannot be squeezed out</td>
+            <td>② ③ — belt + suspenders</td>
+          </tr>
+          <tr>
+            <td><span class="tag p1">P1</span></td>
+            <td>Short-circuit trust check for known channels</td>
+            <td>If channel id is in <code>trusted-channels.json</code>, emit a one-line acknowledgement instead of a full trust analysis paragraph</td>
+            <td>① — removes context bloat</td>
+          </tr>
+          <tr>
+            <td><span class="tag p2">P2</span></td>
+            <td>Raise <code>postCompactionMaxChars</code> for io</td>
+            <td>Schema-locked at global level (finding from 0045 / issue #57174), but raising the global value from 24k → 32k helps all agents; io benefits most</td>
+            <td>③ — more room for state survival</td>
+          </tr>
+          <tr>
+            <td><span class="tag ok">OPT</span></td>
+            <td>Rate-limit trust check prose</td>
+            <td>Only run a full trust analysis on the <em>first</em> message per session from an unverified channel; subsequent messages from the same channel get a one-line note</td>
+            <td>① — reduces bloat without requiring file persistence</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick timeline of what's in the screenshot -->
+  <div class="section">
+    <div class="eyebrow blue">Screenshot annotation</div>
+    <h2>What the 16:22 screenshot shows</h2>
+    <p style="font-size:13.5px;color:var(--muted);">
+      The visible message (16:21) is io's trust-check response for <code>agent:io:telegram:direct:8335771088</code>,
+      explaining the channel is unverified and therefore cannot be used for COA retro planning.
+      Martin replies <em>"This is verified Martin channel."</em> at 16:22. That single short message
+      was enough to cross the softThreshold — the session's prior COA context had already consumed
+      most of the 160k budget, and the trust-check response itself was the bulk of the remaining spend.
+      Compaction fires at 16:22. After compaction, io has no record of the verification. io is already
+      <em>typing</em> at 16:22, which is the post-compaction re-evaluation of the same incoming channel message.
+    </p>
+  </div>
+
+  <div class="footer">
+    <span>OpenClaw · spiral arc · 2026-09-03</span>
+    <span>refs: 0045-compaction-refit · 0050-loop-prevention</span>
+  </div>
+
+</div>
+</body>
+</html>
