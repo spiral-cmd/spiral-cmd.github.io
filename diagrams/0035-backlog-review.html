@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Backlog Review</title>
+<meta name="tags" content="ops">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #e2e8f0;
+    min-height: 100vh;
+  }
+  .slide { animation: fadeIn .18s ease; }
+  .slide.active { display: flex !important; }
+  @keyframes fadeIn { from { opacity:.6; transform:translateY(6px) } to { opacity:1; transform:none } }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .nav-btn {
+    position: fixed; bottom: 20px;
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 8px 18px;
+    font-size: 0.85rem; font-weight: 600; color: #475569;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    transition: background .15s;
+    z-index: 100;
+    user-select: none;
+  }
+  .nav-btn:hover { background: #f1f5f9; }
+  .nav-btn.prev { left: 20px; }
+  .nav-btn.next { right: 80px; }
+  .slide-dots {
+    position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px; z-index: 100;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #cbd5e1; cursor: pointer; transition: background .15s;
+  }
+  .dot.active { background: #475569; }
+</style>
+</head>
+<body>
+
+<div class="slide" style="background:#f0f9ff;min-height:100vh;padding:40px 48px 60px;
+  box-sizing:border-box;position:relative;display:none;flex-direction:column">
+  <div style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#0f172a">Backlog Review</h2>
+    <p style="margin:4px 0 0;font-size:0.9rem;color:#64748b">2026-06-18 10:29 UTC</p>
+    <span style="font-size:0.75rem;color:#94a3b8;margin-top:8px;display:block">← → to navigate</span>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-right:4px">
+    
+<div style="display:flex;gap:32px;flex-wrap:wrap;margin:24px 0 20px">
+  <div style="text-align:center"><div style="font-size:2rem;font-weight:700;color:#0f172a">23</div><div style="font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em">active</div></div><div style="text-align:center"><div style="font-size:2rem;font-weight:700;color:#0f172a">22</div><div style="font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em">pending</div></div><div style="text-align:center"><div style="font-size:2rem;font-weight:700;color:#0f172a">1</div><div style="font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em">blocked</div></div><div style="text-align:center"><div style="font-size:2rem;font-weight:700;color:#0f172a">0</div><div style="font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em">in_progress</div></div><div style="text-align:center"><div style="font-size:2rem;font-weight:700;color:#0f172a">30</div><div style="font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em">done</div></div><div style="text-align:center"><div style="font-size:2rem;font-weight:700;color:#0f172a">2</div><div style="font-size:0.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em">wontfix</div></div>
+</div>
+<table style="font-size:0.85rem;border-collapse:collapse">
+<tr><th style="text-align:left;padding:4px 12px 4px 0;color:#94a3b8;font-weight:500">Owner</th>
+    <th style="text-align:left;padding:4px 0;color:#94a3b8;font-weight:500">Active tasks</th></tr>
+<tr><td style="padding:4px 12px 4px 0;color:#475569">polo</td><td style="padding:4px 0;font-weight:600;color:#0f172a">18</td></tr><tr><td style="padding:4px 12px 4px 0;color:#475569">io</td><td style="padding:4px 0;font-weight:600;color:#0f172a">2</td></tr><tr><td style="padding:4px 12px 4px 0;color:#475569">martin</td><td style="padding:4px 0;font-weight:600;color:#0f172a">1</td></tr><tr><td style="padding:4px 12px 4px 0;color:#475569">CC</td><td style="padding:4px 0;font-weight:600;color:#0f172a">1</td></tr><tr><td style="padding:4px 12px 4px 0;color:#475569">cc</td><td style="padding:4px 0;font-weight:600;color:#0f172a">1</td></tr>
+</table>
+  </div>
+  <div style="position:absolute;bottom:18px;right:24px;font-size:0.78rem;color:#94a3b8">1 / 6</div>
+</div>
+
+<div class="slide" style="background:#fff8f1;min-height:100vh;padding:40px 48px 60px;
+  box-sizing:border-box;position:relative;display:none;flex-direction:column">
+  <div style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#0f172a">Blocked & In Progress</h2>
+    <p style="margin:4px 0 0;font-size:0.9rem;color:#64748b">1 blocked · 0 in progress</p>
+    
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-right:4px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px">
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    gog auth re-auth
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#32</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#ffedd5;color:#9a3412;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">martin</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">🚫 blocked</span><span style="background:#fee2e2;color:#b91c1c;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">blocked by: needs Martin manual intervention</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Expired, needs Martin manual intervention</p>
+  
+</div></div>
+  </div>
+  <div style="position:absolute;bottom:18px;right:24px;font-size:0.78rem;color:#94a3b8">2 / 6</div>
+</div>
+
+<div class="slide" style="background:#fffbeb;min-height:100vh;padding:40px 48px 60px;
+  box-sizing:border-box;position:relative;display:none;flex-direction:column">
+  <div style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#0f172a">Pending — High Priority</h2>
+    <p style="margin:4px 0 0;font-size:0.9rem;color:#64748b">4 tasks</p>
+    
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-right:4px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px">
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Financial circuit breaker — LiteLLM proxy with per-agent virtual keys
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#52</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Deferred from A2A 03-proposal.md (D2/Q2). LiteLLM proxy in front of OpenRouter with per-agent virtual keys adds enforcem</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Telegram inbound to CC injection — iPad workflow
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#53</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Martin cannot message CC from iPad. Fix: launchd script watching for [Martin] tagged messages on sermo topic 111, inject</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    D7: agent.yaml gateway integration
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#72</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">a2a-upgrade</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Make the gateway consume agent.yaml per agent — enforce calibrated_version and context_files at session open. Currently </p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Mailbox sender identity guard — prevent fake from_agent in inbox
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#77</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">mailbox.sqlite has no sender identity enforcement — subagents can write from_agent=&#x27;cc&#x27; to fabricate upstream approvals </p>
+  
+</div></div>
+  </div>
+  <div style="position:absolute;bottom:18px;right:24px;font-size:0.78rem;color:#94a3b8">3 / 6</div>
+</div>
+
+<div class="slide" style="background:#f8fafc;min-height:100vh;padding:40px 48px 60px;
+  box-sizing:border-box;position:relative;display:none;flex-direction:column">
+  <div style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#0f172a">Pending — Normal Priority</h2>
+    <p style="margin:4px 0 0;font-size:0.9rem;color:#64748b">15 tasks</p>
+    
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-right:4px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px">
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Fix cc-sermo-watcher: rewrite to not use io bot token
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#83</span><span style="background:#e0f2fe;color:#075985;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">medium</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">cc-sermo-watcher.sh used io bot token via direct getUpdates every 30s (launchd: com.openclaw.cc-sermo-watcher). Caused 4</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Dev workflow formalisation — 13-step CC Polo workflow to DEV_WORKFLOW.md
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#58</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Write the 13-step CC Polo dev workflow to DEV_WORKFLOW.md. Polo to draft, CC to review.</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Standing failure framework steps 8 and 9
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#59</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Document how to handle and catch failures in the dev workflow (steps 8 and 9).</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Per-agent compaction config
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#60</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Tune postCompactionSections, memoryFlush per-agent (Polo, io, Cato) rather than relying on agents.defaults.</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Safeguard compaction mode evaluation
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#61</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Evaluate mode safeguard (chunked summarisation, qualityGuard retries). Currently using mode default. Switch and test if </p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Compaction hooks — evaluate before and after compaction extension API
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#63</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">OpenClaw exposes before_compaction and after_compaction hooks. Evaluate for custom pre/post-compaction behaviour.</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Research Claude Code external agent spawn
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#66</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#ede9fe;color:#5b21b6;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">CC</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Investigate how external agents can spawn Claude Code sessions. Options: Claude API, Agent Teams with CLAUDE_CODE_EXPERI</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    General vai-job failure notification protocol
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#67</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Any job approved via vai that fails should notify Martin via sermo topic 111. Auto-reset recoverable errors and retry wh</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    OpenClaw gateway: inject accountId into openclaw.runtime-context per turn
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#68</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">The gateway does not surface the originating bot account identity (accountId) in the openclaw.runtime-context injected i</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Token audit — per-agent spend verification (Tier 1 reliability)
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#74</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">io</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability-t1</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Verify per-agent token spend is within expected bounds. Part of agent reliability Tier 1 (5/7 done). Token audit + gatew</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Gateway attestation — agents confirm gateway version at session open (Tier 1 reliability)
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#75</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">io</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability-t1</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Agents confirm gateway version/config at session start. Part of agent reliability Tier 1 (5/7 done). Pair with token aud</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    GitHub CLI authentication expired — run gh auth login to refresh
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#78</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">gh CLI auth has expired, blocking pull request status checks. Fix: run gh auth login to refresh credentials.</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Log: Cato protocol breach — autonomous sermo response 2026-06-18
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#79</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Cato posted an autonomous response to topic 111, violating protocol. Log for pattern tracking.</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Proposal: policy-level block on Cato autonomous responses in topic 111
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#80</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Evaluate whether OpenClaw session config or IDENTITY.md can enforce a hard no-autonomous-response rule for Cato in topic</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Proposal: Cato one-way access to topic 111 — post only, no read
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#81</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Investigate whether Cato can be configured to post to topic 111 but not receive/process messages from it. Polo drafted i</p>
+  
+</div></div>
+  </div>
+  <div style="position:absolute;bottom:18px;right:24px;font-size:0.78rem;color:#94a3b8">4 / 6</div>
+</div>
+
+<div class="slide" style="background:#f0fdf4;min-height:100vh;padding:40px 48px 60px;
+  box-sizing:border-box;position:relative;display:none;flex-direction:column">
+  <div style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#0f172a">Pending — Low Priority</h2>
+    <p style="margin:4px 0 0;font-size:0.9rem;color:#64748b">3 tasks</p>
+    
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-right:4px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px">
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Notion integration — Codex → Notion workflow
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#49</span><span style="background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">low</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">codex</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Build workflow to surface Codex research to Notion. NOTION_TOKEN_POLO is live, Codex root page is connected. Determine s</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    A2A mailbox polish — error handling, cleanup, read receipts
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#50</span><span style="background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">low</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Polish A2A mailbox system: write error handling for failed inserts, one-shot signal cleanup, read receipts for delivered</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    bible §9: add Response Style rules (all-agent scope)
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#76</span><span style="background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">low</span><span style="background:#ede9fe;color:#5b21b6;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">cc</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">a2a-upgrade</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">v0 proposed &#x27;§9 Cost Discipline and Response Style&#x27;. Response style rules for all agents (not just io) were never writte</p>
+  
+</div></div>
+  </div>
+  <div style="position:absolute;bottom:18px;right:24px;font-size:0.78rem;color:#94a3b8">5 / 6</div>
+</div>
+
+<div class="slide" style="background:#f0fdf4;min-height:100vh;padding:40px 48px 60px;
+  box-sizing:border-box;position:relative;display:none;flex-direction:column">
+  <div style="margin-bottom:20px">
+    <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#0f172a">Done</h2>
+    <p style="margin:4px 0 0;font-size:0.9rem;color:#64748b">30 completed · 2 wontfix</p>
+    
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-right:4px">
+    <p style="margin:0 0 12px;font-size:0.85rem;color:#64748b">Showing most recently completed (total: 30)</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px">
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    YouTube Digest WP4
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#26</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">youtube-digest</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Summarisation pipeline integration + error recovery loop</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed datetime('</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Bible v0.1 schema fixes
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#35</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">bible</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Apply io-identified fixes: change blocked_by to INTEGER FK, add write_log table for audit trail, implement .lock file pa</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed datetime('</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Bible v0.1 WP5/6: remaining workstreams
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#36</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">bible</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Complete remaining Bible v0.1 workstreams after schema fixes: markdown generation refinements, integration testing, docu</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed datetime('</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Fix bible-sync cron job path
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#46</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">bible</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Cron job references scripts/bible-sync.sh but actual file is at bible/bible-sync.sh. Update the cron command path.</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed datetime('</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    mailbox-identity-guard: smoke test + gateway restart
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#71</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">agent-reliability</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Plugin v1.1.0 extended (write() guard added 2026-06-15). Codo brief at workspace/codo-brief-mailbox-guard-smoketest.md. </p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed datetime('</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    io model swap: nex-n2-pro:free to glm-4.7-flash
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#82</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Martin vai 2026-06-18. openclaw.json + bible/models.md + io IDENTITY.md cost note. Gateway restart. Confirm via sessions</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-18</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    YouTube Digest WP6 — scheduling &amp; automation
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#48</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">youtube-digest</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Create OpenClaw cron job for daily YouTube digest. run_digest.sh exists but has no cron integration. Add error notificat</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-18</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Gateway agent-registration bug
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#29</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">agent.json model changes ignored by Gateway at startup</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-18</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    A2A mailbox adoption — switch Polo and io write path to mailbox.sqlite
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#54</span><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">high</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">mailbox.sqlite is built but Polo and io still write to to-cc.md. Fix: update Polo and io system prompts to write to mail</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-18</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    /csn — surface unreviewed learnings.db entries at session start
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#65</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#ede9fe;color:#5b21b6;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">CC</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Add section to /csn querying ~/.openclaw/workspace/data/learnings.db for promoted=0 entries created in last 7 days. Max </p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-18</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Worktree cleanup bug
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#28</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Flag to Polo, needs root fix in OpenClaw</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-17</p>
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    set-model CLI wrapper script
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#30</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">✓ done</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Design agreed, not implemented</p>
+  <p style="margin:4px 0 0;font-size:0.72rem;color:#94a3b8">Completed 2026-06-17</p>
+</div></div><h3 style="margin:20px 0 8px;font-size:1rem;color:#737373">Won't Fix (2)</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px">
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Codex PDF ingestion — 44 untagged PDFs
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#47</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">codex</span><span style="background:#f5f5f5;color:#737373;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">⊘ wontfix</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Ingest 44 untagged PDFs into Codex DB. 24 in pdf-in/ (need tag suggestion + routing), 20 in codex/ subfolders (already i</p>
+  
+</div>
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04)">
+  <div style="font-size:0.85rem;font-weight:600;color:#1e293b;line-height:1.35">
+    Agent startup sequence not executing — AGENTS.md reads skipped
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px">
+    <span style="background:#e2e8f0;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">#64</span><span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">normal</span><span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">polo</span><span style="background:#fafafa;color:#6b7280;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap;border:1px solid #e5e7eb">infra</span><span style="background:#f5f5f5;color:#737373;padding:2px 8px;border-radius:999px;font-size:0.72rem;font-weight:600;white-space:nowrap">⊘ wontfix</span>
+  </div>
+  <p style="margin:6px 0 0;font-size:0.78rem;color:#64748b;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Polo and io skip AGENTS.md startup reads. bible/a2abible.md and cc-to-io.md not auto-loaded. Fix options: UserPromptSubm</p>
+  
+</div></div>
+  </div>
+  <div style="position:absolute;bottom:18px;right:24px;font-size:0.78rem;color:#94a3b8">6 / 6</div>
+</div>
+<button class="nav-btn prev" onclick="go(-1)">← Prev</button>
+<button class="nav-btn next" onclick="go(1)">Next →</button>
+<div class="slide-dots" id="dots"></div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+
+  function show(n) {
+    slides[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    document.querySelectorAll('.dot').forEach((d,i) =>
+      d.classList.toggle('active', i === cur));
+  }
+  function go(d) { show(cur + d); }
+
+  // dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => show(i);
+    dotsEl.appendChild(d);
+  });
+
+  slides[0].classList.add('active');
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') go(-1);
+  });
+</script>
+</body>
+</html>

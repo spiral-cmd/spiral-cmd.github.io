@@ -22,9 +22,12 @@ for f in "$DIR"/*.html; do
     title=$(sed -n 's/.*<title>\(.*\)<\/title>.*/\1/p' "$f" | head -1)
     [[ -z "$title" ]] && title="${base%.html}"
 
+    # Get tags from <meta name="tags" content="..."> tag
+    tags=$(sed -n 's/.*<meta name="tags" content="\(.*\)">.*/\1/p' "$f" | head -1)
+
     # Sort key: numbered files by number desc, unnumbered at bottom
     sortkey="${num:-0000}"
-    entries+=("$sortkey|$num|$base|$title")
+    entries+=("$sortkey|$num|$base|$title|$tags")
 done
 
 # Sort by number descending, then filename for ties
@@ -46,30 +49,36 @@ cat > "$OUT" << 'HTML'
         .subtitle { text-align: center; color: var(--muted); margin-bottom: 2rem; font-size: 0.9rem; }
         nav { margin-bottom: 2rem; text-align: center; }
         nav a { color: var(--text); text-decoration: none; font-weight: 500; border-bottom: 2px solid var(--accent); }
+        .filter-container { margin-bottom: 1.5rem; text-align: center; }
+        .filter-container input { padding: 0.6rem 1rem; border: 1px solid var(--line); border-radius: 0.5rem; width: 250px; font-size: 1rem; }
         .list { list-style: none; padding: 0; margin: 0; }
         .list li { background: white; margin-bottom: 0.75rem; border-radius: .5rem; border: 1px solid var(--line); transition: transform 0.15s ease; }
         .list li:hover { transform: translateX(4px); }
         .list a { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; text-decoration: none; color: inherit; }
         .list .num { color: var(--muted); font-size: 0.8rem; font-weight: 600; margin-right: 0.75rem; min-width: 3em; }
         .list .name { font-weight: 500; color: var(--accent); flex: 1; }
+        .list .tags { font-size: 0.75rem; color: var(--muted); margin-left: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
     </style>
 </head>
 <body>
     <div class="wrap">
         <nav><a href="../index.html">← Back to Home</a></nav>
         <h1>System Diagrams</h1>
-        <ul class="list">
+        <div class="filter-container">
+            <input type="text" id="tagFilter" placeholder="Filter by tag...">
+        </div>
+        <ul class="list" id="diagramList">
 HTML
 
 for entry in "${sorted[@]}"; do
-    IFS='|' read -r sortkey num base title <<< "$entry"
+    IFS='|' read -r sortkey num base title tags <<< "$entry"
     if [[ -n "$num" ]]; then
         cat >> "$OUT" << EOF
-            <li><a href="$base"><span class="num">$num</span><span class="name">$title</span></a></li>
+            <li data-tags="$tags"><a href="$base"><span class="num">$num</span><span class="name">$title</span><span class="tags">$tags</span></a></li>
 EOF
     else
         cat >> "$OUT" << EOF
-            <li><a href="$base"><span class="name">$title</span></a></li>
+            <li data-tags="$tags"><a href="$base"><span class="name">$title</span><span class="tags">$tags</span></a></li>
 EOF
     fi
 done
@@ -77,6 +86,20 @@ done
 cat >> "$OUT" << 'HTML'
         </ul>
     </div>
+    <script>
+        document.getElementById('tagFilter').addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const listItems = document.querySelectorAll('#diagramList li');
+            listItems.forEach(item => {
+                const tags = item.getAttribute('data-tags').toLowerCase();
+                if (tags.includes(filter)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 HTML

@@ -12,82 +12,104 @@
         .subtitle { text-align: center; color: var(--muted); margin-bottom: 2rem; font-size: 0.9rem; }
         nav { margin-bottom: 2rem; text-align: center; }
         nav a { color: var(--text); text-decoration: none; font-weight: 500; border-bottom: 2px solid var(--accent); }
+        .filter-container { margin-bottom: 1.5rem; text-align: center; }
+        .filter-container input { padding: 0.6rem 1rem; border: 1px solid var(--line); border-radius: 0.5rem; width: 250px; font-size: 1rem; }
         .list { list-style: none; padding: 0; margin: 0; }
         .list li { background: white; margin-bottom: 0.75rem; border-radius: .5rem; border: 1px solid var(--line); transition: transform 0.15s ease; }
         .list li:hover { transform: translateX(4px); }
         .list a { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; text-decoration: none; color: inherit; }
         .list .num { color: var(--muted); font-size: 0.8rem; font-weight: 600; margin-right: 0.75rem; min-width: 3em; }
         .list .name { font-weight: 500; color: var(--accent); flex: 1; }
+        .list .tags { font-size: 0.75rem; color: var(--muted); margin-left: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
     </style>
 </head>
 <body>
     <div class="wrap">
         <nav><a href="../index.html">← Back to Home</a></nav>
         <h1>System Diagrams</h1>
-        <ul class="list">
-            <li><a href="0054-io-to-cc-message-delivery.html"><span class="num">0054</span><span class="name">0054 — io → CC Message Delivery</span></a></li>
-            <li><a href="0053-a2a-cc-delivery-scenarios.html"><span class="num">0053</span><span class="name">A2A CC Delivery</span></a></li>
-            <li><a href="0052-openclaw-status.html"><span class="num">0052</span><span class="name">OpenClaw Status</span></a></li>
-            <li><a href="0051-coa-projects-horizon.html"><span class="num">0051</span><span class="name">COA Projects</span></a></li>
-            <li><a href="0050-loop-prevention-postmortem.html"><span class="num">0050</span><span class="name">0050 — Loop Prevention Build Post-Mortem</span></a></li>
-            <li><a href="0049-usage-logger-postmortem.html"><span class="num">0049</span><span class="name">Build Post-Mortem: Usage Logger · August 2026</span></a></li>
-            <li><a href="0048-ocaisa-observability-option-d.html"><span class="num">0048</span><span class="name">OCaisa Observability — Option D Architecture</span></a></li>
-            <li><a href="0047-a2a-bus-architecture.html"><span class="num">0047</span><span class="name">a2a Bus — Architecture</span></a></li>
-            <li><a href="0046-a2a-audit-workflow.html"><span class="num">0046</span><span class="name">A2A Protocol Audit</span></a></li>
-            <li><a href="0045-compaction-refit-2026-07-18.html"><span class="num">0045</span><span class="name">OpenClaw Compaction Refit — 2026-07-18</span></a></li>
-            <li><a href="0044-missed-ack-scoreboard.html"><span class="num">0044</span><span class="name">Missed Ack Scoreboard — OpenClaw CoA</span></a></li>
-            <li><a href="0043-jul-aug-2026-calendar.html"><span class="num">0043</span><span class="name">Jul 23 – Aug 9 · 2026</span></a></li>
-            <li><a href="0042-codex-tag-taxonomy.html"><span class="num">0042</span><span class="name">Codex Tags</span></a></li>
-            <li><a href="0041-habermas-system-lifeworld.html"><span class="num">0041</span><span class="name">Habermas — System & Lifeworld</span></a></li>
-            <li><a href="0040-telegram-topic-map.html"><span class="num">0040</span><span class="name">Telegram Topic Map — ocaisa</span></a></li>
-            <li><a href="0039-email-digest-adesso-pipeline.html"><span class="num">0039</span><span class="name">Email Digest — adesso Pipeline (6 scripts)</span></a></li>
-            <li><a href="0038-email-digest-adesso-fix.html"><span class="num">0038</span><span class="name">Email Digest — adesso Label Fix</span></a></li>
-            <li><a href="0037-a2abible-moscow.html"><span class="num">0037</span><span class="name">A2A Protocol — MoSCoW Review</span></a></li>
-            <li><a href="0036-codex-ingest-pipeline.html"><span class="num">0036</span><span class="name">Codex Ingest Pipeline</span></a></li>
-            <li><a href="0035-backlog-review.html"><span class="num">0035</span><span class="name">Backlog Review</span></a></li>
-            <li><a href="0035-codex-orchestrator-pipeline.html"><span class="num">0035</span><span class="name">Codex Orchestrator — Full Pipeline Diagram</span></a></li>
-            <li><a href="0034-probability-10day.html"><span class="num">0034</span><span class="name">0034 probability 10 day</span></a></li>
-            <li><a href="0033-codex-ingestion-pipeline.html"><span class="num">0033</span><span class="name">0033 — Codex Ingestion Pipeline</span></a></li>
-            <li><a href="0032-pratica-db.html"><span class="num">0032</span><span class="name">0032 — Pratica DB</span></a></li>
-            <li><a href="0030-hunt-vs-owen.html"><span class="num">0030</span><span class="name">Hunt vs Owen — Comparison</span></a></li>
-            <li><a href="0029-active-skills.html"><span class="num">0029</span><span class="name">Active Skills — OpenClaw</span></a></li>
-            <li><a href="0029-agent-memory-architecture.html"><span class="num">0029</span><span class="name">Agent Memory Architecture</span></a></li>
-            <li><a href="0027-agent-architecture-june-2026.html"><span class="num">0027</span><span class="name">0027 — Agent Architecture (June 2026)</span></a></li>
-            <li><a href="0026-bgas-timeline.html"><span class="num">0026</span><span class="name">BGAS Timeline — MC vs British Gas</span></a></li>
-            <li><a href="0026-orchestrator-models-june-2026.html"><span class="num">0026</span><span class="name">Orchestrator Models — June 2026</span></a></li>
-            <li><a href="0025-amir-calendar.html"><span class="num">0025</span><span class="name">0025 — Amir Hossein — Arrival &amp; Stay Calendar</span></a></li>
-            <li><a href="0024-car-plan-flow.html"><span class="num">0024</span><span class="name">Car Plan — Get GN20 UKV Back on Road</span></a></li>
-            <li><a href="0023-email-digest-flow.html"><span class="num">0023</span><span class="name">Email Digest — Pipeline Flow</span></a></li>
-            <li><a href="0022-learning2-architecture.html"><span class="num">0022</span><span class="name">Learning2 Architecture</span></a></li>
-            <li><a href="0021-ocaisa-task-workflow.html"><span class="num">0021</span><span class="name">OCAISA Task Workflow</span></a></li>
-            <li><a href="0020-agent-patterns.html"><span class="num">0020</span><span class="name">0020 — Agent Patterns</span></a></li>
-            <li><a href="0019-tag-learn-workflow.html"><span class="num">0019</span><span class="name">Tag-Learn Workflow</span></a></li>
-            <li><a href="0018-backward-fading.html"><span class="num">0018</span><span class="name">Backward Fading</span></a></li>
-            <li><a href="0017-expertise-reversal-principle.html"><span class="num">0017</span><span class="name">Expertise-Reversal Principle</span></a></li>
-            <li><a href="0016-scaffolding-never-subtract-thinking.html"><span class="num">0016</span><span class="name">Scaffolding Should Never Subtract the Thinking</span></a></li>
-            <li><a href="0015-cron-schedule.html"><span class="num">0015</span><span class="name">OpenClaw Cron Schedule — 25 Jobs</span></a></li>
-            <li><a href="0015-procedural-vs-metacognitive.html"><span class="num">0015</span><span class="name">Procedural vs Metacognitive Prompts</span></a></li>
-            <li><a href="0014-sainsburys-best-wines.html"><span class="num">0014</span><span class="name">Sainsbury's Best Wines — Susy Atkins, May 2026</span></a></li>
-            <li><a href="0013-telegram-history-research.html"><span class="num">0013</span><span class="name">Telegram History for OpenClaw Agents — Research Findings</span></a></li>
-            <li><a href="0012-messaging-channels.html"><span class="num">0012</span><span class="name">OpenClaw Messaging Channels</span></a></li>
-            <li><a href="0011-agent-to-agent.html"><span class="num">0011</span><span class="name">OpenClaw — Agent-to-Agent Communication</span></a></li>
-            <li><a href="0011-youtube-digest-format.html"><span class="num">0011</span><span class="name">YouTube Digest — Format Proposal</span></a></li>
-            <li><a href="0010-agents-overview.html"><span class="num">0010</span><span class="name">0010 — OpenClaw Agents</span></a></li>
-            <li><a href="0008-reliability-roadmap.html"><span class="num">0008</span><span class="name">Agent Reliability Roadmap — OpenClaw</span></a></li>
-            <li><a href="0007-email-digest-flow.html"><span class="num">0007</span><span class="name">Email Digest Workflow</span></a></li>
-            <li><a href="0007-galway-trip-2026.html"><span class="num">0007</span><span class="name">Galway Trip — Jul/Aug 2026</span></a></li>
-            <li><a href="0006-lta-grade5-calendar.html"><span class="num">0006</span><span class="name">LTA Grade 5 Tournaments — Jun/Jul 2026</span></a></li>
-            <li><a href="0005-lta-grade5-calendar.html"><span class="num">0005</span><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span></a></li>
-            <li><a href="0004-oracle-gate.html"><span class="num">0004</span><span class="name">Oracle Gate — OpenClaw Plugin</span></a></li>
-            <li><a href="0004-polo-protocol.html"><span class="num">0004</span><span class="name">FT Scrape — Polo Productivity Protocol</span></a></li>
-            <li><a href="0003-cron-dash.html"><span class="num">0003</span><span class="name">OpenClaw Cron Dashboard</span></a></li>
-            <li><a href="0002-agent-workflow.html"><span class="num">0002</span><span class="name">OpenClaw Agent Workflow</span></a></li>
-            <li><a href="0001-cc-polo-a2a-messaging.html"><span class="num">0001</span><span class="name">A2A Messaging — CC ↔ Polo</span></a></li>
-            <li><a href="0001-cc-polo-flow.html"><span class="num">0001</span><span class="name">CC ↔ Polo Communication Flow</span></a></li>
-            <li><a href="0001-youtube-digest-architecture.html"><span class="num">0001</span><span class="name">YouTube Digest — Architecture</span></a></li>
-            <li><a href="0012a-messaging-channels.html"><span class="name">OpenClaw Messaging Channels (rev a)</span></a></li>
-            <li><a href="prompting-stack-what-we-have-vs-jones.html"><span class="name">0010a — Prompting Stack: What We Have vs. What Jones Recommends</span></a></li>
+        <div class="filter-container">
+            <input type="text" id="tagFilter" placeholder="Filter by tag...">
+        </div>
+        <ul class="list" id="diagramList">
+            <li data-tags="ops"><a href="0056-forgejo-v16-position.html"><span class="num">0056</span><span class="name">Forgejo v16 Upgrade</span><span class="tags">ops</span></a></li>
+            <li data-tags="codex"><a href="0055-codex-pipeline.html"><span class="num">0055</span><span class="name">Codex Pipeline</span><span class="tags">codex</span></a></li>
+            <li data-tags="comms,a2a"><a href="0054-io-to-cc-message-delivery.html"><span class="num">0054</span><span class="name">0054 — io → CC Message Delivery</span><span class="tags">comms,a2a</span></a></li>
+            <li data-tags="comms,a2a"><a href="0053-a2a-cc-delivery-scenarios.html"><span class="num">0053</span><span class="name">A2A CC Delivery</span><span class="tags">comms,a2a</span></a></li>
+            <li data-tags="openclaw"><a href="0052-openclaw-status.html"><span class="num">0052</span><span class="name">OpenClaw Status</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="ops"><a href="0051-coa-projects-horizon.html"><span class="num">0051</span><span class="name">COA Projects</span><span class="tags">ops</span></a></li>
+            <li data-tags="ops"><a href="0050-loop-prevention-postmortem.html"><span class="num">0050</span><span class="name">0050 — Loop Prevention Build Post-Mortem</span><span class="tags">ops</span></a></li>
+            <li data-tags="ops"><a href="0049-usage-logger-postmortem.html"><span class="num">0049</span><span class="name">Build Post-Mortem: Usage Logger · August 2026</span><span class="tags">ops</span></a></li>
+            <li data-tags="ops"><a href="0048-ocaisa-observability-option-d.html"><span class="num">0048</span><span class="name">OCaisa Observability — Option D Architecture</span><span class="tags">ops</span></a></li>
+            <li data-tags="comms,a2a"><a href="0047-a2a-bus-architecture.html"><span class="num">0047</span><span class="name">a2a Bus — Architecture</span><span class="tags">comms,a2a</span></a></li>
+            <li data-tags="comms,a2a"><a href="0046-a2a-audit-workflow.html"><span class="num">0046</span><span class="name">A2A Protocol Audit</span><span class="tags">comms,a2a</span></a></li>
+            <li data-tags="openclaw"><a href="0045-compaction-refit-2026-07-18.html"><span class="num">0045</span><span class="name">OpenClaw Compaction Refit — 2026-07-18</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="ops"><a href="0044-missed-ack-scoreboard.html"><span class="num">0044</span><span class="name">Missed Ack Scoreboard — OpenClaw CoA</span><span class="tags">ops</span></a></li>
+            <li data-tags="calendar"><a href="0043-jul-aug-2026-calendar.html"><span class="num">0043</span><span class="name">Jul 23 – Aug 9 · 2026</span><span class="tags">calendar</span></a></li>
+            <li data-tags="codex"><a href="0042-codex-tag-taxonomy.html"><span class="num">0042</span><span class="name">Codex Tags</span><span class="tags">codex</span></a></li>
+            <li data-tags="theory"><a href="0041-habermas-system-lifeworld.html"><span class="num">0041</span><span class="name">Habermas — System & Lifeworld</span><span class="tags">theory</span></a></li>
+            <li data-tags="comms,telegram"><a href="0040-telegram-topic-map.html"><span class="num">0040</span><span class="name">Telegram Topic Map — ocaisa</span><span class="tags">comms,telegram</span></a></li>
+            <li data-tags="email"><a href="0039-email-digest-adesso-pipeline.html"><span class="num">0039</span><span class="name">Email Digest — adesso Pipeline (6 scripts)</span><span class="tags">email</span></a></li>
+            <li data-tags="email"><a href="0038-email-digest-adesso-fix.html"><span class="num">0038</span><span class="name">Email Digest — adesso Label Fix</span><span class="tags">email</span></a></li>
+            <li data-tags="comms,a2a"><a href="0037-a2abible-moscow.html"><span class="num">0037</span><span class="name">A2A Protocol — MoSCoW Review</span><span class="tags">comms,a2a</span></a></li>
+            <li data-tags="codex"><a href="0036-codex-ingest-pipeline.html"><span class="num">0036</span><span class="name">Codex Ingest Pipeline</span><span class="tags">codex</span></a></li>
+            <li data-tags="ops"><a href="0035-backlog-review.html"><span class="num">0035</span><span class="name">Backlog Review</span><span class="tags">ops</span></a></li>
+            <li data-tags="codex"><a href="0035-codex-orchestrator-pipeline.html"><span class="num">0035</span><span class="name">Codex Orchestrator — Full Pipeline Diagram</span><span class="tags">codex</span></a></li>
+            <li data-tags="misc"><a href="0034-probability-10day.html"><span class="num">0034</span><span class="name">0034 probability 10 day</span><span class="tags">misc</span></a></li>
+            <li data-tags="codex"><a href="0033-codex-ingestion-pipeline.html"><span class="num">0033</span><span class="name">0033 — Codex Ingestion Pipeline</span><span class="tags">codex</span></a></li>
+            <li data-tags="openclaw"><a href="0032-pratica-db.html"><span class="num">0032</span><span class="name">0032 — Pratica DB</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="misc"><a href="0030-hunt-vs-owen.html"><span class="num">0030</span><span class="name">Hunt vs Owen — Comparison</span><span class="tags">misc</span></a></li>
+            <li data-tags="openclaw"><a href="0029-active-skills.html"><span class="num">0029</span><span class="name">Active Skills — OpenClaw</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="openclaw"><a href="0029-agent-memory-architecture.html"><span class="num">0029</span><span class="name">Agent Memory Architecture</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="openclaw"><a href="0027-agent-architecture-june-2026.html"><span class="num">0027</span><span class="name">0027 — Agent Architecture (June 2026)</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="misc"><a href="0026-bgas-timeline.html"><span class="num">0026</span><span class="name">BGAS Timeline — MC vs British Gas</span><span class="tags">misc</span></a></li>
+            <li data-tags="openclaw"><a href="0026-orchestrator-models-june-2026.html"><span class="num">0026</span><span class="name">Orchestrator Models — June 2026</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="calendar"><a href="0025-amir-calendar.html"><span class="num">0025</span><span class="name">0025 — Amir Hossein — Arrival &amp; Stay Calendar</span><span class="tags">calendar</span></a></li>
+            <li data-tags="misc"><a href="0024-car-plan-flow.html"><span class="num">0024</span><span class="name">Car Plan — Get GN20 UKV Back on Road</span><span class="tags">misc</span></a></li>
+            <li data-tags="email"><a href="0023-email-digest-flow.html"><span class="num">0023</span><span class="name">Email Digest — Pipeline Flow</span><span class="tags">email</span></a></li>
+            <li data-tags="openclaw"><a href="0022-learning2-architecture.html"><span class="num">0022</span><span class="name">Learning2 Architecture</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="ops"><a href="0021-ocaisa-task-workflow.html"><span class="num">0021</span><span class="name">OCAISA Task Workflow</span><span class="tags">ops</span></a></li>
+            <li data-tags="openclaw"><a href="0020-agent-patterns.html"><span class="num">0020</span><span class="name">0020 — Agent Patterns</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="openclaw"><a href="0019-tag-learn-workflow.html"><span class="num">0019</span><span class="name">Tag-Learn Workflow</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="theory"><a href="0018-backward-fading.html"><span class="num">0018</span><span class="name">Backward Fading</span><span class="tags">theory</span></a></li>
+            <li data-tags="theory"><a href="0017-expertise-reversal-principle.html"><span class="num">0017</span><span class="name">Expertise-Reversal Principle</span><span class="tags">theory</span></a></li>
+            <li data-tags="theory"><a href="0016-scaffolding-never-subtract-thinking.html"><span class="num">0016</span><span class="name">Scaffolding Should Never Subtract the Thinking</span><span class="tags">theory</span></a></li>
+            <li data-tags="openclaw"><a href="0015-cron-schedule.html"><span class="num">0015</span><span class="name">OpenClaw Cron Schedule — 25 Jobs</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="theory"><a href="0015-procedural-vs-metacognitive.html"><span class="num">0015</span><span class="name">Procedural vs Metacognitive Prompts</span><span class="tags">theory</span></a></li>
+            <li data-tags="misc"><a href="0014-sainsburys-best-wines.html"><span class="num">0014</span><span class="name">Sainsbury's Best Wines — Susy Atkins, May 2026</span><span class="tags">misc</span></a></li>
+            <li data-tags="comms,telegram"><a href="0013-telegram-history-research.html"><span class="num">0013</span><span class="name">Telegram History for OpenClaw Agents — Research Findings</span><span class="tags">comms,telegram</span></a></li>
+            <li data-tags="comms"><a href="0012-messaging-channels.html"><span class="num">0012</span><span class="name">OpenClaw Messaging Channels</span><span class="tags">comms</span></a></li>
+            <li data-tags="comms"><a href="0011-agent-to-agent.html"><span class="num">0011</span><span class="name">OpenClaw — Agent-to-Agent Communication</span><span class="tags">comms</span></a></li>
+            <li data-tags="youtube"><a href="0011-youtube-digest-format.html"><span class="num">0011</span><span class="name">YouTube Digest — Format Proposal</span><span class="tags">youtube</span></a></li>
+            <li data-tags="openclaw"><a href="0010-agents-overview.html"><span class="num">0010</span><span class="name">0010 — OpenClaw Agents</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="openclaw"><a href="0008-reliability-roadmap.html"><span class="num">0008</span><span class="name">Agent Reliability Roadmap — OpenClaw</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="email"><a href="0007-email-digest-flow.html"><span class="num">0007</span><span class="name">Email Digest Workflow</span><span class="tags">email</span></a></li>
+            <li data-tags="misc"><a href="0007-galway-trip-2026.html"><span class="num">0007</span><span class="name">Galway Trip — Jul/Aug 2026</span><span class="tags">misc</span></a></li>
+            <li data-tags="calendar"><a href="0006-lta-grade5-calendar.html"><span class="num">0006</span><span class="name">LTA Grade 5 Tournaments — Jun/Jul 2026</span><span class="tags">calendar</span></a></li>
+            <li data-tags="calendar"><a href="0005-lta-grade5-calendar.html"><span class="num">0005</span><span class="name">LTA Grade 5 Tournaments — May/Jun 2026</span><span class="tags">calendar</span></a></li>
+            <li data-tags="openclaw"><a href="0004-oracle-gate.html"><span class="num">0004</span><span class="name">Oracle Gate — OpenClaw Plugin</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="misc"><a href="0004-polo-protocol.html"><span class="num">0004</span><span class="name">FT Scrape — Polo Productivity Protocol</span><span class="tags">misc</span></a></li>
+            <li data-tags="openclaw"><a href="0003-cron-dash.html"><span class="num">0003</span><span class="name">OpenClaw Cron Dashboard</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="openclaw"><a href="0002-agent-workflow.html"><span class="num">0002</span><span class="name">OpenClaw Agent Workflow</span><span class="tags">openclaw</span></a></li>
+            <li data-tags="comms,a2a"><a href="0001-cc-polo-a2a-messaging.html"><span class="num">0001</span><span class="name">A2A Messaging — CC ↔ Polo</span><span class="tags">comms,a2a</span></a></li>
+            <li data-tags="comms"><a href="0001-cc-polo-flow.html"><span class="num">0001</span><span class="name">CC ↔ Polo Communication Flow</span><span class="tags">comms</span></a></li>
+            <li data-tags="youtube"><a href="0001-youtube-digest-architecture.html"><span class="num">0001</span><span class="name">YouTube Digest — Architecture</span><span class="tags">youtube</span></a></li>
+            <li data-tags="comms"><a href="0012a-messaging-channels.html"><span class="name">OpenClaw Messaging Channels (rev a)</span><span class="tags">comms</span></a></li>
+            <li data-tags="theory"><a href="prompting-stack-what-we-have-vs-jones.html"><span class="name">0010a — Prompting Stack: What We Have vs. What Jones Recommends</span><span class="tags">theory</span></a></li>
         </ul>
     </div>
+    <script>
+        document.getElementById('tagFilter').addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const listItems = document.querySelectorAll('#diagramList li');
+            listItems.forEach(item => {
+                const tags = item.getAttribute('data-tags').toLowerCase();
+                if (tags.includes(filter)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
