@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0057 — Telegram Group Structure</title>
+<meta name="tags" content="telegram,codex,design">
+<style>
+  body { margin: 0; background: #f8f9fa; display: flex; flex-direction: column; align-items: center; padding: 32px 16px; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+  h1 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin: 0 0 8px 0; }
+  p.sub { font-size: 12px; color: #6b7280; margin: 0 0 6px 0; }
+  p.archive { font-size: 11px; color: #9ca3af; margin: 0 0 24px 0; }
+  svg { max-width: 100%; height: auto; }
+
+  /* Diagram specific styles */
+  .level1-box { fill: #e0f2fe; stroke: #38bdf8; stroke-width: 2; }
+  .level2-box { fill: #dbeafe; stroke: #2563eb; stroke-width: 2; }
+  .level3-box { fill: #eff6ff; stroke: #60a5fa; stroke-width: 1; }
+  .text-main { font-size: 14px; font-weight: 700; fill: #1e40af; }
+  .text-sub { font-size: 11px; fill: #3b82f6; }
+  .text-topic { font-size: 10px; fill: #1e40af; }
+  .text-note { font-size: 9px; fill: #6b7280; }
+  .arrow { stroke: #60a5fa; stroke-width: 1; marker-end: url(#arrowhead); }
+  .arrow-dashed { stroke: #60a5fa; stroke-width: 1; stroke-dasharray: 3 2; marker-end: url(#arrowhead); }
+  .legend-box { fill: #f0f9ff; stroke: #bfdbfe; stroke-width: 1; }
+  .legend-text { font-size: 10px; fill: #6b7280; }
+</style>
+</head>
+<body>
+<h1>0057 — Telegram Group Structure</h1>
+<p class="sub">Overview of ocaisa ecosystem, Telegram groups, and topics. 2026-09-11.</p>
+
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'Inter', 'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa" />
+    </marker>
+  </defs>
+
+  <!-- Level 1: ocaisa ecosystem -->
+  <rect x="50" y="50" width="1100" height="700" rx="15" class="level1-box"/>
+  <text x="600" y="80" text-anchor="middle" class="text-main">ocaisa ecosystem</text>
+  <text x="600" y="95" text-anchor="middle" class="text-note">(minicz, openclaw, workspace, data, scripts, api creds, agents)</text>
+
+  <!-- Level 2: Telegram Groups -->
+  <rect x="100" y="150" width="450" height="550" rx="10" class="level2-box"/>
+  <text x="325" y="175" text-anchor="middle" class="text-main">pratica</text>
+  <text x="325" y="195" text-anchor="middle" class="text-sub">-1003678179601 (7 members)</text>
+  <text x="325" y="210" text-anchor="middle" class="text-note">(practical/day-to-day)</text>
+
+  <rect x="650" y="150" width="450" height="550" rx="10" class="level2-box"/>
+  <text x="875" y="175" text-anchor="middle" class="text-main">codex-ocaisa</text>
+  <text x="875" y="195" text-anchor="middle" class="text-sub">-1004401299405 (2 members)</text>
+  <text x="875" y="210" text-anchor="middle" class="text-note">(knowledge/reading library)</text>
+
+  <!-- Level 3: Pratica Topics -->
+  <g transform="translate(120, 240)">
+    <rect x="0" y="0" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="17" class="text-topic">1 General</text>
+    <rect x="0" y="30" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="47" class="text-topic">4 Tennis</text>
+    <rect x="0" y="60" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="77" class="text-topic">8 GTD</text>
+    <rect x="0" y="90" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="107" class="text-topic">10 AIdev</text>
+    <rect x="0" y="120" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="137" class="text-topic">12 CZ</text>
+    <rect x="0" y="150" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="167" class="text-topic">14 Zee</text>
+    <rect x="0" y="180" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="197" class="text-topic">60 Trading</text>
+    <rect x="0" y="210" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="227" class="text-topic">111 sermo</text>
+    <rect x="0" y="240" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="257" class="text-topic">780 AI</text>
+    <rect x="0" y="270" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="287" class="text-topic">12687 HIL</text>
+    <rect x="0" y="300" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="317" class="text-topic">19850 Biz</text>
+    <rect x="0" y="330" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="347" class="text-topic">7417 zzz</text>
+  </g>
+
+  <!-- Pratica Topic Annotations -->
+  <text x="310" y="450" class="text-note">sermo(111) = inter-agent coordination log, write-only for agents</text>
+
+  <!-- Level 3: Codex-ocaisa Cluster Topics -->
+  <g transform="translate(670, 240)">
+    <rect x="0" y="0" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="17" class="text-topic">20 campo</text>
+    <rect x="0" y="30" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="47" class="text-topic">26 ingegno</text>
+    <rect x="0" y="60" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="77" class="text-topic">2 vivere</text>
+    <rect x="0" y="90" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="107" class="text-topic">1618 tage</text>
+  </g>
+
+  <!-- Codex-ocaisa Cluster Topic Annotations -->
+  <text x="860" y="380" class="text-note">codex cluster topics map to the four taxonomy clusters</text>
+
+  <!-- Level 3: Codex-ocaisa Sub-Topics -->
+  <g transform="translate(950, 240)">
+    <rect x="0" y="0" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="17" class="text-topic">1 General</text>
+    <rect x="0" y="30" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="47" class="text-topic">28 psa</text>
+    <rect x="0" y="60" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="77" class="text-topic">8 health</text>
+    <rect x="0" y="90" width="180" height="25" rx="5" class="level3-box"/> <text x="10" y="107" class="text-topic">1792 mossa</text>
+  </g>
+
+  <!-- Codex-ocaisa Sub-Topic Annotations -->
+  <text x="860" y="450" class="text-note">health(8) ⚠misplaced, mossa(1792)</text>
+
+  <!-- General Annotations -->
+  <text x="600" y="720" text-anchor="middle" class="text-note">"ocaisa" is the ecosystem name, NOT a Telegram group</text>
+  <text x="600" y="735" text-anchor="middle" class="text-note">CLAUDE.md previously incorrectly called pratica "ocaisa" — corrected today</text>
+
+</svg>
+</body>
+</html>
