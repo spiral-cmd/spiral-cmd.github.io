@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0060 — @mezzo_ocaisa_bot responds as Polo</title>
+<meta name="tags" content="telegram,a2a">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #F4F6FB;
+    --surface:    #FFFFFF;
+    --border:     #D4DCF0;
+    --text-1:     #18243E;
+    --text-2:     #4D5C7A;
+    --text-3:     #9AA5BE;
+    --polo:       #2554E8;
+    --polo-dim:   #EBF0FF;
+    --accent:     #2554E8;
+    --sep:        #E4E9F5;
+    --badge-bg:   #EBF0FF;
+    --badge-text: #1A42C0;
+    --note-bg:    #FFFBEB;
+    --note-border:#FDE68A;
+    --note-text:  #92400E;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:         #0E1525;
+      --surface:    #172035;
+      --border:     #253050;
+      --text-1:     #E2E8F8;
+      --text-2:     #8A98BE;
+      --text-3:     #3D4D6A;
+      --polo:       #5B8AF5;
+      --polo-dim:   #162040;
+      --accent:     #5B8AF5;
+      --sep:        #1E2D48;
+      --badge-bg:   #162040;
+      --badge-text: #8AB0F8;
+      --note-bg:    #2B1E06;
+      --note-border:#92400E;
+      --note-text:  #FDE68A;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg:         #F4F6FB;
+    --surface:    #FFFFFF;
+    --border:     #D4DCF0;
+    --text-1:     #18243E;
+    --text-2:     #4D5C7A;
+    --text-3:     #9AA5BE;
+    --polo:       #2554E8;
+    --polo-dim:   #EBF0FF;
+    --accent:     #2554E8;
+    --sep:        #E4E9F5;
+    --badge-bg:   #EBF0FF;
+    --badge-text: #1A42C0;
+    --note-bg:    #FFFBEB;
+    --note-border:#FDE68A;
+    --note-text:  #92400E;
+  }
+
+  :root[data-theme="dark"] {
+    --bg:         #0E1525;
+    --surface:    #172035;
+    --border:     #253050;
+    --text-1:     #E2E8F8;
+    --text-2:     #8A98BE;
+    --text-3:     #3D4D6A;
+    --polo:       #5B8AF5;
+    --polo-dim:   #162040;
+    --accent:     #5B8AF5;
+    --sep:        #1E2D48;
+    --badge-bg:   #162040;
+    --badge-text: #8AB0F8;
+    --note-bg:    #2B1E06;
+    --note-border:#92400E;
+    --note-text:  #FDE68A;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 28px 16px 48px;
+  }
+
+  .page { max-width: 780px; margin: 0 auto; }
+
+  .eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--polo); margin-bottom: 6px;
+  }
+  h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .sub { font-size: 12px; color: var(--text-2); margin-top: 4px; margin-bottom: 28px; }
+
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    padding: 14px 20px 12px;
+    border-bottom: 1.5px solid var(--sep);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .card-header .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .card-body {
+    padding: 18px 20px;
+  }
+
+  /* Identity mapping row */
+  .mapping {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .entity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .entity-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+  .entity-icon.tg  { background: #E8F3FF; }
+  .entity-icon.polo { background: var(--badge-bg); }
+
+  .entity-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-1);
+    text-align: center;
+  }
+  .entity-sub {
+    font-size: 10.5px;
+    color: var(--text-3);
+    text-align: center;
+  }
+
+  .arrow {
+    font-size: 22px;
+    color: var(--text-3);
+    flex-shrink: 0;
+    padding: 0 4px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* Detail table */
+  .detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .detail-table tr {
+    border-bottom: 1px solid var(--sep);
+  }
+  .detail-table tr:last-child {
+    border-bottom: none;
+  }
+  .detail-table td {
+    padding: 9px 4px;
+    vertical-align: top;
+  }
+  .detail-table td:first-child {
+    width: 140px;
+    color: var(--text-3);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-right: 12px;
+    white-space: nowrap;
+  }
+  .detail-table td:last-child {
+    color: var(--text-1);
+  }
+
+  /* Note box */
+  .note {
+    background: var(--note-bg);
+    border: 1px solid var(--note-border);
+    border-radius: 8px;
+    padding: 11px 15px;
+    font-size: 12.5px;
+    color: var(--note-text);
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .note .icon { flex-shrink: 0; font-size: 14px; }
+
+  .mono {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 12px;
+    background: var(--polo-dim);
+    color: var(--polo);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">0060 · telegram · a2a</div>
+  <h1>@mezzo_ocaisa_bot responds as Polo</h1>
+  <p class="sub">Identity mapping: Telegram bot handle → ocaisa agent persona · 2026-09-13</p>
+
+  <!-- Identity mapping card -->
+  <div class="card">
+    <div class="card-header">
+      <span class="label">Identity Mapping</span>
+    </div>
+    <div class="card-body">
+      <div class="mapping">
+        <div class="entity">
+          <div class="entity-icon tg">🤖</div>
+          <div class="entity-name">@mezzo_ocaisa_bot</div>
+          <div class="entity-sub">Telegram bot handle</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="entity">
+          <div class="entity-icon polo">🔵</div>
+          <div class="entity-name">polo</div>
+          <div class="entity-sub">primary agent · ocaisa</div>
+        </div>
+      </div>
+
+      <table class="detail-table">
+        <tr>
+          <td>Bot handle</td>
+          <td><span class="mono">@mezzo_ocaisa_bot</span></td>
+        </tr>
+        <tr>
+          <td>Persona</td>
+          <td><span class="badge">polo</span> — primary responder in pratica</td>
+        </tr>
+        <tr>
+          <td>Group</td>
+          <td>pratica · -1003678179601</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td>active · responding as polo</td>
+        </tr>
+        <tr>
+          <td>Topics covered</td>
+          <td>all topics where polo is the designated responder (see 0002 agent-topic-permissions)</td>
+        </tr>
+      </table>
+
+      <div class="note">
+        <span class="icon">📝</span>
+        <span><strong>~idr note:</strong> The mezzo bot's name is the Telegram API identity; <em>polo</em> is the agent persona it carries. Messages sent to <span class="mono">@mezzo_ocaisa_bot</span> in pratica are processed and replied to under the polo persona.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context card -->
+  <div class="card">
+    <div class="card-header">
+      <span class="label">Related</span>
+    </div>
+    <div class="card-body">
+      <table class="detail-table">
+        <tr>
+          <td>Agent map</td>
+          <td><a href="../agent-topic-permissions.html" style="color: var(--polo);">0002 — Agent Topic Permissions</a></td>
+        </tr>
+        <tr>
+          <td>Polo protocol</td>
+          <td><a href="0004-polo-protocol.html" style="color: var(--polo);">0004 — Polo Productivity Protocol</a></td>
+        </tr>
+        <tr>
+          <td>Telegram map</td>
+          <td><a href="0040-telegram-topic-map.html" style="color: var(--polo);">0040 — Telegram Topic Map — ocaisa</a></td>
+        </tr>
+        <tr>
+          <td>Group structure</td>
+          <td><a href="0057-telegram-group-structure.html" style="color: var(--polo);">0057 — Telegram Group Structure</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
