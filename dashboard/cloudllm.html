@@ -14,6 +14,7 @@
     --deepseek:      #F5CE6A;
     --siliconflow:   #F5A882;
     --zai:           #C8B4F0;
+    --chip-inactive: #D4D2DA;
     --row-gap:       10px;
     --chip-r:        5px;
   }
@@ -22,12 +23,14 @@
       --ground: #0E0D12; --surface: #18161E; --text: #E4E2EC; --text-sub: #5A5864; --text-inv: #0E0D12;
       --ollamacloud: #5BB8E8; --openrouter: #3ECFAA; --deepseek: #E8B830;
       --siliconflow: #D97040; --zai: #9070D8;
+      --chip-inactive: #22202E;
     }
   }
   :root[data-theme="dark"] {
     --ground: #0E0D12; --surface: #18161E; --text: #E4E2EC; --text-sub: #5A5864; --text-inv: #0E0D12;
     --ollamacloud: #5BB8E8; --openrouter: #3ECFAA; --deepseek: #E8B830;
     --siliconflow: #D97040; --zai: #9070D8;
+    --chip-inactive: #22202E;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--ground); color: var(--text); font-family: "IBM Plex Mono","Courier New",monospace; padding: 28px 24px; min-height: 100vh; }
@@ -46,6 +49,7 @@
   .row-deepseek     .chip { background: var(--deepseek); }
   .row-siliconflow  .chip { background: var(--siliconflow); }
   .row-zai          .chip { background: var(--zai); }
+  .row-inactive .chip { background: var(--chip-inactive); color: var(--text-sub); }
   .sep { width: 3px; height: 3px; border-radius: 50%; background: var(--text-sub); flex-shrink: 0; opacity: 0.4; }
   footer { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--surface); display: flex; gap: 20px; }
   .footer-stat { display: flex; flex-direction: column; gap: 2px; }
@@ -80,14 +84,14 @@
     <div class="chip chip-provider">deepseek direct</div>
     <div class="chip chip-balance">$8.56</div>
   </div>
-  <div class="provider-row row-siliconflow">
+  <div class="provider-row row-siliconflow row-inactive">
     <div class="chip chip-provider">siliconflow</div>
     <div class="chip chip-balance">$ —</div>
     <div class="sep"></div>
     <div class="chip chip-model">DeepSeek-V3.2</div>
     <div class="chip chip-agent">codo · zeno</div>
   </div>
-  <div class="provider-row row-zai">
+  <div class="provider-row row-zai row-inactive">
     <div class="chip chip-provider">z-ai direct</div>
     <div class="chip chip-balance">$ —</div>
     <div class="sep"></div>
