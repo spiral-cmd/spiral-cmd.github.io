@@ -4,26 +4,30 @@
 
 <style>
   :root {
-    --ground:       #F5F4F0;
-    --surface:      #ECEAE4;
-    --text:         #1C1A22;
-    --text-sub:     #7A7884;
-    --text-inv:     #1C1A22;
-    --ollamacloud:  #A8D8F0;
-    --openrouter:   #82DEC4;
-    --deepseek:     #F5CE6A;
-    --row-gap:      10px;
-    --chip-r:       5px;
+    --ground:        #F5F4F0;
+    --surface:       #ECEAE4;
+    --text:          #1C1A22;
+    --text-sub:      #7A7884;
+    --text-inv:      #1C1A22;
+    --ollamacloud:   #A8D8F0;
+    --openrouter:    #82DEC4;
+    --deepseek:      #F5CE6A;
+    --siliconflow:   #F5A882;
+    --zai:           #C8B4F0;
+    --row-gap:       10px;
+    --chip-r:        5px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --ground: #0E0D12; --surface: #18161E; --text: #E4E2EC; --text-sub: #5A5864; --text-inv: #0E0D12;
       --ollamacloud: #5BB8E8; --openrouter: #3ECFAA; --deepseek: #E8B830;
+      --siliconflow: #D97040; --zai: #9070D8;
     }
   }
   :root[data-theme="dark"] {
     --ground: #0E0D12; --surface: #18161E; --text: #E4E2EC; --text-sub: #5A5864; --text-inv: #0E0D12;
     --ollamacloud: #5BB8E8; --openrouter: #3ECFAA; --deepseek: #E8B830;
+    --siliconflow: #D97040; --zai: #9070D8;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--ground); color: var(--text); font-family: "IBM Plex Mono","Courier New",monospace; padding: 28px 24px; min-height: 100vh; }
@@ -37,9 +41,11 @@
   .chip-balance { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; min-width: 80px; justify-content: flex-end; }
   .chip-model { opacity: 0.85; font-size: 12px; letter-spacing: 0.01em; }
   .chip-agent { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
-  .row-ollamacloud .chip { background: var(--ollamacloud); }
-  .row-openrouter  .chip { background: var(--openrouter); }
-  .row-deepseek    .chip { background: var(--deepseek); }
+  .row-ollamacloud  .chip { background: var(--ollamacloud); }
+  .row-openrouter   .chip { background: var(--openrouter); }
+  .row-deepseek     .chip { background: var(--deepseek); }
+  .row-siliconflow  .chip { background: var(--siliconflow); }
+  .row-zai          .chip { background: var(--zai); }
   .sep { width: 3px; height: 3px; border-radius: 50%; background: var(--text-sub); flex-shrink: 0; opacity: 0.4; }
   footer { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--surface); display: flex; gap: 20px; }
   .footer-stat { display: flex; flex-direction: column; gap: 2px; }
@@ -74,6 +80,20 @@
     <div class="chip chip-provider">deepseek direct</div>
     <div class="chip chip-balance">$8.56</div>
   </div>
+  <div class="provider-row row-siliconflow">
+    <div class="chip chip-provider">siliconflow</div>
+    <div class="chip chip-balance">$ —</div>
+    <div class="sep"></div>
+    <div class="chip chip-model">DeepSeek-V3.2</div>
+    <div class="chip chip-agent">codo · zeno</div>
+  </div>
+  <div class="provider-row row-zai">
+    <div class="chip chip-provider">z-ai direct</div>
+    <div class="chip chip-balance">$ —</div>
+    <div class="sep"></div>
+    <div class="chip chip-model">glm-5.2</div>
+    <div class="chip chip-agent">zeno · mezzo</div>
+  </div>
 </div>
 
 <footer>
@@ -83,7 +103,7 @@
   </div>
   <div class="footer-stat">
     <span class="footer-stat-label">providers</span>
-    <span class="footer-stat-value">3 active</span>
+    <span class="footer-stat-value">5 active</span>
   </div>
   <div class="footer-stat">
     <span class="footer-stat-label">ollama quota</span>
