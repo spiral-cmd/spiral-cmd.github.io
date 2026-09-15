@@ -1,0 +1,100 @@
+<title>Cloud LLM Credits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@300;400;600&display=swap">
+
+<style>
+  :root {
+    --ground:       #F5F4F0;
+    --surface:      #ECEAE4;
+    --text:         #1C1A22;
+    --text-sub:     #7A7884;
+    --text-inv:     #1C1A22;
+    --ollamacloud:  #A8D8F0;
+    --openrouter:   #82DEC4;
+    --deepseek:     #F5CE6A;
+    --row-gap:      10px;
+    --chip-r:       5px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E0D12; --surface: #18161E; --text: #E4E2EC; --text-sub: #5A5864; --text-inv: #0E0D12;
+      --ollamacloud: #5BB8E8; --openrouter: #3ECFAA; --deepseek: #E8B830;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E0D12; --surface: #18161E; --text: #E4E2EC; --text-sub: #5A5864; --text-inv: #0E0D12;
+    --ollamacloud: #5BB8E8; --openrouter: #3ECFAA; --deepseek: #E8B830;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--ground); color: var(--text); font-family: "IBM Plex Mono","Courier New",monospace; padding: 28px 24px; min-height: 100vh; }
+  header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--surface); padding-bottom: 14px; }
+  .header-date { font-family: "IBM Plex Sans Condensed",sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); }
+  .header-label { font-family: "IBM Plex Sans Condensed",sans-serif; font-weight: 300; font-size: 13px; color: var(--text-sub); letter-spacing: 0.04em; text-transform: uppercase; }
+  .rows { display: flex; flex-direction: column; gap: var(--row-gap); }
+  .provider-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: var(--chip-r); font-family: "IBM Plex Mono",monospace; font-size: 13px; font-weight: 500; line-height: 1; white-space: nowrap; color: var(--text-inv); }
+  .chip-provider { font-weight: 600; min-width: 130px; }
+  .chip-balance { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; min-width: 80px; justify-content: flex-end; }
+  .chip-model { opacity: 0.85; font-size: 12px; letter-spacing: 0.01em; }
+  .chip-agent { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
+  .row-ollamacloud .chip { background: var(--ollamacloud); }
+  .row-openrouter  .chip { background: var(--openrouter); }
+  .row-deepseek    .chip { background: var(--deepseek); }
+  .sep { width: 3px; height: 3px; border-radius: 50%; background: var(--text-sub); flex-shrink: 0; opacity: 0.4; }
+  footer { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--surface); display: flex; gap: 20px; }
+  .footer-stat { display: flex; flex-direction: column; gap: 2px; }
+  .footer-stat-label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.08em; }
+  .footer-stat-value { font-size: 13px; font-variant-numeric: tabular-nums; font-weight: 500; color: var(--text); }
+  @media (max-width: 480px) { body { padding: 20px 16px; } .chip { font-size: 12px; padding: 6px 10px; } footer { flex-wrap: wrap; gap: 14px; } }
+</style>
+
+<header>
+  <span class="header-date" id="today-date">Mon 15 Sep 2026</span>
+  <span class="header-label">Supplier Credits</span>
+</header>
+
+<div class="rows">
+  <div class="provider-row row-ollamacloud">
+    <div class="chip chip-provider">ollamacloud</div>
+    <div class="chip chip-balance">100% mo</div>
+    <div class="sep"></div>
+    <div class="chip chip-model">deepseek-v4-flash:0731</div>
+    <div class="chip chip-agent">polo</div>
+    <div class="chip chip-model">glm-5.3-flash</div>
+    <div class="chip chip-agent">io · mezzo</div>
+  </div>
+  <div class="provider-row row-openrouter">
+    <div class="chip chip-provider">openrouter</div>
+    <div class="chip chip-balance">$5.81</div>
+    <div class="sep"></div>
+    <div class="chip chip-model">glm-4.7-flash</div>
+    <div class="chip chip-agent">cc</div>
+  </div>
+  <div class="provider-row row-deepseek">
+    <div class="chip chip-provider">deepseek direct</div>
+    <div class="chip chip-balance">$8.56</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-stat">
+    <span class="footer-stat-label">dollar credit</span>
+    <span class="footer-stat-value">$14.37</span>
+  </div>
+  <div class="footer-stat">
+    <span class="footer-stat-label">providers</span>
+    <span class="footer-stat-value">3 active</span>
+  </div>
+  <div class="footer-stat">
+    <span class="footer-stat-label">ollama quota</span>
+    <span class="footer-stat-value">100% monthly used</span>
+  </div>
+</footer>
+
+<script>
+  const d = new Date();
+  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("today-date").textContent =
+    `${days[d.getDay()]} ${String(d.getDate()).padStart(2,"0")} ${months[d.getMonth()]} ${d.getFullYear()}`;
+</script>
