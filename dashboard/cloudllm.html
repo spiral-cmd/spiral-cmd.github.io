@@ -37,19 +37,22 @@
   header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--surface); padding-bottom: 14px; }
   .header-date { font-family: "IBM Plex Sans Condensed",sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); }
   .header-label { font-family: "IBM Plex Sans Condensed",sans-serif; font-weight: 300; font-size: 13px; color: var(--text-sub); letter-spacing: 0.04em; text-transform: uppercase; }
-  .rows { display: flex; flex-direction: column; gap: var(--row-gap); }
-  .provider-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: var(--chip-r); font-family: "IBM Plex Mono",monospace; font-size: 13px; font-weight: 500; line-height: 1; white-space: nowrap; color: var(--text-inv); }
+  .rows { display: flex; flex-direction: column; gap: 14px; }
+  .provider-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .chip { display: inline-flex; align-items: center; padding: 7px 13px; border-radius: var(--chip-r); font-family: "IBM Plex Mono",monospace; font-size: 13px; font-weight: 500; line-height: 1; white-space: nowrap; color: var(--text-inv); }
   .chip-provider { font-weight: 600; min-width: 130px; }
-  .chip-balance { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; min-width: 80px; justify-content: flex-end; }
-  .chip-model { opacity: 0.85; font-size: 12px; letter-spacing: 0.01em; }
-  .chip-agent { font-size: 12px; font-weight: 600; letter-spacing: 0.03em; }
-  .row-ollamacloud  .chip { background: var(--ollamacloud); }
-  .row-openrouter   .chip { background: var(--openrouter); }
-  .row-deepseek     .chip { background: var(--deepseek); }
-  .row-siliconflow  .chip { background: var(--siliconflow); }
-  .row-zai          .chip { background: var(--zai); }
-  .row-inactive .chip { background: var(--chip-inactive); color: var(--text-sub); }
+  .chip-balance { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; min-width: 72px; justify-content: flex-end; }
+  .model-cards { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; margin-left: 4px; }
+  .model-card { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .model-rect { padding: 7px 14px; border-radius: var(--chip-r); font-family: "IBM Plex Mono",monospace; font-size: 12px; font-weight: 500; white-space: nowrap; color: var(--text-inv); }
+  .agent-under { font-family: "IBM Plex Sans Condensed",sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-sub); text-align: center; }
+  .row-ollamacloud  .chip, .row-ollamacloud  .model-rect { background: var(--ollamacloud); }
+  .row-openrouter   .chip, .row-openrouter   .model-rect { background: var(--openrouter); }
+  .row-deepseek     .chip, .row-deepseek     .model-rect { background: var(--deepseek); }
+  .row-siliconflow  .chip, .row-siliconflow  .model-rect { background: var(--siliconflow); }
+  .row-zai          .chip, .row-zai          .model-rect { background: var(--zai); }
+  .row-inactive .chip, .row-inactive .model-rect { background: var(--chip-inactive); color: var(--text-sub); }
+  .row-inactive .agent-under { opacity: 0.6; }
   .sep { width: 3px; height: 3px; border-radius: 50%; background: var(--text-sub); flex-shrink: 0; opacity: 0.4; }
   footer { margin-top: 22px; padding-top: 12px; border-top: 1px solid var(--surface); display: flex; gap: 20px; }
   .footer-stat { display: flex; flex-direction: column; gap: 2px; }
@@ -64,41 +67,59 @@
 </header>
 
 <div class="rows">
-  <div class="provider-row row-ollamacloud row-inactive">
-    <div class="chip chip-provider">ollamacloud</div>
-    <div class="chip chip-balance">100% mo</div>
-    <div class="sep"></div>
-    <div class="chip chip-model">kimi-k2.7-code</div>
-    <div class="chip chip-agent">codo</div>
-    <div class="chip chip-model">glm-5.3-flash</div>
-    <div class="chip chip-agent">mezzo</div>
-  </div>
   <div class="provider-row row-openrouter">
     <div class="chip chip-provider">openrouter</div>
     <div class="chip chip-balance">$5.17</div>
-    <div class="sep"></div>
-    <div class="chip chip-agent">io</div>
+    <div class="model-cards">
+      <div class="model-card">
+        <div class="model-rect">—</div>
+        <div class="agent-under">io</div>
+      </div>
+    </div>
   </div>
   <div class="provider-row row-deepseek">
     <div class="chip chip-provider">deepseek direct</div>
     <div class="chip chip-balance">$8.44</div>
-    <div class="sep"></div>
-    <div class="chip chip-model">deepseek-v4-flash</div>
-    <div class="chip chip-agent">polo</div>
+    <div class="model-cards">
+      <div class="model-card">
+        <div class="model-rect">deepseek-v4-flash</div>
+        <div class="agent-under">polo</div>
+      </div>
+    </div>
+  </div>
+  <div class="provider-row row-ollamacloud row-inactive">
+    <div class="chip chip-provider">ollamacloud</div>
+    <div class="chip chip-balance">100% mo</div>
+    <div class="model-cards">
+      <div class="model-card">
+        <div class="model-rect">kimi-k2.7-code</div>
+        <div class="agent-under">codo</div>
+      </div>
+      <div class="model-card">
+        <div class="model-rect">glm-5.3-flash</div>
+        <div class="agent-under">mezzo</div>
+      </div>
+    </div>
   </div>
   <div class="provider-row row-siliconflow row-inactive">
     <div class="chip chip-provider">siliconflow</div>
     <div class="chip chip-balance">$ —</div>
-    <div class="sep"></div>
-    <div class="chip chip-model">DeepSeek-V3.2</div>
-    <div class="chip chip-agent">codo · zeno</div>
+    <div class="model-cards">
+      <div class="model-card">
+        <div class="model-rect">DeepSeek-V3.2</div>
+        <div class="agent-under">codo · zeno</div>
+      </div>
+    </div>
   </div>
   <div class="provider-row row-zai row-inactive">
     <div class="chip chip-provider">z-ai direct</div>
     <div class="chip chip-balance">$ —</div>
-    <div class="sep"></div>
-    <div class="chip chip-model">glm-5.2</div>
-    <div class="chip chip-agent">zeno · mezzo</div>
+    <div class="model-cards">
+      <div class="model-card">
+        <div class="model-rect">glm-5.2</div>
+        <div class="agent-under">zeno · mezzo</div>
+      </div>
+    </div>
   </div>
 </div>
 
