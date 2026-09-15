@@ -1,0 +1,727 @@
+<title>EGO Plugin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+
+<style>
+:root {
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface-2: #EFEDE8;
+  --border: #D8D5CE;
+  --text: #1C1B18;
+  --text-muted: #7A7775;
+  --node-accent: #3B6EA5;
+  --node-light: #EAF1F9;
+  --node-border: #B3CFEA;
+  --py-accent: #7B4F2E;
+  --py-light: #F5EDE8;
+  --py-border: #D9BDA8;
+  --bridge-accent: #4A7A5C;
+  --bridge-light: #EAF2EE;
+  --bridge-border: #9EC4AE;
+  --op-bg: #F0EEE9;
+  --hash-bg: #F4F0FC;
+  --hash-border: #C4B8E8;
+  --hash-accent: #5B3FA0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #18171A;
+    --surface: #232228;
+    --surface-2: #2C2B31;
+    --border: #3A3840;
+    --text: #E8E6E0;
+    --text-muted: #7A7875;
+    --node-accent: #6B9FD4;
+    --node-light: #1A2535;
+    --node-border: #2D4A6A;
+    --py-accent: #C4875A;
+    --py-light: #2A1F18;
+    --py-border: #5A3820;
+    --bridge-accent: #6AAD82;
+    --bridge-light: #182820;
+    --bridge-border: #2E5A3A;
+    --op-bg: #24232A;
+    --hash-bg: #1E1B2E;
+    --hash-border: #4A3A7A;
+    --hash-accent: #9B7FD4;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #18171A;
+  --surface: #232228;
+  --surface-2: #2C2B31;
+  --border: #3A3840;
+  --text: #E8E6E0;
+  --text-muted: #7A7875;
+  --node-accent: #6B9FD4;
+  --node-light: #1A2535;
+  --node-border: #2D4A6A;
+  --py-accent: #C4875A;
+  --py-light: #2A1F18;
+  --py-border: #5A3820;
+  --bridge-accent: #6AAD82;
+  --bridge-light: #182820;
+  --bridge-border: #2E5A3A;
+  --op-bg: #24232A;
+  --hash-bg: #1E1B2E;
+  --hash-border: #4A3A7A;
+  --hash-accent: #9B7FD4;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  padding-inline: 24px;
+  padding-block: 32px 48px;
+  max-width: 1100px;
+}
+
+.page-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0 0 4px;
+  text-wrap: balance;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.layer-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mode-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mode-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.badge-permissive { color: var(--bridge-accent); border-color: var(--bridge-border); background: var(--bridge-light); }
+.badge-soft       { color: var(--node-accent);   border-color: var(--node-border);   background: var(--node-light); }
+.badge-enforcing  { color: var(--py-accent);     border-color: var(--py-border);     background: var(--py-light); }
+
+/* Arch grid */
+.arch-grid {
+  display: grid;
+  grid-template-columns: 1fr 120px 1fr;
+  gap: 0;
+  align-items: start;
+  margin-bottom: 24px;
+}
+
+.layer-panel {
+  border: 1.5px solid;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.node-panel {
+  border-color: var(--node-border);
+  background: var(--node-light);
+}
+.node-panel .layer-label { color: var(--node-accent); }
+
+.py-panel {
+  border-color: var(--py-border);
+  background: var(--py-light);
+}
+.py-panel .layer-label { color: var(--py-accent); }
+
+/* Bridge */
+.bridge-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 10px;
+  padding-top: 48px;
+}
+
+.bridge-arrow-v {
+  font-size: 14px;
+  color: var(--bridge-accent);
+  margin: 3px 0;
+  line-height: 1;
+}
+
+.bridge-box {
+  background: var(--bridge-light);
+  border: 1.5px solid var(--bridge-border);
+  border-radius: 4px;
+  padding: 10px 10px 8px;
+  text-align: center;
+  width: 100%;
+}
+
+.bridge-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bridge-accent);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.bridge-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.cmd-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+}
+
+.cmd-chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  padding: 2px 5px;
+  background: var(--surface);
+  border: 1px solid var(--bridge-border);
+  border-radius: 2px;
+  color: var(--bridge-accent);
+}
+
+/* Hooks flow */
+.hooks-flow {
+  margin-bottom: 14px;
+}
+
+.hook-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+  position: relative;
+}
+
+.hook-item:first-child { border-radius: 4px 4px 0 0; }
+.hook-item:last-child  { border-radius: 0 0 4px 4px; }
+.hook-item + .hook-item { border-top: none; }
+
+.hook-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--node-accent);
+  flex-shrink: 0;
+}
+
+.hook-accent {
+  background: var(--node-light);
+  color: var(--node-accent);
+  font-size: 10px;
+}
+
+.hook-passive {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 10px;
+}
+
+.hook-passive .hook-dot { background: var(--text-muted); }
+
+/* Router table */
+.route-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  width: 100%;
+}
+
+.route-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  padding: 5px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  border-top: 1px solid var(--border);
+}
+
+.route-row:first-child { border-top: none; }
+
+.rt-tool  { color: var(--node-accent); min-width: 0; flex: 1; padding-right: 6px; }
+.rt-arr   { color: var(--text-muted); flex-shrink: 0; padding: 0 4px; }
+.rt-op    { color: var(--text); flex: 1; }
+
+/* Mem grid */
+.mem-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mem-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+.mem-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--node-accent);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.mem-detail {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Adapter box */
+.adapter-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+.adapter-row {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  padding: 2px 0;
+  border-top: 1px solid var(--border);
+}
+
+.adapter-row:first-child { border-top: none; }
+
+.adapter-fn { color: var(--node-accent); }
+
+/* Python modules */
+.py-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.py-mod {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+.py-mod-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--py-accent);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.py-mod-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* DB box */
+.db-box {
+  background: var(--surface);
+  border: 1.5px solid var(--py-border);
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.db-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.db-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--py-accent);
+}
+
+.db-table-chips {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.db-chip {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  background: var(--py-light);
+  border: 1px solid var(--py-border);
+  border-radius: 2px;
+  color: var(--py-accent);
+}
+
+.db-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.db-field-row {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  border-top: 1px solid var(--border);
+  font-size: 10.5px;
+}
+
+.db-field-row:first-child { border-top: none; }
+
+.dbf-table {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--py-accent);
+  min-width: 86px;
+  flex-shrink: 0;
+  font-size: 10px;
+}
+
+.dbf-cols {
+  color: var(--text-muted);
+  line-height: 1.4;
+  font-size: 10px;
+}
+
+/* Hash section */
+.hash-section {
+  background: var(--hash-bg);
+  border: 1px solid var(--hash-border);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.hash-heading {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--hash-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.hash-formula {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--hash-border);
+  border-radius: 4px;
+  padding: 10px 14px;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+.hash-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+}
+
+.hf {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.hf strong {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--hash-accent);
+  font-weight: 500;
+}
+
+/* Ops namespace */
+.ops-section { margin-bottom: 0; }
+
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 5px;
+}
+
+.op-chip {
+  background: var(--op-bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 6px 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.op-ns   { color: var(--text-muted); font-size: 10px; }
+.op-name { color: var(--text); font-weight: 500; }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .arch-grid {
+    grid-template-columns: 1fr;
+  }
+  .bridge-col {
+    flex-direction: row;
+    padding: 8px 0;
+    gap: 10px;
+    justify-content: center;
+  }
+  .bridge-arrow-v { transform: rotate(-90deg); }
+  .bridge-box { width: auto; flex: 1; max-width: 260px; }
+  .mem-pair { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="header">
+  <div>
+    <h1 class="page-title">EGO Plugin</h1>
+    <p class="page-subtitle">Evidence-Gated Orchestration · receipt ledger + output gate for mutating tool calls</p>
+  </div>
+  <div class="mode-row">
+    <span class="mode-label">EGO_GATE_MODE</span>
+    <span class="badge badge-permissive">permissive</span>
+    <span class="badge badge-soft">soft</span>
+    <span class="badge badge-enforcing">enforcing</span>
+  </div>
+</div>
+
+<div class="arch-grid">
+
+  <!-- Node.js layer -->
+  <div class="layer-panel node-panel">
+    <p class="layer-label">Node.js · extensions/ego/index.js (795 lines)</p>
+
+    <p class="section-label">Gateway Hook Sequence</p>
+    <div class="hooks-flow">
+      <div class="hook-item"><span class="hook-dot"></span>message_received</div>
+      <div class="hook-item"><span class="hook-dot"></span>before_agent_run</div>
+      <div class="hook-item hook-accent"><span class="hook-dot"></span>before_tool_call — route op · mint · idempotency check</div>
+      <div class="hook-item hook-passive"><span class="hook-dot"></span>[ tool executes ]</div>
+      <div class="hook-item hook-accent"><span class="hook-dot"></span>after_tool_call — record receipt</div>
+      <div class="hook-item hook-accent"><span class="hook-dot"></span>tool_result_persist — verify · resolve obligation</div>
+      <div class="hook-item hook-accent"><span class="hook-dot"></span>before_agent_finalize — output gate check</div>
+      <div class="hook-item"><span class="hook-dot"></span>gateway_start — plugin init</div>
+    </div>
+
+    <p class="section-label">Tool → Operation Router</p>
+    <div class="route-table">
+      <div class="route-row">
+        <span class="rt-tool">write / edit / apply_patch</span>
+        <span class="rt-arr">→</span>
+        <span class="rt-op">filesystem.file.write</span>
+      </div>
+      <div class="route-row">
+        <span class="rt-tool">sessions_send / message</span>
+        <span class="rt-arr">→</span>
+        <span class="rt-op">a2a.message.inject</span>
+      </div>
+      <div class="route-row">
+        <span class="rt-tool">exec (forgejo curl write)</span>
+        <span class="rt-arr">→</span>
+        <span class="rt-op">forgejo.* heuristic</span>
+      </div>
+      <div class="route-row">
+        <span class="rt-tool">exec (sqlite3 mutation)</span>
+        <span class="rt-arr">→</span>
+        <span class="rt-op">sqlite.row.upsert</span>
+      </div>
+    </div>
+
+    <p class="section-label">In-Memory State (per gateway process)</p>
+    <div class="mem-pair">
+      <div class="mem-box">
+        <span class="mem-name">runTurnMap</span>
+        <span class="mem-detail">runId → turn binding<br>TTL 30 min · max 500</span>
+      </div>
+      <div class="mem-box">
+        <span class="mem-name">actionStore</span>
+        <span class="mem-detail">toolCallId → actionId, operation, hashSource, params</span>
+      </div>
+    </div>
+
+    <p class="section-label">Adapter Registry</p>
+    <div class="adapter-box">
+      <div class="adapter-row"><span class="adapter-fn">buildVerificationRecipe()</span> — per-op confirm/refute predicates</div>
+      <div class="adapter-row"><span class="adapter-fn">extractObserved()</span> — reads file for filesystem.file.write</div>
+      <div class="adapter-row"><span class="adapter-fn">computeIdempotencyKey()</span> — sha256(tool|params|runId) → ik_…</div>
+    </div>
+  </div>
+
+  <!-- Bridge column -->
+  <div class="bridge-col">
+    <span class="bridge-arrow-v">↑</span>
+    <div class="bridge-box">
+      <span class="bridge-name">helper.py</span>
+      <span class="bridge-sub">subprocess bridge<br>spawn-per-hook · stateless</span>
+      <div class="cmd-grid">
+        <span class="cmd-chip">mint</span>
+        <span class="cmd-chip">receipt</span>
+        <span class="cmd-chip">resolve</span>
+        <span class="cmd-chip">coverage</span>
+        <span class="cmd-chip">prestate</span>
+        <span class="cmd-chip">blocked</span>
+        <span class="cmd-chip">obligation</span>
+        <span class="cmd-chip">finalize</span>
+        <span class="cmd-chip">readiness</span>
+      </div>
+    </div>
+    <span class="bridge-arrow-v">↓</span>
+  </div>
+
+  <!-- Python layer -->
+  <div class="layer-panel py-panel">
+    <p class="layer-label">Python · workspace/project/ego/</p>
+
+    <p class="section-label">Core Modules</p>
+    <div class="py-modules">
+      <div class="py-mod">
+        <span class="py-mod-name">schema.py</span>
+        <span class="py-mod-desc">init_db · mint_id · insert_action / receipt / obligation · compute_receipt_hash · compute_turn_binding_hash · OPERATION_NAMESPACE const</span>
+      </div>
+      <div class="py-mod">
+        <span class="py-mod-name">reaper.py</span>
+        <span class="py-mod-desc">verify_action(conn, action_id, observed) · coverage_assertion(conn) — post-execution outcome resolution</span>
+      </div>
+      <div class="py-mod">
+        <span class="py-mod-name">gate.py</span>
+        <span class="py-mod-desc">before_agent_finalize(conn, ctx) → FinalizeResult · gate_readiness(conn) — output gate at finalize boundary</span>
+      </div>
+    </div>
+
+    <p class="section-label">SQLite Ledger</p>
+    <div class="db-box">
+      <div class="db-header">
+        <span class="db-title">ego-ledger.db</span>
+      </div>
+      <div class="db-table-chips">
+        <span class="db-chip">actions</span>
+        <span class="db-chip">receipts</span>
+        <span class="db-chip">obligations</span>
+      </div>
+      <div class="db-fields">
+        <div class="db-field-row">
+          <span class="dbf-table">actions</span>
+          <span class="dbf-cols">action_id · run_id · operation · state · idempotency_key · seq_num · request_hash</span>
+        </div>
+        <div class="db-field-row">
+          <span class="dbf-table">receipts</span>
+          <span class="dbf-cols">receipt_id · state · receipt_hash · prev_receipt_hash · turn_binding_hash · hash_source · verification</span>
+        </div>
+        <div class="db-field-row">
+          <span class="dbf-table">obligations</span>
+          <span class="dbf-cols">obligation_id · operation · expected · refute · state (OPEN/CLOSED)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Turn-binding hash -->
+<div class="hash-section">
+  <p class="hash-heading">Turn-Binding Hash · WS-D 3-field formula (spec comment #2737)</p>
+  <div class="hash-formula">sha256( resolvedSessionKey  +  userTurnCreatedAt  +  receiptSequence )</div>
+  <div class="hash-fields">
+    <span class="hf"><strong>resolvedSessionKey</strong> — agent session identifier</span>
+    <span class="hf"><strong>userTurnCreatedAt</strong> — ISO timestamp of originating user turn</span>
+    <span class="hf"><strong>receiptSequence</strong> — per-turn receipt counter N</span>
+    <span class="hf"><strong>hash_source</strong> — user_turn / agent_run / cc_invocation / none</span>
+  </div>
+</div>
+
+<!-- Operations namespace -->
+<div class="ops-section">
+  <p class="section-label">Operation Namespace · 8 canonical operations</p>
+  <div class="ops-grid">
+    <div class="op-chip"><span class="op-ns">forgejo.</span><br><span class="op-name">issue.update</span></div>
+    <div class="op-chip"><span class="op-ns">forgejo.</span><br><span class="op-name">issue.comment.create</span></div>
+    <div class="op-chip"><span class="op-ns">forgejo.</span><br><span class="op-name">label.apply</span></div>
+    <div class="op-chip"><span class="op-ns">a2a.</span><br><span class="op-name">message.inject</span></div>
+    <div class="op-chip"><span class="op-ns">sermo.</span><br><span class="op-name">post.create</span></div>
+    <div class="op-chip"><span class="op-ns">filesystem.</span><br><span class="op-name">file.write</span></div>
+    <div class="op-chip"><span class="op-ns">sqlite.</span><br><span class="op-name">row.upsert</span></div>
+    <div class="op-chip"><span class="op-ns">ego.</span><br><span class="op-name">escalation.publish</span></div>
+  </div>
+</div>
