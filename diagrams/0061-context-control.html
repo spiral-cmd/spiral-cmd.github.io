@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context Control — ops/#22</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #F8F9FB; --white: #FFFFFF; --dark: #1A2332; --muted: #4A5568;
+    --light: #718096; --border: #E2E8F0; --blue: #2B6CB0; --blue-bg: #EBF8FF;
+    --green: #276749; --green-bg: #F0FFF4; --green-border: #68D391;
+    --orange: #D97706; --orange-bg: #FFFBEB; --orange-border: #F6AD55;
+    --red: #E53E3E; --red-bg: #FFF5F5; --red-border: #FC8181;
+    --purple: #6B46C1; --purple-bg: #FAF5FF; --purple-border: #B794F4;
+    --yellow-bg: #FFFFF0; --yellow-border: #F6E05E; --yellow: #B7791F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'IBM Plex Sans', Arial, sans-serif; background: var(--bg); color: var(--dark); line-height: 1.5; }
+  nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 32px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 10; }
+  nav a { color: var(--blue); text-decoration: none; font-size: 14px; }
+  nav .sep { color: var(--light); }
+  nav .title { font-weight: 600; color: var(--dark); }
+  nav .tag { font-size: 12px; background: var(--blue-bg); color: var(--blue); padding: 2px 10px; border-radius: 999px; font-weight: 600; }
+
+  .slides { max-width: 1120px; margin: 0 auto; padding: 40px 32px 80px; display: flex; flex-direction: column; gap: 32px; }
+
+  .slide { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .slide-inner { padding: 48px 56px; }
+  .slide-num { font-size: 11px; font-weight: 700; color: var(--light); letter-spacing: 2px; text-transform: uppercase; padding: 10px 20px; background: var(--bg); border-bottom: 1px solid var(--border); }
+
+  h1 { font-size: 52px; font-weight: 700; line-height: 1.05; }
+  h2 { font-size: 36px; font-weight: 700; line-height: 1.1; }
+  h3 { font-size: 20px; font-weight: 600; }
+  p { font-size: 16px; color: var(--muted); }
+  code { font-family: 'IBM Plex Mono', monospace; font-size: 14px; background: var(--border); padding: 2px 8px; border-radius: 4px; color: var(--dark); }
+
+  .label { font-size: 12px; font-weight: 600; color: var(--blue); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .subtitle { font-size: 20px; font-weight: 300; color: var(--muted); margin-top: 10px; }
+
+  .chips { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+  .chip { padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  .chip-red { background: var(--red); color: #FFF5F5; }
+  .chip-orange { background: var(--orange); color: #FFFBEB; }
+  .chip-blue { background: var(--blue); color: var(--blue-bg); }
+
+  .cards { display: grid; gap: 20px; margin-top: 24px; }
+  .cards-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .cards-2 { grid-template-columns: 1fr 1fr; }
+  .card { border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .card.red { background: var(--red-bg); border: 2px solid var(--red-border); }
+  .card.orange { background: var(--orange-bg); border: 2px solid var(--orange-border); }
+  .card.blue { background: var(--blue-bg); border: 2px solid #63B3ED; }
+  .card.green { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .card.purple { background: var(--purple-bg); border: 2px solid var(--purple-border); }
+  .card.white { background: var(--white); border: 1px solid var(--border); }
+  .card .big { font-size: 48px; font-weight: 700; line-height: 1; }
+  .card .big.red { color: var(--red); background: none; border: none; padding: 0; }
+  .card .big.green { color: var(--green); background: none; border: none; padding: 0; }
+  .card .big.orange { color: var(--orange); background: none; border: none; padding: 0; }
+  .card p { font-size: 14px; }
+  .card h3 { font-size: 17px; }
+  .card .note { font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .card .note.red { color: var(--red); }
+  .card .note.green { color: var(--green); }
+  .card .note.orange { color: var(--orange); }
+  .card .note.blue { color: var(--blue); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 24px; }
+  .divider { width: 2px; background: var(--border); border-radius: 2px; }
+  .col-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 14px; }
+  .col-label.blue { color: var(--blue); }
+  .col-label.red { color: #9B2C2C; }
+
+  .file-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; margin-bottom: 10px; }
+  .file-item .fname { font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .fname.raw { color: var(--dark); }
+  .fname.summary { color: var(--green); }
+  .fname.sticky { color: var(--orange); }
+
+  .layer-card { border-radius: 12px; padding: 22px; margin-bottom: 10px; }
+  .layer-card.l1 { background: var(--red-bg); border: 2px solid var(--red-border); }
+  .layer-card.l2 { background: var(--blue-bg); border: 2px solid #63B3ED; }
+  .layer-card.note { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .layer-card h3 { font-size: 16px; }
+  .layer-card p { font-size: 13px; margin-top: 6px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 24px; }
+  th { background: #EDF2F7; text-align: left; padding: 12px 16px; color: var(--dark); font-weight: 600; }
+  td { padding: 10px 16px; color: var(--muted); border-top: 1px solid var(--border); }
+  tr:nth-child(even) td { background: #F7FAFC; }
+  td code { font-size: 13px; }
+  td.never { color: var(--blue); font-weight: 700; }
+  td.keep { color: var(--green); font-weight: 600; }
+  td.prune { color: var(--orange); }
+  td.agg { color: var(--red); font-weight: 600; }
+
+  .budget-row { display: flex; gap: 16px; margin-top: 24px; }
+  .budget-box { border-radius: 10px; padding: 20px; flex: 1; }
+  .budget-box .num { font-size: 42px; font-weight: 700; line-height: 1; }
+  .budget-box p { font-size: 13px; margin-top: 6px; }
+  .budget-box.orange { background: var(--orange-bg); border: 2px solid var(--orange-border); }
+  .budget-box.orange .num { color: var(--orange); }
+  .budget-box.blue { background: var(--blue-bg); border: 2px solid #63B3ED; }
+  .budget-box.blue .num { color: var(--blue); }
+  .budget-box.green { background: var(--green-bg); border: 1px solid var(--green-border); }
+  .budget-box.green p { color: var(--green); font-size: 13px; }
+
+  .topo-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; margin-top: 24px; }
+
+  .roadmap { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+  .rrow { display: flex; gap: 14px; align-items: stretch; }
+  .rchunk { width: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px; padding: 10px; flex-shrink: 0; }
+  .rchunk .cn { font-size: 20px; font-weight: 700; }
+  .rchunk .cl { font-size: 11px; text-align: center; line-height: 1.2; }
+  .rchunk.n1 { background: var(--green-bg); border: 2px solid var(--green-border); color: var(--green); }
+  .rchunk.n0 { background: var(--orange-bg); border: 2px solid var(--orange-border); color: var(--orange); }
+  .rchunk.n2 { background: var(--blue-bg); border: 2px solid #63B3ED; color: var(--blue); }
+  .rchunk.n3 { background: var(--red-bg); border: 2px solid var(--red-border); color: var(--red); }
+  .rchunk.n4 { background: var(--purple-bg); border: 2px solid var(--purple-border); color: var(--purple); }
+  .rchunk.n5 { background: var(--yellow-bg); border: 2px solid var(--yellow-border); color: var(--yellow); }
+  .rbody { flex: 1; background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px 22px; }
+  .rbody h3 { font-size: 16px; margin-bottom: 4px; }
+  .rbody p { font-size: 13px; }
+  .rstatus { width: 110px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 10px; flex-shrink: 0; }
+  .rstatus p { font-size: 13px; font-weight: 600; text-align: center; }
+  .rstatus.inflight { background: var(--orange-bg); border: 2px solid var(--orange-border); }
+  .rstatus.inflight p { color: var(--orange); }
+  .rstatus.briefed { background: var(--orange-bg); border: 2px solid var(--orange-border); }
+  .rstatus.briefed p { color: var(--orange); }
+  .rstatus.pending { background: var(--bg); border: 1px solid var(--border); }
+  .rstatus.pending p { color: var(--light); }
+
+  .footer { font-size: 13px; color: var(--light); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  .info-box { border-radius: 10px; padding: 18px 22px; margin-top: 16px; display: flex; align-items: center; gap: 16px; }
+  .info-box.orange { background: var(--orange-bg); border: 1px solid var(--orange-border); }
+  .info-box strong { color: var(--orange); }
+  .info-box p { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">← diagrams</a>
+  <span class="sep">/</span>
+  <span class="title">0061 — Context Control</span>
+  <span class="tag">openclaw</span>
+</nav>
+
+<div class="slides">
+
+  <!-- 1. Cover -->
+  <div class="slide">
+    <div class="slide-num">01 / 07 · ops/#22 · OpenClaw Native Plugin</div>
+    <div class="slide-inner">
+      <div class="label">OpenClaw · contextEngine Plugin</div>
+      <h1>Context Control</h1>
+      <p class="subtitle">A native <code>contextEngine</code> plugin to replace lossless-claw</p>
+      <p style="font-size:14px; color:var(--light); margin-top:12px;">CC · 2026-09-18 · v0.2-plan · Path A + Path B embedded</p>
+      <div class="chips">
+        <span class="chip chip-red">986 MB RSS</span>
+        <span class="chip chip-orange">0 compactions running</span>
+        <span class="chip chip-blue">lcm disabled</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Problem -->
+  <div class="slide">
+    <div class="slide-num">02 / 07 · The current state</div>
+    <div class="slide-inner">
+      <h2>The current state</h2>
+      <div class="cards cards-3" style="margin-top:24px;">
+        <div class="card red">
+          <div class="big red">986 MB</div>
+          <h3>Gateway RSS</h3>
+          <p>With lossless-claw fully disabled. Expected floor much lower — co-contributor is an AsyncLocalStorage leak in OC 2026.8–9.x</p>
+        </div>
+        <div class="card orange">
+          <div class="big orange">1.4 GB</div>
+          <h3>lcm.db size</h3>
+          <p>Vacuumed 2026-09-18 — no size change. Last lcm_ tool used 2 months ago (2026-07-24). Safe to retire.</p>
+        </div>
+        <div class="card green">
+          <div class="big green">0</div>
+          <h3>Compactions running</h3>
+          <p>Config: <code>contextEngine: "legacy"</code>. The replacement needs to be built before anything can compact.</p>
+        </div>
+      </div>
+      <p class="footer">Phase 0 audit · 2026-09-18</p>
+    </div>
+  </div>
+
+  <!-- 3. Architecture -->
+  <div class="slide">
+    <div class="slide-num">03 / 07 · Architecture</div>
+    <div class="slide-inner">
+      <h2>Per-session flat store + 2-layer pipeline</h2>
+      <div class="two-col" style="margin-top:24px;">
+        <div>
+          <div class="col-label blue">Per-session storage (one writer per session)</div>
+          <div class="file-item">
+            <div class="fname raw">raw.jsonl</div>
+            <p style="font-size:14px;">Append-only, never truncated. Source of truth. Full message history with tool calls and results.</p>
+          </div>
+          <div class="file-item">
+            <div class="fname summary">summary.md</div>
+            <p style="font-size:14px;">Derived artifact — provenance-linked back to raw.jsonl. Structured: Goal / Discoveries / Accomplished / Relevant files. Written by Layer 2 compact().</p>
+          </div>
+          <div class="file-item">
+            <div class="fname sticky">sticky.md</div>
+            <p style="font-size:14px;">Zero-cost injection every turn. Goal · Constraints · Key Decisions · Open TODOs. Updated by heuristics, no LLM call. Prevents goal drift.</p>
+          </div>
+        </div>
+        <div>
+          <div class="col-label red">Two-layer pipeline</div>
+          <div class="layer-card l1">
+            <h3>Layer 1 — assemble() · Chunk 2</h3>
+            <p>Structured tool-output eviction on every model run. No LLM call. Protect 40K tokens of recent outputs, reclaim only if 20K+ available. Tombstones not silence.</p>
+            <p class="note orange" style="margin-top:8px;">Highest ROI — ships independently</p>
+          </div>
+          <div class="layer-card l2">
+            <h3>Layer 2 — compact() · Chunk 3</h3>
+            <p>LLM-triggered summarization only when Layer 1 insufficient. Structured template (not narrative blob). Updates summary.md with provenance link to raw.jsonl.</p>
+            <p class="note blue" style="margin-top:8px;">Fires at 85% context window</p>
+          </div>
+          <div class="layer-card note">
+            <p style="font-size:13px; color:var(--green);"><strong>Key principle:</strong> Raw is append-only — never discarded. summary.md is a derived artifact. Consistent with real Hermes (Feb 2026) and lossless-claw 1.x best practice.</p>
+          </div>
+        </div>
+      </div>
+      <p class="footer">Path A · api.registerContextEngine() · stable since OC 2026.3.7</p>
+    </div>
+  </div>
+
+  <!-- 4. Topology -->
+  <div class="slide">
+    <div class="slide-num">04 / 07 · Topology</div>
+    <div class="slide-inner">
+      <h2>The surface is smaller than it looks</h2>
+      <p style="font-size:18px; color:var(--muted); margin-top:8px;">sessionTarget topology audit: 57 of 58 cron jobs are <code>isolated</code></p>
+      <div class="topo-grid">
+        <div class="card green" style="padding:28px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div class="big green" style="font-size:56px;">57</div>
+            <div>
+              <h3 style="color:var(--green);">isolated crons</h3>
+              <p style="font-size:14px;">Fresh session per run · context does NOT accumulate across runs</p>
+            </div>
+          </div>
+          <p style="font-size:14px; background:#C6F6D5; padding:10px 14px; border-radius:8px; color:var(--green); margin-top:12px;">Context is bounded by one run. Path B windowing is irrelevant here. Fix = janitor cron (Chunk -1.1) + lightContext: true config flip.</p>
+        </div>
+        <div class="card red" style="padding:28px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="big red" style="font-size:56px;">1</div>
+            <div>
+              <h3 style="color:var(--red);">main session</h3>
+              <p style="font-size:14px;">heartbeat:main</p>
+            </div>
+          </div>
+          <p style="font-size:14px; background:#FED7D7; padding:10px 14px; border-radius:8px; color:var(--red); margin-top:12px;">Runs in shared main session — this is the cross-run growth driver. Hermes plugin is most impactful here.</p>
+        </div>
+      </div>
+      <table>
+        <tr><th style="width:20%">sessionTarget</th><th style="width:35%">Context behaviour</th><th style="width:20%">Fix needed</th><th style="width:25%">Plugin required?</th></tr>
+        <tr><td><code style="color:var(--green)">isolated</code></td><td>Fresh per run, no cross-run accumulation</td><td class="prune">Janitor + lightContext</td><td class="keep">No</td></tr>
+        <tr><td><code style="color:var(--red)">main</code></td><td>Accumulates across all runs in shared session</td><td class="agg">Full Hermes plugin</td><td class="agg">Yes — primary target</td></tr>
+        <tr><td><code style="color:var(--blue)">session:&lt;id&gt;</code></td><td>Persistent named session, accumulates intentionally</td><td class="note blue" style="font-weight:600; color:var(--blue)">Hermes plugin</td><td class="never">Yes — interactive</td></tr>
+      </table>
+      <p class="footer">Source: Sonnet 5 ext · v0.2-plan.md topology audit</p>
+    </div>
+  </div>
+
+  <!-- 5. Retention -->
+  <div class="slide">
+    <div class="slide-num">05 / 07 · Layer 1 retention policy</div>
+    <div class="slide-inner">
+      <h2>Layer 1: Retention policy by content type</h2>
+      <p style="font-size:16px; color:var(--muted); margin-top:8px;">assemble() — fires on every model run · no LLM call · tombstones not silence</p>
+      <div style="display:flex; gap:24px; margin-top:24px; align-items:flex-start;">
+        <table style="flex:3; margin-top:0;">
+          <tr><th style="width:30%">Content type</th><th style="width:28%">Treatment</th><th>Rationale</th></tr>
+          <tr><td><code>grep / find results</code></td><td class="prune">Keep last 1–3 turns</td><td>Matching lines only</td></tr>
+          <tr><td><code>exec / shell output</code></td><td class="prune">Keep last 1–3 turns</td><td>Head/tail trick for logs</td></tr>
+          <tr><td><code>pytest / build logs</code></td><td class="prune">Failure lines + summary only</td><td>High noise, low signal once fixed</td></tr>
+          <tr><td><code>cat / file reads</code></td><td class="keep">Keep full</td><td>Was requested intentionally</td></tr>
+          <tr><td><code>API responses</code></td><td class="prune">Keep last 1–3 turns</td><td>State changes; old is stale</td></tr>
+          <tr><td><code>idempotent cron output</code></td><td class="agg">Keep last 1 turn only</td><td>Repeated no-op, zero signal</td></tr>
+          <tr><td><code>user-provided data</code></td><td class="never">Never auto-prune</td><td>User intent is canonical</td></tr>
+          <tr><td><code>exit codes / status</code></td><td class="never">Always keep</td><td>Model needs to know tool ran</td></tr>
+          <tr><td><code>user / assistant reasoning</code></td><td class="never">Never prune</td><td>Reasoning thread = MiroThinker safety guarantee</td></tr>
+        </table>
+        <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+          <div class="budget-box orange">
+            <div class="num">40K</div>
+            <p>PRUNE_PROTECT — recent tool outputs untouched</p>
+          </div>
+          <div class="budget-box blue">
+            <div class="num">20K</div>
+            <p>PRUNE_MINIMUM — only prune if worth it</p>
+          </div>
+          <div class="budget-box green">
+            <p>Tombstone: <code>[exec output pruned — 18.4k chars, exit_code=0]</code></p>
+          </div>
+        </div>
+      </div>
+      <p class="footer">Kilocode thresholds · ChatGPT + DeepSeek cross-LLM consensus</p>
+    </div>
+  </div>
+
+  <!-- 6. Free wins -->
+  <div class="slide">
+    <div class="slide-num">06 / 07 · Chunk -1 · Zero code</div>
+    <div class="slide-inner">
+      <div class="label" style="color:var(--green);">Chunk -1 · Zero code</div>
+      <h2>Free wins before writing a line</h2>
+      <div class="cards cards-3" style="margin-top:20px;">
+        <div class="card green">
+          <h3>1. lightContext: true</h3>
+          <p>Skip workspace bootstrap file injection (AGENTS.md, SOUL.md, etc.) for isolated cron jobs that don't need them. Per-run token reduction with zero code. Config flip only.</p>
+          <p class="note green">Target: ~50 isolated crons</p>
+        </div>
+        <div class="card blue">
+          <h3>2. contextInjection:<br>"continuation-skip"</h3>
+          <p>Skip re-injecting all bootstrap files on safe continuation turns. Only rebuild after heartbeats or compaction. Trims prompt size on the ~20 long interactive sessions specifically.</p>
+          <p class="note blue">Target: interactive sessions</p>
+        </div>
+        <div class="card red">
+          <h3>3. Janitor cron</h3>
+          <p>deleteAfterRun: true has a confirmed reliability bug. Daily cleanup of stale isolated cron session files. 134 MB, 43 files identified 2026-09-18. One cron job, five minutes.</p>
+          <p class="note red">Biggest certain win in Chunk -1</p>
+        </div>
+      </div>
+      <div class="info-box orange">
+        <strong>Timing:</strong>&nbsp;
+        <p>Config flips scheduled 24h after pristine gateway restart. Janitor Chunk -1.1 script under review. Exclusion list finalized 2026-09-18.</p>
+      </div>
+      <p class="footer">Chunk -1 ships before any plugin code · ops/#290 in-flight</p>
+    </div>
+  </div>
+
+  <!-- 7. Roadmap -->
+  <div class="slide">
+    <div class="slide-num">07 / 07 · Roadmap</div>
+    <div class="slide-inner">
+      <h2>6-chunk build roadmap</h2>
+      <div class="roadmap">
+        <div class="rrow">
+          <div class="rchunk n1"><span class="cn">-1</span><span class="cl">Zero code</span></div>
+          <div class="rbody"><h3>Janitor + config flips</h3><p>Janitor cron (134 MB cleanup), lightContext flips, contextInjection flip. Pristine restart → 24h RSS baseline. No plugin code.</p></div>
+          <div class="rstatus inflight"><p>In flight</p></div>
+        </div>
+        <div class="rrow">
+          <div class="rchunk n0"><span class="cn">0</span><span class="cl">Skeleton</span></div>
+          <div class="rbody"><h3>RSS baseline + plugin scaffold</h3><p>24h RSS trace on cato (lightest agent). Verify registerContextEngine() API on OC 2026.9.3. Scaffold plugin: assemble/compact/ingest stubs, per-session file init, write-lock + atomic writes.</p></div>
+          <div class="rstatus briefed"><p>Briefed to io</p></div>
+        </div>
+        <div class="rrow">
+          <div class="rchunk n2"><span class="cn">1</span><span class="cl">Store</span></div>
+          <div class="rbody"><h3>raw.jsonl append + sticky.md injection</h3><p>Write raw.jsonl on every turn. Build + inject sticky.md (Goal/Constraints/Decisions/TODOs). First working plugin.</p></div>
+          <div class="rstatus pending"><p>Pending</p></div>
+        </div>
+        <div class="rrow">
+          <div class="rchunk n3"><span class="cn">2</span><span class="cl">Layer 1</span></div>
+          <div class="rbody"><h3>assemble() eviction — highest ROI</h3><p>Per-type retention policy in assemble(). PRUNE_PROTECT=40K, PRUNE_MINIMUM=20K. Tombstones. Ships independently, delivers measurable token reduction.</p></div>
+          <div class="rstatus pending"><p>Pending</p></div>
+        </div>
+        <div class="rrow">
+          <div class="rchunk n4"><span class="cn">3</span><span class="cl">Layer 2</span></div>
+          <div class="rbody"><h3>compact() LLM summarization</h3><p>Structured template compact (not narrative blob). Writes summary.md with provenance link to raw.jsonl. Fires at 85% context window.</p></div>
+          <div class="rstatus pending"><p>Pending</p></div>
+        </div>
+        <div class="rrow">
+          <div class="rchunk n5"><span class="cn">5</span><span class="cl">Pilot</span></div>
+          <div class="rbody"><h3>7-day soak on cato</h3><p>Cato is the lightest agent and lowest-risk pilot host. Measure RSS, context usage, task completion. Pass = fleet rollout.</p></div>
+          <div class="rstatus pending"><p>Pending</p></div>
+        </div>
+      </div>
+      <p class="footer">v0.2-plan.md · Path A native · Path B embedded as Chunk 2</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
