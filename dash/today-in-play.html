@@ -65,7 +65,7 @@
   <header>
     <h1>Today in Play</h1>
     <p class="subtitle">150 open items shown across openclaw/ops — a point-in-time snapshot, not a live feed.</p>
-    <p class="meta-line">Pulled 2026-11-10 14:36 UTC. 6 security-tagged item(s) withheld from this public page across all buckets. Interactive version (full detail, private): <a href="https://claude.ai/artifact/5Sz1B8x7F7ELZsFcXz4HYc">Claude artifact</a>.</p>
+    <p class="meta-line">Pulled 2026-11-10 23:14 UTC. 12 security-tagged item(s) withheld from this public page across all buckets. Interactive version (full detail, private): <a href="https://claude.ai/artifact/5Sz1B8x7F7ELZsFcXz4HYc">Claude artifact</a>.</p>
   </header>
   <section class="stats">
     <a class="stat-card sev-bad" href="#bucket-hil">
@@ -86,15 +86,15 @@
     </a>
     <a class="stat-card sev-neutral" href="#bucket-review">
       <div class="stat-label">In review</div>
-      <div class="stat-value">3</div>
+      <div class="stat-value">2</div>
     </a>
     <a class="stat-card sev-warn" href="#bucket-p1_queued">
       <div class="stat-label">P1 queued</div>
-      <div class="stat-value">11</div>
+      <div class="stat-value">14</div>
     </a>
     <a class="stat-card sev-neutral" href="#bucket-touched_today">
       <div class="stat-label">Touched today</div>
-      <div class="stat-value">12</div>
+      <div class="stat-value">17</div>
     </a>
   </section>
   <section class="board">
@@ -301,24 +301,11 @@
     <div class="bucket-section sev-neutral" id="bucket-review">
       <div class="bucket-head"><h2>In review</h2></div>
       <p class="bucket-note">Open issues tagged <code>status/review</code>: awaiting a review pass.</p>
+      <p class="withheld-note">1 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
       <div class="table-wrap">
         <table class="issue-table">
           <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
           <tbody>
-            <tr>
-              <td class="num">422</td>
-              <td class="title">Identity-doc migration: fix 10KB truncation + SOTA convention mismatch (io review requested)</td>
-              <td class="labels">project/identity-refactor</td>
-              <td class="owner">(unassigned)</td>
-              <td class="owner">2026-11-10 13:25</td>
-            </tr>
-            <tr>
-              <td class="num">397</td>
-              <td class="title">[ego][security] EGO exec idempotency-block bypass — unrouted exec commands (python3/sed/tee/git/ssh/adb) skip the UNKNOWN gate entirely</td>
-              <td class="labels"></td>
-              <td class="owner">(unassigned)</td>
-              <td class="owner">2026-11-06 15:00</td>
-            </tr>
             <tr>
               <td class="num">334</td>
               <td class="title">LLM allocation best practice on OpenClaw — research report + remediation alignment</td>
@@ -338,6 +325,27 @@
         <table class="issue-table">
           <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
           <tbody>
+            <tr>
+              <td class="num">431</td>
+              <td class="title">forgejo_token.py: intermittent vault resolution failure is BWS 429 rate limiting, misreported as empty secret</td>
+              <td class="labels">priority/p1</td>
+              <td class="owner">(unassigned)</td>
+              <td class="owner">2026-11-10 23:08</td>
+            </tr>
+            <tr>
+              <td class="num">428</td>
+              <td class="title">secrets.sh: GITHUB_TOKEN and others silently fall through to stale Keychain copy instead of BWS</td>
+              <td class="labels">priority/p1, project/ops-live</td>
+              <td class="owner">(unassigned)</td>
+              <td class="owner">2026-11-10 19:47</td>
+            </tr>
+            <tr>
+              <td class="num">426</td>
+              <td class="title">Git working tree hygiene: stale tracked browser profile (browser/clawd/user-data) + 5.5k dirty paths incl. possible saved-credential data</td>
+              <td class="labels">priority/p1, project/ops-live</td>
+              <td class="owner">(unassigned)</td>
+              <td class="owner">2026-11-10 17:20</td>
+            </tr>
             <tr>
               <td class="num">416</td>
               <td class="title">Research triage paradigm — pattern-match incoming research against ocaisa&#x27;s mental model before investigating</td>
@@ -401,38 +409,38 @@
     <div class="bucket-section sev-neutral" id="bucket-touched_today">
       <div class="bucket-head"><h2>Touched today</h2></div>
       <p class="bucket-note">Open issues updated today (UTC).</p>
-      <p class="withheld-note">1 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
+      <p class="withheld-note">6 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
       <div class="table-wrap">
         <table class="issue-table">
           <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
           <tbody>
             <tr>
-              <td class="num">424</td>
-              <td class="title">Dashboard: Today in Play — bible doc + reusable regen skill (gitweb mirror only)</td>
-              <td class="labels">project/ops-live</td>
+              <td class="num">431</td>
+              <td class="title">forgejo_token.py: intermittent vault resolution failure is BWS 429 rate limiting, misreported as empty secret</td>
+              <td class="labels">priority/p1</td>
               <td class="owner">(unassigned)</td>
-              <td class="owner">2026-11-10 14:32</td>
+              <td class="owner">2026-11-10 23:08</td>
+            </tr>
+            <tr>
+              <td class="num">428</td>
+              <td class="title">secrets.sh: GITHUB_TOKEN and others silently fall through to stale Keychain copy instead of BWS</td>
+              <td class="labels">priority/p1, project/ops-live</td>
+              <td class="owner">(unassigned)</td>
+              <td class="owner">2026-11-10 19:47</td>
+            </tr>
+            <tr>
+              <td class="num">426</td>
+              <td class="title">Git working tree hygiene: stale tracked browser profile (browser/clawd/user-data) + 5.5k dirty paths incl. possible saved-credential data</td>
+              <td class="labels">priority/p1, project/ops-live</td>
+              <td class="owner">(unassigned)</td>
+              <td class="owner">2026-11-10 17:20</td>
             </tr>
             <tr>
               <td class="num">423</td>
               <td class="title">[SUPERSEDED] AGENTS.md rewrite v0 — proposal for review (targeted wrong file; see comment)</td>
               <td class="labels">project/identity-refactor</td>
               <td class="owner">(unassigned)</td>
-              <td class="owner">2026-11-10 12:49</td>
-            </tr>
-            <tr>
-              <td class="num">422</td>
-              <td class="title">Identity-doc migration: fix 10KB truncation + SOTA convention mismatch (io review requested)</td>
-              <td class="labels">project/identity-refactor</td>
-              <td class="owner">(unassigned)</td>
-              <td class="owner">2026-11-10 13:25</td>
-            </tr>
-            <tr>
-              <td class="num">421</td>
-              <td class="title">AGENTS.md: live file resolved to agents/main/workspace/, not shared workspace root — v0 rewrite proposal and CLAUDE.md:143 both target the wrong path</td>
-              <td class="labels">priority/p2, project/identity-refactor</td>
-              <td class="owner">(unassigned)</td>
-              <td class="owner">2026-11-10 13:25</td>
+              <td class="owner">2026-11-10 15:38</td>
             </tr>
             <tr>
               <td class="num">420</td>
