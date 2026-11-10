@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Today in Play</title>
 <style>
+
   :root {
     --bg: #f7f5f1; --panel: #ffffff; --fg: #1d1b18; --fg-muted: #6b6558;
     --border: #e4ded2; --ok: #1f7a52; --warn: #a85b12; --bad: #b3261e; --accent: #2d4f4a;
@@ -15,14 +16,18 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--bg); color: var(--fg); }
-  body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 24px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); line-height: 1.45; }
+  body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    padding: 24px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left));
+    line-height: 1.45; }
   .page { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
   h1 { font-size: 28px; margin: 0 0 6px 0; font-weight: 600; }
   .subtitle { color: var(--fg-muted); margin: 0; font-size: 15px; }
   .meta-line { color: var(--fg-muted); font-size: 13px; margin: 4px 0 0 0; }
   .meta-line a { color: var(--accent); }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-  .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: var(--fg); border-top: 3px solid var(--line-color, var(--border)); }
+  .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; text-decoration: none;
+    color: var(--fg); border-top: 3px solid var(--line-color, var(--border)); }
   .stat-card.sev-bad { --line-color: var(--bad); }
   .stat-card.sev-warn { --line-color: var(--warn); }
   .stat-card.sev-ok { --line-color: var(--ok); }
@@ -30,7 +35,8 @@
   .stat-label { font-size: 11px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .04em; }
   .stat-value { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .board { display: flex; flex-direction: column; gap: 16px; }
-  .bucket-section { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--line-color, var(--border)); border-radius: 10px; padding: 16px 18px; }
+  .bucket-section { background: var(--panel); border: 1px solid var(--border);
+    border-left: 3px solid var(--line-color, var(--border)); border-radius: 10px; padding: 16px 18px; }
   .bucket-section.sev-bad { --line-color: var(--bad); }
   .bucket-section.sev-warn { --line-color: var(--warn); }
   .bucket-section.sev-ok { --line-color: var(--ok); }
@@ -39,26 +45,28 @@
   .bucket-note { font-size: 12.5px; color: var(--fg-muted); margin: 0 0 8px 0; }
   .withheld-note { font-size: 12.5px; color: var(--warn); margin: 0 0 8px 0; font-style: italic; }
   .table-wrap { overflow-x: auto; }
-  table.issue-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
-  table.issue-table th { text-align: left; font-size: 11.5px; color: var(--fg-muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  table.issue-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.issue-table th { text-align: left; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--fg-muted); font-weight: 600;
+    border-bottom: 1px solid var(--border); padding: 6px 8px; }
   table.issue-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
   table.issue-table tr:last-child td { border-bottom: none; }
-  table.issue-table td.num { color: var(--fg-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  table.issue-table td.labels { color: var(--fg-muted); font-size: 12px; }
-  table.issue-table td.owner { white-space: nowrap; color: var(--fg-muted); }
-  .empty-row { color: var(--fg-muted); font-style: italic; }
-  footer { font-size: 12px; color: var(--fg-muted); border-top: 1px solid var(--border); padding-top: 14px; }
-  code { background: var(--border); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  td.num { font-variant-numeric: tabular-nums; color: var(--fg-muted); white-space: nowrap; }
+  td.title { font-weight: 500; }
+  td.labels, td.owner { color: var(--fg-muted); font-size: 12.5px; }
+  .empty { color: var(--fg-muted); font-size: 13px; font-style: italic; margin: 4px 0 0 0; }
+  footer { color: var(--fg-muted); font-size: 12.5px; border-top: 1px solid var(--border); padding-top: 14px; }
+  footer code { font-size: 12px; }
+
 </style>
 </head>
 <body>
 <div class="page">
   <header>
     <h1>Today in Play</h1>
-    <p class="subtitle">43 open items shown across openclaw/ops — a point-in-time snapshot, not a live feed.</p>
-    <p class="meta-line">Pulled 2026-11-10 13:40 UTC. 6 security-tagged item(s) withheld from this public page across all buckets. Interactive version (full detail, private): <a href="https://claude.ai/artifact/5Sz1B8x7F7ELZsFcXz4HYc">Claude artifact</a>.</p>
+    <p class="subtitle">150 open items shown across openclaw/ops — a point-in-time snapshot, not a live feed.</p>
+    <p class="meta-line">Pulled 2026-11-10 14:36 UTC. 6 security-tagged item(s) withheld from this public page across all buckets. Interactive version (full detail, private): <a href="https://claude.ai/artifact/5Sz1B8x7F7ELZsFcXz4HYc">Claude artifact</a>.</p>
   </header>
-
   <section class="stats">
     <a class="stat-card sev-bad" href="#bucket-hil">
       <div class="stat-label">HIL — needs Martin</div>
@@ -86,10 +94,9 @@
     </a>
     <a class="stat-card sev-neutral" href="#bucket-touched_today">
       <div class="stat-label">Touched today</div>
-      <div class="stat-value">11</div>
+      <div class="stat-value">12</div>
     </a>
   </section>
-
   <section class="board">
     <div class="bucket-section sev-bad" id="bucket-hil">
       <div class="bucket-head"><h2>HIL — needs Martin</h2></div>
@@ -97,298 +104,392 @@
       <p class="withheld-note">1 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
               <td class="num">415</td>
               <td class="title">offload-pixel9a: success-shaped output regardless of what happened</td>
               <td class="labels">project/ops-live, type/hil</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-08 17:57</td>
+            </tr>
+            <tr>
               <td class="num">408</td>
               <td class="title">decision: wire foto tag into future-arrivals pipeline</td>
               <td class="labels">project/ops-live, type/hil</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-06 15:00</td>
+            </tr>
+            <tr>
               <td class="num">297</td>
               <td class="title">New box — plan &amp; orderly migration from Intel minicz to Apple Silicon Mac</td>
               <td class="labels">priority/p2, project/upgrade-prep, type/hil</td>
               <td class="owner">(unassigned)</td>
-            </tr></tbody>
+              <td class="owner">2026-09-21 11:26</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <div class="bucket-section sev-ok" id="bucket-running">
       <div class="bucket-head"><h2>Running now</h2></div>
-      <p class="bucket-note">Tagged <code>status/running</code>: actively being worked this moment.</p>
-      
+      <p class="bucket-note">Open issues tagged <code>status/running</code>: actively being worked.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
               <td class="num">343</td>
               <td class="title">Gateway plugin-host retirement race: engine degrades to legacy mid-turn (plugin-setup-module:1613)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">cc</td>
-            </tr><tr>
+              <td class="owner">2026-10-28 13:24</td>
+            </tr>
+            <tr>
               <td class="num">22</td>
               <td class="title">Replace lossless-claw with Hermes-style dual-layer summarizer</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">cc</td>
-            </tr></tbody>
+              <td class="owner">2026-10-04 20:51</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <div class="bucket-section sev-ok" id="bucket-inflight">
       <div class="bucket-head"><h2>In-flight</h2></div>
-      <p class="bucket-note">Tagged <code>status/in-flight</code>: chunk assigned and underway, not yet back for review.</p>
-      
+      <p class="bucket-note">Open issues tagged <code>status/in-flight</code>: started, not yet complete.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
               <td class="num">387</td>
               <td class="title">Pixel 9a → minicz verified offload (adb) — spec + script</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-08 18:06</td>
+            </tr>
+            <tr>
               <td class="num">363</td>
               <td class="title">Google rotation trial — Section D: Host cleanup sweep (independent)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-26 16:01</td>
+            </tr>
+            <tr>
               <td class="num">362</td>
               <td class="title">Google rotation trial — Section C: Post-trial cleanup &amp; 24h monitoring</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-26 16:01</td>
+            </tr>
+            <tr>
               <td class="num">361</td>
               <td class="title">Google rotation trial — Section B: ggmcmr password change (trial)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-26 16:01</td>
+            </tr>
+            <tr>
               <td class="num">360</td>
               <td class="title">Google rotation trial — Section A: Backup &amp; pre-flight (gate)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-26 16:01</td>
+            </tr>
+            <tr>
               <td class="num">359</td>
               <td class="title">Google credential rotation — limited trial v1 (ggmcmr)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-27 10:01</td>
+            </tr>
+            <tr>
               <td class="num">187</td>
               <td class="title">sermo-cato-guard cron (auto-delete future [Cato] messages from topic 111)</td>
               <td class="labels">project/comms-infra</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-09-13 11:02</td>
+            </tr>
+            <tr>
               <td class="num">186</td>
               <td class="title">sermo-cato-purge skill (retroactive purge of [Cato] messages from topic 111)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-09-13 11:02</td>
+            </tr>
+            <tr>
               <td class="num">185</td>
               <td class="title">openrouter-rankings cron auto-delete patch (prevention)</td>
               <td class="labels">project/comms-infra</td>
               <td class="owner">polo</td>
-            </tr></tbody>
+              <td class="owner">2026-10-09 10:58</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <div class="bucket-section sev-warn" id="bucket-blocked">
       <div class="bucket-head"><h2>Blocked</h2></div>
-      <p class="bucket-note">Tagged <code>status/blocked</code>: stuck on a decision, dependency or external input.</p>
+      <p class="bucket-note">Open issues tagged <code>status/blocked</code>: waiting on something external.</p>
       <p class="withheld-note">1 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
               <td class="num">408</td>
               <td class="title">decision: wire foto tag into future-arrivals pipeline</td>
               <td class="labels">project/ops-live, type/hil</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-06 15:00</td>
+            </tr>
+            <tr>
               <td class="num">395</td>
               <td class="title">ops: 9.36 upgrade readiness — pre-flight checklist and decision log</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-09 11:34</td>
+            </tr>
+            <tr>
               <td class="num">365</td>
               <td class="title">External drive backup strategy: 4tb-a has NO working backup (GB Pro stale 9 months, RAID 0, no TM)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-24 20:51</td>
+            </tr>
+            <tr>
               <td class="num">364</td>
               <td class="title">Pixel 9a photo route: Syncthing → Hazel → Drive-mirrored folder (research complete, blocked on decision)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-24 20:51</td>
+            </tr>
+            <tr>
               <td class="num">329</td>
               <td class="title">vai-gate channel protocol: is direct CC-terminal instruction a valid vai channel? (OPEN - not settled)</td>
               <td class="labels">project/protocol</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:26</td>
+            </tr>
+            <tr>
               <td class="num">262</td>
               <td class="title">Codex: review secondary tags usage</td>
               <td class="labels">project/horizon-board</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-09-30 16:08</td>
+            </tr>
+            <tr>
               <td class="num">234</td>
               <td class="title">Upstream PR: fix STDIO caller provenance gap (parity with HTTP loopback)</td>
               <td class="labels">project/session-identity</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-09-11 09:05</td>
+            </tr>
+            <tr>
               <td class="num">193</td>
               <td class="title">codex SOTA research via wei-cross-research — planning (io&#x27;s 5 prompts)</td>
               <td class="labels">priority/p1</td>
               <td class="owner">io</td>
-            </tr></tbody>
+              <td class="owner">2026-10-09 10:58</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <div class="bucket-section sev-neutral" id="bucket-review">
       <div class="bucket-head"><h2>In review</h2></div>
-      <p class="bucket-note">Tagged <code>status/review</code>: work is done, waiting on a reviewer's read.</p>
-      
+      <p class="bucket-note">Open issues tagged <code>status/review</code>: awaiting a review pass.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
               <td class="num">422</td>
               <td class="title">Identity-doc migration: fix 10KB truncation + SOTA convention mismatch (io review requested)</td>
               <td class="labels">project/identity-refactor</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 13:25</td>
+            </tr>
+            <tr>
               <td class="num">397</td>
               <td class="title">[ego][security] EGO exec idempotency-block bypass — unrouted exec commands (python3/sed/tee/git/ssh/adb) skip the UNKNOWN gate entirely</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-06 15:00</td>
+            </tr>
+            <tr>
               <td class="num">334</td>
               <td class="title">LLM allocation best practice on OpenClaw — research report + remediation alignment</td>
               <td class="labels">project/model-ops</td>
               <td class="owner">cc</td>
-            </tr></tbody>
+              <td class="owner">2026-10-02 12:37</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <div class="bucket-section sev-warn" id="bucket-p1_queued">
       <div class="bucket-head"><h2>P1 queued</h2></div>
-      <p class="bucket-note">Open, <code>priority/p1</code>, not yet running, in-flight or done.</p>
+      <p class="bucket-note">Open <code>priority/p1</code> issues not already done, in-flight, or running.</p>
       <p class="withheld-note">3 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
               <td class="num">416</td>
               <td class="title">Research triage paradigm — pattern-match incoming research against ocaisa&#x27;s mental model before investigating</td>
               <td class="labels">priority/p1, project/protocol</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:26</td>
+            </tr>
+            <tr>
               <td class="num">411</td>
               <td class="title">Upgrade rehearsal: 11.5 schema migration via copy-sandbox on 4tb-a</td>
               <td class="labels">priority/p1, project/upgrade-prep</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-08 20:21</td>
+            </tr>
+            <tr>
               <td class="num">266</td>
               <td class="title">Provider Health Sentinel — launchd probe + cron rollup + canary lane</td>
               <td class="labels">priority/p1, project/horizon-board, project/observability</td>
               <td class="owner">io</td>
-            </tr><tr>
+              <td class="owner">2026-10-09 11:30</td>
+            </tr>
+            <tr>
               <td class="num">236</td>
               <td class="title">EGO C2: ledger audit + state report</td>
               <td class="labels">priority/p1, project/ego</td>
               <td class="owner">polo</td>
-            </tr><tr>
+              <td class="owner">2026-10-09 10:58</td>
+            </tr>
+            <tr>
               <td class="num">193</td>
               <td class="title">codex SOTA research via wei-cross-research — planning (io&#x27;s 5 prompts)</td>
               <td class="labels">priority/p1</td>
               <td class="owner">io</td>
-            </tr><tr>
+              <td class="owner">2026-10-09 10:58</td>
+            </tr>
+            <tr>
               <td class="num">192</td>
               <td class="title">memory backup: find and implement backup solution for agent memos data</td>
               <td class="labels">priority/p1</td>
               <td class="owner">polo</td>
-            </tr><tr>
+              <td class="owner">2026-10-09 10:58</td>
+            </tr>
+            <tr>
               <td class="num">183</td>
               <td class="title">openclaw model handling issues — reasoning_content wrapper bypass + session_expired misclassification</td>
               <td class="labels">priority/p1, project/model-ops</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-10-09 11:01</td>
+            </tr>
+            <tr>
               <td class="num">112</td>
               <td class="title">Finalise Mezzo + io onboarding process</td>
               <td class="labels">priority/p1, project/horizon-board</td>
               <td class="owner">(unassigned)</td>
-            </tr></tbody>
+              <td class="owner">2026-09-30 16:08</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <div class="bucket-section sev-neutral" id="bucket-touched_today">
       <div class="bucket-head"><h2>Touched today</h2></div>
-      <p class="bucket-note">Updated or opened today regardless of label.</p>
+      <p class="bucket-note">Open issues updated today (UTC).</p>
       <p class="withheld-note">1 security-tagged item(s) withheld from this public view — see the internal tracker.</p>
       <div class="table-wrap">
         <table class="issue-table">
-          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th></tr></thead>
-          <tbody><tr>
+          <thead><tr><th>No.</th><th>Issue</th><th>Labels</th><th>Owner</th><th>Updated</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">424</td>
+              <td class="title">Dashboard: Today in Play — bible doc + reusable regen skill (gitweb mirror only)</td>
+              <td class="labels">project/ops-live</td>
+              <td class="owner">(unassigned)</td>
+              <td class="owner">2026-11-10 14:32</td>
+            </tr>
+            <tr>
               <td class="num">423</td>
               <td class="title">[SUPERSEDED] AGENTS.md rewrite v0 — proposal for review (targeted wrong file; see comment)</td>
               <td class="labels">project/identity-refactor</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:49</td>
+            </tr>
+            <tr>
               <td class="num">422</td>
               <td class="title">Identity-doc migration: fix 10KB truncation + SOTA convention mismatch (io review requested)</td>
               <td class="labels">project/identity-refactor</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 13:25</td>
+            </tr>
+            <tr>
               <td class="num">421</td>
               <td class="title">AGENTS.md: live file resolved to agents/main/workspace/, not shared workspace root — v0 rewrite proposal and CLAUDE.md:143 both target the wrong path</td>
               <td class="labels">priority/p2, project/identity-refactor</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 13:25</td>
+            </tr>
+            <tr>
               <td class="num">420</td>
               <td class="title">SESSION_CANONICAL_KEY_MIGRATION_REQUIRED — untracked session-store condition, 3 incidents across 2 agents, no owner</td>
               <td class="labels">project/session-identity, project/session-reliability</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:56</td>
+            </tr>
+            <tr>
               <td class="num">419</td>
               <td class="title">io session bricked by non-canonical persisted session key (agent:io:telegram:io:direct:*)</td>
               <td class="labels">priority/p1, project/session-reliability</td>
               <td class="owner">polo</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 00:17</td>
+            </tr>
+            <tr>
               <td class="num">416</td>
               <td class="title">Research triage paradigm — pattern-match incoming research against ocaisa&#x27;s mental model before investigating</td>
               <td class="labels">priority/p1, project/protocol</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:26</td>
+            </tr>
+            <tr>
               <td class="num">329</td>
               <td class="title">vai-gate channel protocol: is direct CC-terminal instruction a valid vai channel? (OPEN - not settled)</td>
               <td class="labels">project/protocol</td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:26</td>
+            </tr>
+            <tr>
               <td class="num">264</td>
               <td class="title">a2a-bus: add fromAgent validation against agentRuntimeIdentity</td>
               <td class="labels">priority/p2, project/protocol</td>
               <td class="owner">io</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:26</td>
+            </tr>
+            <tr>
               <td class="num">230</td>
               <td class="title">Crontab cleanup — Martin manual action required (ctx-guard + c2-polo-compact-trigger)</td>
-              <td class="labels">—</td>
+              <td class="labels"></td>
               <td class="owner">(unassigned)</td>
-            </tr><tr>
+              <td class="owner">2026-11-10 12:29</td>
+            </tr>
+            <tr>
               <td class="num">45</td>
               <td class="title">CC Telegram identity: messages show as &#x27;polo&#x27;, not &#x27;cc&#x27;</td>
               <td class="labels">project/comms-infra</td>
               <td class="owner">mc</td>
-            </tr></tbody>
+              <td class="owner">2026-11-10 09:06</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
   </section>
-
   <footer>
-    Static snapshot published via the <code>gitweb</code> skill from a Forgejo pull of <code>openclaw/ops</code> open issues,
-    sorted into buckets by label. Not live — regenerate to refresh. Issues carrying the <code>security</code> label are
-    withheld from this public copy; see the internal tracker or the private interactive dashboard for full detail.
+    Static snapshot published via the <code>gitweb</code> skill from a Forgejo pull of <code>openclaw/ops</code> open issues, sorted into buckets by label. Not live — regenerate to refresh. Issues carrying the <code>security</code> label are withheld from this public copy; see the internal tracker or the private interactive dashboard for full detail.
   </footer>
 </div>
 </body>
