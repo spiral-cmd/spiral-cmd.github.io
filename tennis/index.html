@@ -59,13 +59,14 @@
 
         <div class="count" id="count"></div>
         <ul class="list" id="diagramList">
+            <li data-tags="tactics,isaac,serve,footwork"><a href="0002-five-tactical-rules.html"><span class="num">0002</span><span class="name">0002 — Five Tactical Rules</span><span class="tags">tactics,isaac,serve,footwork</span></a></li>
             <li data-tags="isaac,scorecard,tactics"><a href="0001-isaac-session-scorecard.html"><span class="num">0001</span><span class="name">0001 — Isaac Session Scorecard</span><span class="tags">isaac,scorecard,tactics</span></a></li>
             <li data-tags="isaac,scorecard,print"><a href="isaac-session-scorecard.html"><span class="name">Isaac — Session Scorecard (print layout)</span><span class="tags">isaac,scorecard,print</span></a></li>
         </ul>
     </div>
     <script>
         // Known tags: tag -> count (generated)
-        const TAGS = { "scorecard": 2, "isaac": 2, "tactics": 1, "print": 1 };
+        const TAGS = { "isaac": 3, "tactics": 2, "scorecard": 2, "serve": 1, "print": 1, "footwork": 1 };
         const items = Array.from(document.querySelectorAll('#diagramList li'));
         const input = document.getElementById('tagFilter');
         const dropdown = document.getElementById('dropdown');
