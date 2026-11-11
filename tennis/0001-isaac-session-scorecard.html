@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="tags" content="isaac,scorecard,tactics">
+  <title>0001 — Isaac Session Scorecard</title>
+  <style>
+    :root { --bg: #EEEAE3; --surface: #F5F2EC; --fg: #111827; --fg-sub: #6B7280; --fg-muted: #9CA3AF; --accent: #01696f; --line: rgba(0,0,0,0.08); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); font-family: 'Inter', -apple-system, sans-serif; padding: 28px 16px 48px; display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--fg); }
+    .eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); }
+    .card { width: 100%; max-width: 780px; background: var(--surface); border-radius: 16px; padding: 32px 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); }
+    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 4px; }
+    .meta { font-size: 12px; color: var(--fg-sub); margin-bottom: 18px; }
+    .intro { font-size: 12.5px; color: var(--fg-sub); line-height: 1.6; margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+    h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; margin: 22px 0 3px; padding-bottom: 6px; border-bottom: 1.5px solid var(--fg); }
+    .sub { font-size: 11.5px; color: var(--fg-sub); font-style: italic; margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
+    td { padding: 7px 4px; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+    td.s { width: 90px; text-align: right; font-weight: 600; white-space: nowrap; }
+    .score { font-weight: 700; font-size: 12.5px; margin-top: 4px; }
+    .note { font-size: 11px; color: var(--fg-muted); margin-top: 3px; line-height: 1.5; }
+    .total { font-size: 18px; font-weight: 800; text-align: center; border: 2.5px solid var(--fg); border-radius: 10px; padding: 12px; margin: 26px 0 8px; }
+    .line { border-bottom: 1px solid var(--fg-muted); height: 22px; margin-top: 4px; }
+    ul.guide { list-style: none; font-size: 12px; color: var(--fg-sub); line-height: 1.7; }
+    ul.guide li::before { content: '— '; color: var(--fg-muted); }
+    .rule { border-left: 4px solid var(--accent); padding: 10px 14px; background: rgba(1,105,111,0.06); font-size: 12px; line-height: 1.6; margin-top: 18px; border-radius: 0 8px 8px 0; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+    .btn { display: inline-block; background: var(--accent); color: white; text-decoration: none; font-size: 12px; font-weight: 600; padding: 9px 16px; border-radius: 8px; }
+    .btn.ghost { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+    @media print { body { background: white; padding: 0; } .card { box-shadow: none; max-width: none; } .actions { display: none; } }
+  </style>
+</head>
+<body>
+<p class="eyebrow">Tennis — Isaac · Session Tool</p>
+
+<div class="card">
+  <h1>Isaac — Session Scorecard</h1>
+  <div class="meta">Date: ____________ &nbsp;·&nbsp; Court: ____________ &nbsp;·&nbsp; Practice / Match</div>
+
+  <p class="intro">Score each item <strong>0, 1 or 2</strong> as you go. Total out of 15. No one else fills this in — it's yours.</p>
+
+  <h2>1. SERVE — 70% not 100%</h2>
+  <p class="sub">Target: 6 or 7 out of 10 first serves in.</p>
+  <table>
+    <tr><td>First serves in, out of 10</td><td class="s">____ / 10</td></tr>
+    <tr><td>Did I swing at ~70% (not flat out)?</td><td class="s">0 / 1 / 2</td></tr>
+    <tr><td>Did I use spin/slice rather than pure pace?</td><td class="s">0 / 1 / 2</td></tr>
+  </table>
+  <p class="score">Score: ____ / 4</p>
+  <p class="note">2 = hit the 6-7/10 target and used spin. 1 = one of the two. 0 = went flat out and missed.</p>
+
+  <h2>2. DEEP BALLS — high and down the middle</h2>
+  <p class="sub">When I'm behind the baseline: high over the net, deep to the middle. No sharp angles from back there.</p>
+  <table>
+    <tr><td>Did I aim high over the net from deep?</td><td class="s">0 / 1 / 2</td></tr>
+    <tr><td>Did I resist sharp angles from behind the line?</td><td class="s">0 / 1 / 2</td></tr>
+  </table>
+  <p class="score">Score: ____ / 4</p>
+  <p class="note">2 = did it consistently. 1 = remembered halfway through. 0 = kept going for the hero angle.</p>
+
+  <h2>3. RECOVERY + SPLIT-STEP</h2>
+  <p class="sub">Recover to the middle of their possible return angles — not the centre mark. Split-step as they hit.</p>
+  <table>
+    <tr><td>Did I recover to the right side (crosscourt → same side, DTL → opposite)?</td><td class="s">0 / 1 / 2</td></tr>
+    <tr><td>Did I split-step as they made contact?</td><td class="s">0 / 1 / 2</td></tr>
+  </table>
+  <p class="score">Score: ____ / 4</p>
+  <p class="note">2 = both, most points. 1 = one of them. 0 = stood still / ran through contact.</p>
+
+  <h2>4. TARGETS — 1 metre inside the lines</h2>
+  <p class="sub">Not the lines. A metre in.</p>
+  <table>
+    <tr><td>Did I aim at a real target zone, not the paint?</td><td class="s">0 / 1 / 2</td></tr>
+  </table>
+  <p class="score">Score: ____ / 2</p>
+  <p class="note">2 = aimed inside every time. 1 = sometimes. 0 = went for the lines.</p>
+
+  <h2>5. PATIENCE — crosscourt until the short ball</h2>
+  <p class="sub">Rally crosscourt and deep. Only go down the line when the ball is short and I've stepped in.</p>
+  <table>
+    <tr><td>Did I stay crosscourt while rallying from deep?</td><td class="s">0 / 1 / 2</td></tr>
+  </table>
+  <p class="score">Score: ____ / 2</p>
+  <p class="note">2 = waited for the short ball. 1 = went early once or twice. 0 = went DTL from behind the baseline.</p>
+
+  <div class="total">TOTAL: &nbsp; ____ / 15</div>
+
+  <h2>After the session — 30 seconds</h2>
+  <p class="sub" style="margin-top:8px">The one thing I did best:</p>
+  <div class="line"></div>
+  <p class="sub" style="margin-top:14px">The one thing to fix next time:</p>
+  <div class="line"></div>
+  <p class="sub" style="margin-top:14px">Did I beat last session's score? &nbsp; YES / NO &nbsp;·&nbsp; last score: ______</p>
+
+  <h2>Scoring guide</h2>
+  <ul class="guide">
+    <li><strong>12-15</strong> — Sharp session. This is match-ready tennis.</li>
+    <li><strong>8-11</strong> — Solid. One or two habits slipped.</li>
+    <li><strong>4-7</strong> — The old habits won today. Pick ONE item for next time.</li>
+    <li><strong>0-3</strong> — Rough one. Don't fix everything — just pick the serve.</li>
+  </ul>
+
+  <div class="rule"><strong>The rule:</strong> Don't chase all five at once. Circle the lowest-scoring item. That's the only thing you think about next session. Everything else is allowed to be average.</div>
+
+  <div class="actions">
+    <a class="btn" href="isaac-session-scorecard.pdf">Download PDF (print this)</a>
+    <a class="btn ghost" href="isaac-session-scorecard.html">Plain HTML version</a>
+  </div>
+</div>
+</body>
+</html>
