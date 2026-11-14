@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>0064 — P3 Forgejo Token Path</title>
+<meta name="tags" content="security bws openclaw">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root { --bg: #EEEAE3; --surface: #F5F2EC; --fg: #111827; --fg-sub: #6B7280; --fg-muted: #9CA3AF; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'Inter', -apple-system, sans-serif; padding: 28px 16px 48px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-muted); }
+.diagram-wrap { width: 100%; max-width: 900px; overflow-x: auto; background: var(--surface); border-radius: 16px; padding: 36px 32px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); }
+svg { display: block; width: 100%; height: auto; min-width: 580px; }
+.caption { font-size: 11px; color: var(--fg-sub); max-width: 900px; padding: 0 4px; line-height: 1.6; }
+code { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<p class="eyebrow">OpenClaw — BWS Secrets · ops/#375 P3</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 760 310" font-family="'Inter', -apple-system, sans-serif" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Before: three scripts read the Forgejo token directly from YAML on disk. After: all three call forgejo_token.py which calls oc_secret() which runs bws to fetch from BWS EU vault.">
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#444441"/>
+    </marker>
+  </defs>
+
+  <!-- Section labels -->
+  <text x="195" y="27" font-size="13" font-weight="500" fill="#111827" text-anchor="middle">before</text>
+  <text x="575" y="27" font-size="13" font-weight="500" fill="#111827" text-anchor="middle">after</text>
+
+  <!-- Divider -->
+  <line x1="380" y1="12" x2="380" y2="296" stroke="#888780" stroke-width="1" stroke-dasharray="5,4" opacity="0.5"/>
+
+  <!-- BEFORE: script boxes -->
+  <rect x="15" y="50" width="170" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="100" y="66" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">forgejo-kanban-move.sh</text>
+
+  <rect x="15" y="100" width="170" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="100" y="116" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">cato-alerts.py</text>
+
+  <rect x="15" y="150" width="170" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="100" y="166" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">cc-loop-watch.sh</text>
+
+  <!-- BEFORE: arrows to YAML + "reads" label -->
+  <line x1="185" y1="66" x2="213" y2="66" stroke="#444441" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="185" y1="116" x2="213" y2="116" stroke="#444441" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="185" y1="166" x2="213" y2="166" stroke="#444441" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="199" y="89" font-size="10" fill="#6B7280" text-anchor="middle">reads</text>
+
+  <!-- BEFORE: YAML box (amber — plaintext on disk) -->
+  <rect x="215" y="44" width="130" height="132" rx="4" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+  <text x="280" y="85" font-size="13" font-weight="500" fill="#633806" text-anchor="middle" dominant-baseline="central">YAML</text>
+  <text x="280" y="110" font-size="10.5" fill="#854F0B" text-anchor="middle" dominant-baseline="central">forgejo token</text>
+  <text x="280" y="130" font-size="10.5" fill="#854F0B" text-anchor="middle" dominant-baseline="central">plaintext on disk</text>
+
+  <!-- AFTER: script boxes -->
+  <rect x="390" y="50" width="170" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="475" y="66" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">forgejo-kanban-move.sh</text>
+
+  <rect x="390" y="100" width="170" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="475" y="116" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">cato-alerts.py</text>
+
+  <rect x="390" y="150" width="170" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="475" y="166" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">cc-loop-watch.sh</text>
+
+  <!-- AFTER: collector (ticks + vertical line + arrow into chain) -->
+  <line x1="560" y1="66" x2="572" y2="66" stroke="#888780" stroke-width="0.5"/>
+  <line x1="560" y1="116" x2="572" y2="116" stroke="#888780" stroke-width="0.5"/>
+  <line x1="560" y1="166" x2="572" y2="166" stroke="#888780" stroke-width="0.5"/>
+  <line x1="572" y1="66" x2="572" y2="166" stroke="#888780" stroke-width="0.5"/>
+  <line x1="572" y1="116" x2="583" y2="116" stroke="#444441" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- forgejo_token.py -->
+  <rect x="585" y="100" width="150" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="660" y="116" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">forgejo_token.py</text>
+
+  <!-- Arrow down to oc_secret -->
+  <line x1="660" y1="132" x2="660" y2="162" stroke="#444441" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="667" y="150" font-size="10" fill="#6B7280">calls</text>
+
+  <!-- oc_secret() -->
+  <rect x="585" y="164" width="150" height="32" rx="4" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text x="660" y="180" font-size="11" fill="#444441" text-anchor="middle" dominant-baseline="central">oc_secret()</text>
+
+  <!-- Arrow down to BWS vault -->
+  <line x1="660" y1="196" x2="660" y2="226" stroke="#444441" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="667" y="214" font-size="10" fill="#6B7280">bws fetch</text>
+
+  <!-- BWS EU vault (teal — secure destination) -->
+  <rect x="585" y="228" width="150" height="44" rx="4" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+  <text x="660" y="246" font-size="13" font-weight="500" fill="#085041" text-anchor="middle" dominant-baseline="central">BWS EU vault</text>
+  <text x="660" y="263" font-size="10.5" fill="#0F6E56" text-anchor="middle" dominant-baseline="central">Bitwarden Secrets</text>
+
+</svg>
+</div>
+
+<p class="caption">P3 token path. Before: three callers read the Forgejo token directly from YAML — plaintext on disk. After: all three route through <code>forgejo_token.py</code> → <code>oc_secret()</code> → <code>bws</code> → BWS EU vault. The YAML file stays in place during the D1-dwell transition; callers stop reading it.</p>
+
+</body>
+</html>
